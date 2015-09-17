@@ -1,0 +1,11 @@
+
+# place output files in out directory and 
+# therefore won't be included in version control
+out
+
+# keep PyCharm preferences separate
+.idea
+
+*.bck
+*.bak
+*.pyc

@@ -1,0 +1,14 @@
+"Suite name","Test name","Test number","Lsl","Lsl_typ","Usl_typ","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
+"Test mode","","","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","","","","","","","",""
+SupplyShortsPre_st,I_B_SP_VDDCORE,498,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDUHI,499,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDSLO,500,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDRAM,501,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDSHI,502,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDDPLL,503,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDDDR,504,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDIO,505,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDULO,506,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDNWA,507,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VPP,508,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,
+SupplyShortsPre_st,I_B_SP_VDDPLL,509,-10,GE,LE,10,mA,9,F_OS_SHRT_VDD,8,F_OS,bad,,,

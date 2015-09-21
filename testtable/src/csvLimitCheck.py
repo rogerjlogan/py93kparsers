@@ -82,14 +82,23 @@ def create_logfile():#[ expression for item in list if conditional ]
             header='\n***********************************************\n'\
                   +'DUPLICATE TEST NUMBERS FOUND !!!!\n'\
                   +'***********************************************\n'
-            logFile.write(header+','.join(_duptestname_err_)+'\n')
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: DUPLICATE TEST NUMBERS CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+','.join(_duptestname_err_)+'\n')
+
         if len(_testnamelen_err_):
             errors = True
             header='\n***********************************************\n'\
                   +'TEST NAME LENGTH ERRORS LISTED BELOW !!!!\n'\
                   +'MAX ALLOWED LENGTH = '+str(_MAXLENGTH_TESTNAME_)+' (INCLUDING \'@pin\',IF \'Pins\' COLUMN FOUND)\n'\
                   +'***********************************************\n'
-            logFile.write(header+_testnamelen_err_)
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: TEST NAME LENGTH CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+_testnamelen_err_)
         if len(_sbin_name_err_):
             errors = True
             header='\n***********************************************\n'\
@@ -107,7 +116,11 @@ def create_logfile():#[ expression for item in list if conditional ]
                         testnames = ','.join(_sbin_num_to_testname_[thisnum])
                     err_str += thisnum + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
-            logFile.write(header+err_str)
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: SBIN NAME TO NUMS CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+err_str)
         if len(_hbin_name_err_):
             errors = True
             header='\n***********************************************\n'\
@@ -125,7 +138,11 @@ def create_logfile():#[ expression for item in list if conditional ]
                         testnames = ','.join(_hbin_num_to_testname_[thisnum])
                     err_str += thisnum +'('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
-            logFile.write(header+err_str)
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: HBIN NAME TO NUMS CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+err_str)
         if len(_sbin_num_err_):
             errors = True
             header='\n***********************************************\n'\
@@ -143,7 +160,11 @@ def create_logfile():#[ expression for item in list if conditional ]
                         testnames = ','.join(_sbin_name_to_testname_[thisname])
                     err_str += thisname + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
-            logFile.write(header+err_str)
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: SBIN NUMS TO NAMES CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+err_str)
         if len(_hbin_num_err_):
             errors = True
             header='\n***********************************************\n'\
@@ -161,7 +182,11 @@ def create_logfile():#[ expression for item in list if conditional ]
                         testnames = ','.join(_hbin_name_to_testname_[thisname])
                     err_str += thisname + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
-            logFile.write(header+err_str)
+        else:
+            header='\n***********************************************\n'\
+                  +'PASSED: HBIN NUMS TO NAMES CHECK !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+err_str)
         if len(_binmap_err_):
             errors = True
             header='\n***********************************************\n'\
@@ -179,7 +204,12 @@ def create_logfile():#[ expression for item in list if conditional ]
                     else:
                         testnames = ','.join(_binmap_err_tests_[thisname])
                     err_str += hbin + '('+testnames+')\n\t\t\t\t\t\t\t\t'
-            logFile.write(header+err_str)
+        else:
+            header='\n***********************************************\n'\
+                  +'INCONSISTENT SBIN NAME/HBIN NAME MAPPING ERRORS LISTED BELOW !!!!\n'\
+                  +'CANNOT MAP TO MORE THAN ONE !!!!\n'\
+                  +'***********************************************\n'
+        logFile.write(header+err_str)
         if not errors:
             header='\n***********************************************\n'\
                   +'YAY !!! NO ERRRORS FOUND !\n'\

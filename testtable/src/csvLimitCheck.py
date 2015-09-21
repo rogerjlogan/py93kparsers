@@ -49,7 +49,7 @@ _file_header_ = \
 """
 \t# Script File Name: csvLimitCheck.py
 \t# Author: Roger Logan
-\t# Version: 2.0
+\t# Version: 2.1
 \t# Property of Anora, LLC
 \t# Script Run Date:"""+localtime+"""
 \t# Description: """+_description_+"""\n\n

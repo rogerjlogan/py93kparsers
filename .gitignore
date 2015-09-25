@@ -1,6 +1,7 @@
 # keep PyCharm preferences separate
 .idea
 
+*.out
 *.log
 *.bck
 *.bak

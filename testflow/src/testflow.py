@@ -2,148 +2,8 @@
 
 import sys
 import pyparsing as pp
-from pprint import pprint
-
-class Node(object):
-    def __init__(self, toks=None):
-        if toks:
-            self.val = toks[0]
-            self.repr = str(toks[0])
-        else:
-            self.val = None
-            self.repr = ''
-
-    def eval(self, env=None):
-        pass
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
-        return self.repr
-
-    def __eq__(self, other):
-        try:
-            return self.__dict__ == other.__dict__
-        except AttributeError:
-            return False
-
-
-class DecEval(Node):
-    def __init__(self, toks):
-        """ :rtype : str, hash, self
-            :param toks:
-        """
-        super(DecEval, self).__init__()
-        self.val = int(toks[0])
-
-    def __str__(self):
-        return str(self.val)
-
-    def __hash__(self):
-        return hash(self.val)
-
-    def eval(self, env=None):
-        return self
-
-        # def __add__(self, other):
-        #     if isinstance(other, floatEval):
-        #         return other + self
-        #     try:
-        #         return DecEval([str(self.val + other.val)])
-        #     except AttributeError:
-        #         return DecEval([str(self.val + other)])
-        #
-        # def __neg__(self):
-        #     out = copy.deepcopy(self)
-        #     out.val  = -out.val
-        #     return out
-        #
-        # def __abs__(self):
-        #     if self.val < 0:
-        #         return -self
-        #     return copy.deepcopy(self)
-        #
-        # def __mod__(self, other):
-        #     try:
-        #         return DecEval([str(self.val % other.val)])
-        #     except AttributeError:
-        #         return DecEval([str(self.val % other)])
-        # def __pow__(self, other):
-        #     try:
-        #         return DecEval([str(self.val ** other.val)])
-        #     except AttributeError:
-        #         return DecEval([str(self.val ** other)])
-        #
-        # def _convert(self, other):
-        #     if hasattr(other, 'val'):
-        #         return other
-        #     elif isinstance(other, float):
-        #         return floatEval([str(other).upper()])
-        #     return DecEval([str(other).upper()])
-        #
-        # def __mul__(self,other):
-        #     if isinstance(other, floatEval):
-        #         return other * self
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val*other.val)])
-        # def __radd__(self, other):
-        #     return self.__add__(other)
-        # def __rmul__(self,other):
-        #     return self.__mul__(other)
-        #
-        # def __div__(self,other):
-        #     if isinstance(other, floatEval):
-        #         return other.__rdiv__(self)
-        #     other = self._convert(other)
-        #     try:
-        #         return DecEval([str(self.val/other.val)])
-        #     except ZeroDivisionError:
-        #         print 'Warning!!: division by zero!!!'
-        #         return DecEval(['0'])
-        #
-        # def __rdiv__(self,other):
-        #     try:
-        #         return DecEval([str(other/self.val).upper()])
-        #     except ZeroDivisionError:
-        #         print 'Warning!!: division by zero!!!'
-        #         return DecEval(['0'])
-        # def __sub__(self,other):
-        #     if isinstance(other, floatEval):
-        #         return (-other) + self
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val - other.val)])
-        # def __lshift__(self,other):
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val << other.val)])
-        # def __rshift__(self,other):
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val >> other.val)])
-        # def __or__(self,other):
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val | other.val)])
-        # def __and__(self,other):
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val & other.val)])
-        # def __xor__(self,other):
-        #     other = self._convert(other)
-        #     return DecEval([str(self.val ^ other.val)])
-        # def __invert__(self):
-        #     return DecEval([str(~self.val)])
-        # def __cmp__(self,other):
-        #     try:
-        #         return cmp(self.val, other.val)
-        #     except AttributeError:
-        #         return cmp(self.val, other)
-        # def __nonzero__(self):
-        #     return self.val !=0
-
-
-class hexEval(DecEval):
-    def __init__(self, toks):
-        super(hexEval, self).__init__(toks)
-        self.val = int(toks[0], 16)
-        self.repr = str(self.val)
+from generic_parsers import *
+from print_debug import *
 
 # special chars
 COMMA = pp.Literal(',').suppress()
@@ -198,12 +58,12 @@ Bool = pp.Literal("0") | pp.Literal("1")
 label = pp.Word(pp.alphas + pp.printables, excludeChars='"')
 
 
-# ---------------------------------------
-# SAMPLE CODE ... TODO: check this out ... might be able to use
-# ---------------------------------------
-# nestedParens = nestedExpr('(', ')', content=enclosed)
-# nestedBrackets = nestedExpr('[', ']', content=enclosed)
-# nestedCurlies = nestedExpr('{', '}', content=enclosed)
+character = pp.alphanums
+
+# <color> := an integer number (where 0 = black, 1 = white, 2 = red,
+# 3 = yellow, 4 = green, 5 = cyan, 6 = blue, 7 = magenta),
+# or the name of the color in lower case.
+color = pp.Word(pp.alphanums)
 
 # TODO: figure out expression definition
 # <expression> := an arithmetic, string and/or boolean
@@ -236,15 +96,39 @@ label = pp.Word(pp.alphas + pp.printables, excludeChars='"')
 # bsus()
 # ( expression )
 
-# expression parsing, uses built-in operator precedence.
-expr = pp.Forward()
-
 expression = pp.Word(pp.printables, excludeChars='";')
 
 # TODO: complete string_with_vars definition
 # string_with_vars = "[[<chars>] \@<var_name> ]... [<chars>]"
 string_with_vars = String
 
+# <major_bin> := <character>[<character>]
+major_bin = character + pp.Optional(character)
+
+# <minor_bin> := <string_with_vars>
+minor_bin = string_with_vars
+
+# <evaluation_limit> := <integer>
+evaluation_limit = Int
+
+# <consideration window> := <integer>
+consideration_window = Int
+
+# <action_limit> := <integer>
+action_limit = Int
+
+# <message> := <string> given as report warning or
+# stop message
+message = String
+
+# <OOC_rule> := [OOC_warning = <evaluation_limit>
+# <consideration window> <action_limit> <message>]
+# [OOC_stop = <evaluation_limit>
+# <consideration window> <action_limit> <message>]
+OOC_rule = pp.Optional(pp.Keyword("OOC_warning") + EQ + evaluation_limit + consideration_window + action_limit + message) +\
+           pp.Optional(pp.Keyword("OOC_stop")    + EQ + evaluation_limit + consideration_window + action_limit + message)
+
+physical_bin = Int
 
 ts_flag = pp.Keyword("bypass") |\
           pp.Keyword("set_pass") |\
@@ -291,10 +175,11 @@ flag_value = Int | Bool
 # <flag_name> |
 # <test_suite>.<ts_flag>|
 # * <test_suite>.ffc_on_fail}
-var_name = label |\
-           flag_name |\
-           (test_suite + '.' + ts_flag) |\
-           pp.ZeroOrMore((test_suite + '.' + pp.Keyword("ffc_on_fail")))
+var_name = pp.Optional(label |\
+                       flag_name |\
+                       pp.Group(test_suite + POINT + ts_flag) |\
+                       pp.Group(test_suite + POINT + pp.Keyword("ffc_on_fail"))\
+                       )
 
 # ----------------------
 # hp93000,testflow,0.1
@@ -432,23 +317,23 @@ site_control_info = String
 test_level = Int
 ffc_count = Int
 
-test_suite_entry = test_suite + COLON +\
-                   pp.ZeroOrMore(
-                       pp.Keyword("datasets") + EQ + dataset_label + SEMI |
-                       pp.Keyword("tests") + EQ + test_label + SEMI |
-                       pp.Keyword("test_level") + EQ + test_level + SEMI |
-                       pp.Keyword("local_flags") + EQ + ts_flag + pp.Regex("[, ...]") + SEMI |
-                       pp.ZeroOrMore(pp.Keyword("ffc_on_fail") + EQ + ffc_count + SEMI) |
-                       pp.Keyword("override") + EQ + Bool + SEMI |
-                       pp.Keyword("override_dpsset") + EQ + expression + SEMI |
-                       pp.Keyword("override_levset") + EQ + expression + SEMI |
-                       pp.Keyword("override_seqlbl") + EQ + expression + SEMI |
-                       pp.Keyword("override_timset") + EQ + expression + SEMI |
-                       pp.ZeroOrMore(pp.Keyword("override_wvfset") + EQ + expression + SEMI) |
-                       pp.Keyword("override_testf") + EQ + label + SEMI |
-                       pp.Keyword("site_match") + EQ + Bool + SEMI |
-                       pp.Keyword("site_control") + EQ + site_control_info + SEMI
-                   )
+# test_suite_entry = test_suite + COLON +\
+#                    pp.ZeroOrMore(
+#                        pp.Keyword("datasets") + EQ + dataset_label + SEMI |
+#                        pp.Keyword("tests") + EQ + test_label + SEMI |
+#                        pp.Keyword("test_level") + EQ + test_level + SEMI |
+#                        pp.Keyword("local_flags") + EQ + ts_flag + pp.Regex("[, ...]") + SEMI |
+#                        pp.ZeroOrMore(pp.Keyword("ffc_on_fail") + EQ + ffc_count + SEMI) |
+#                        pp.Keyword("override") + EQ + Bool + SEMI |
+#                        pp.Keyword("override_dpsset") + EQ + expression + SEMI |
+#                        pp.Keyword("override_levset") + EQ + expression + SEMI |
+#                        pp.Keyword("override_seqlbl") + EQ + expression + SEMI |
+#                        pp.Keyword("override_timset") + EQ + expression + SEMI |
+#                        pp.ZeroOrMore(pp.Keyword("override_wvfset") + EQ + expression + SEMI) |
+#                        pp.Keyword("override_testf") + EQ + label + SEMI |
+#                        pp.Keyword("site_match") + EQ + Bool + SEMI |
+#                        pp.Keyword("site_control") + EQ + site_control_info + SEMI
+#                    )
 # test_suites_section = pp.Keyword("test_suites") + pp.ZeroOrMore(test_suite_entry) + END
 test_suites_section = (pp.Keyword("test_suites") + pp.SkipTo(END) + END)\
                       .setResultsName("test_suites_section")
@@ -525,7 +410,7 @@ print_expression = expression | string_with_vars
 
 # <assignment> :={@<var_name> = <expression> |
 # @<var_name> = <string>}
-assignment  = var_name + EQ + (String | expression)
+assignment  =  var_name + EQ + (String | expression)
 
 compound_state = (pp.Keyword("open") | pp.Keyword("closed")).setResultsName("compound_state")
 compound_label = String.setResultsName("compound_label")
@@ -579,13 +464,41 @@ reprobe_flag = (pp.Keyword("reprobe") | pp.Keyword("noreprobe")).setResultsName(
 # NOTE: For compatibility reasons to older versions, SmarTest saves stop_bin with a blank in between commas
 #       between <minor_bin> and <good_flag>.
 
-
-
 # <test_flow_section> := <statement>;
 # [...]
-#
 
-test_flow_section = (pp.Keyword("test_flow").suppress() + pp.SkipTo(END) + END)\
+# this line is necessary if "statement" is going to be nested,
+# then statement must use "<<" instead of "="
+statement = pp.Forward()
+run_statement = pp.Keyword("run") + LPAR + test_suite + RPAR
+run_and_branch_statement = pp.Keyword("run_and_branch") + LPAR + test_suite + RPAR + pp.Keyword("then") +\
+                 statement + pp.Optional(pp.Keyword("else") + statement)
+print_statement = pp.Keyword("print") + print_expression
+print_dl_statement = pp.Keyword("print_dl") + print_expression
+if_statement = pp.Keyword("if") + expression + pp.Keyword("then") + statement + pp.Optional(pp.Keyword("else") + statement)
+while_statement = pp.Keyword("while") + expression + pp.Keyword("do") + statement
+for_statement = pp.Keyword("for") + assignment + SEMI + expression + SEMI + assignment + SEMI + pp.Keyword("do") + statement
+repeat_statement = pp.Keyword("repeat") + statement + SEMI + pp.Keyword("until") + expression
+group_statement = LCURL + statement + pp.ZeroOrMore(SEMI + statement) + RCURL + \
+                  pp.Optional(pp.Optional(compound_state) + COMMA +\
+                                pp.Optional(compound_label) + COMMA +\
+                                pp.Optional(compound_description))
+stop_bin_statement = pp.Keyword("stop_bin") + LCURL + major_bin + minor_bin +\
+                     pp.Optional(OOC_rule) + good_flag + reprobe_flag + color +\
+                     physical_bin + pp.Optional(COMMA + over_on_flag)
+statement << ( #assignment|\
+              run_statement|\
+              run_and_branch_statement|\
+              print_statement|\
+              print_dl_statement|\
+              if_statement|\
+              while_statement|\
+              for_statement|\
+              repeat_statement|\
+              group_statement|\
+              stop_bin_statement).setResultsName("statement")
+
+test_flow_section = pp.Group(pp.Keyword("test_flow").suppress() + pp.OneOrMore(statement) + END)\
                     .setResultsName("test_flow_section")
 
 
@@ -613,10 +526,7 @@ context_section = (pp.Keyword("context").suppress() + pp.SkipTo(END) + END)\
 # oocrule_section
 # ----------------------
 # <oocrule_section> := [<OOC_rule>]
-# <OOC_rule> := [OOC_warning = <evaluation_limit>
-# <consideration window> <action_limit> <message>]
-# [OOC_stop = <evaluation_limit>
-# <consideration window> <action_limit> <message>]
+# oocrule_section = pp.Optional(OOC_rule)
 oocrule_section = (pp.Keyword("oocrule").suppress() + pp.SkipTo(END) + END)\
                   .setResultsName("oocrule_section")
 
@@ -656,34 +566,63 @@ hardware_bin_descriptions_section = (pp.Keyword("hardware_bin_descriptions").sup
 # ooc_rule <oocrule_section> end |
 # context <setup_section> end |
 # hardware_bin_descriptions <hardware_bin_descriptions_section> end }
-section = header                                  +\
-          language_revision                       +\
-          information_section                     +\
-          declarations_section                    +\
-          implicit_declarations_section           +\
-          flags_section                           +\
-          testmethodparameters                    +\
-          testmethodlimits                        +\
-          testmethods                             +\
-          pp.Optional(tests_section)              +\
-          pp.Optional(testfunction_section)       +\
-          pp.Optional(dataset_section)            +\
-          test_suites_section                     +\
-          pp.Optional(bin_disconnect)             +\
-          pp.Optional(download_section)           +\
-          pp.Optional(initialize_section)         +\
-          pp.Optional(pause_section)              +\
-          pp.Optional(abort_section)              +\
-          pp.Optional(reset_section)              +\
-          pp.Optional(exit_section)               +\
-          pp.Optional(bin_disconnect_section)     +\
-          pp.Optional(multi_bin_decision_section) +\
-          test_flow_section                       +\
-          binning_section                         +\
-          pp.Optional(context_section)            +\
-          pp.Optional(oocrule_section)            +\
-          pp.Optional(setup_section)              +\
-          hardware_bin_descriptions_section
+section = header + language_revision +\
+            pp.ZeroOrMore(
+                information_section                     |\
+                declarations_section                    |\
+                implicit_declarations_section           |\
+                flags_section                           |\
+                testmethodparameters                    |\
+                testmethodlimits                        |\
+                testmethods                             |\
+                tests_section                           |\
+                testfunction_section                    |\
+                dataset_section                         |\
+                test_suites_section                     |\
+                bin_disconnect                          |\
+                download_section                        |\
+                initialize_section                      |\
+                pause_section                           |\
+                abort_section                           |\
+                reset_section                           |\
+                exit_section                            |\
+                bin_disconnect_section                  |\
+                multi_bin_decision_section              |\
+                binning_section                         |\
+                context_section                         |\
+                oocrule_section                         |\
+                setup_section                           |\
+                hardware_bin_descriptions_section
+            ) +\
+            test_flow_section +\
+            pp.ZeroOrMore(
+                information_section                     |\
+                declarations_section                    |\
+                implicit_declarations_section           |\
+                flags_section                           |\
+                testmethodparameters                    |\
+                testmethodlimits                        |\
+                testmethods                             |\
+                tests_section                           |\
+                testfunction_section                    |\
+                dataset_section                         |\
+                test_suites_section                     |\
+                bin_disconnect                          |\
+                download_section                        |\
+                initialize_section                      |\
+                pause_section                           |\
+                abort_section                           |\
+                reset_section                           |\
+                exit_section                            |\
+                bin_disconnect_section                  |\
+                multi_bin_decision_section              |\
+                binning_section                         |\
+                context_section                         |\
+                oocrule_section                         |\
+                setup_section                           |\
+                hardware_bin_descriptions_section
+            )
+
 
 
 class parse_TestFlow(object):
@@ -691,7 +630,7 @@ class parse_TestFlow(object):
         self.parse_test_flow_section(toks["test_flow_section"])
 
     def parse_test_flow_section(self, content):
-        print content
+        print2file(content)
 
 section.setParseAction(parse_TestFlow)
 
@@ -703,7 +642,5 @@ if __name__ == '__main__':
     print '\n\n'
 
     f = open(args[0])
-
     result = section.parseFile(f)
-
     f.close()

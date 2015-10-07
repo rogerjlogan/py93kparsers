@@ -104,7 +104,8 @@ def main():
 
     for pathfn in args.files:
         dump = read_tm_limits(pathfn)
-        print dump,'\n\n'
+        pprint(dump)
+        sys.exit()
 
 if __name__ == "__main__":
     main()

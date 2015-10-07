@@ -2,7 +2,8 @@ hp93000,testflow,0.1
 language_revision = 1;
 
 information
-
+temperature = 40.5;
+application = "yadda";
 end
 -----------------------------------------------------------------
 declarations

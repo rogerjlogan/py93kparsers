@@ -1,0 +1,7 @@
+hp93000,testflow,0.1
+language_revision = 1;
+
+declarations
+
+@my_double = 2.333;
+end

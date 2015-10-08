@@ -134,15 +134,16 @@ TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 Type = pp.Keyword("double") | pp.Keyword("string")
 
 # OptFileHeader = !str_p("hp93000,testflow,0.1");
-OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))\
+OptFileHeader = pp.Group(pp.Optional(pp.Keyword("hp93000,testflow,0.1")))\
     .setResultsName("OptFileHeader")
 
 # OptRevision = !(str_p("language_revision") >> ch_p('=') >> int_p >> ch_p(';'));
-OptRevision = (pp.Optional(pp.Keyword("language_revision")) + EQ + pp.Word(pp.nums) + SEMI)\
+OptRevision = pp.Group(pp.Optional(pp.Keyword("language_revision")) + EQ + pp.Word(pp.nums) + SEMI)\
     .setResultsName("OptRevision")
 
 # EmptySection = ch_p(';');
-EmptySection = SEMI
+EmptySection = pp.Group(SEMI)\
+    .setResultsName("EmptySection")
 
 # DeviceName = str_p("device_name") >> '=' >> (QuotedString)[bind(&SetDeviceName)(arg1)] >> ';';
 DeviceName = pp.Keyword("device_name") + EQ + QuotedString + SEMI
@@ -168,7 +169,7 @@ InformationElements = pp.ZeroOrMore(DeviceName | DeviceRevision | TestRevision |
 
 
 # InformationSection = str_p("information") >> InformationElements >> End;
-InformationSection = (pp.Keyword("information") + InformationElements + End)\
+InformationSection = pp.Group(pp.Keyword("information") + InformationElements + End)\
     .setResultsName("InformationSection")
 
 # Declaration = (Variable[Declaration.varName = arg1] >> ':' >> Type[Declaration.varType = arg1] >> ';' )
@@ -179,7 +180,7 @@ Declaration = (Variable + COLON + Type + SEMI)
 ImplicitDeclarations = pp.ZeroOrMore(Declaration)
 
 # ImplicitDeclarationSection = str_p("implicit_declarations") >> ImplicitDeclarations >> End;
-ImplicitDeclarationSection = (pp.Keyword("implicit_declarations") + ImplicitDeclarations + End)\
+ImplicitDeclarationSection = pp.Group(pp.Keyword("implicit_declarations") + ImplicitDeclarations + End)\
     .setResultsName("ImplicitDeclarationSection")
 
 # Definition = (Variable[Definition.varName = arg1] >> '=' >> Expression[Definition.value = arg1] >> ';')
@@ -191,7 +192,7 @@ Definition = (Variable + EQ + Expression + SEMI)
 Declarations = pp.ZeroOrMore(Definition)
 
 # DeclarationSection = str_p("declarations") >> Declarations >> End;
-DeclarationSection = (pp.Keyword("declarations") + Declarations + End)\
+DeclarationSection = pp.Group(pp.Keyword("declarations") + Declarations + End)\
     .setResultsName("DeclarationSection")
 
 
@@ -209,7 +210,7 @@ Flags = pp.ZeroOrMore(UserFlag | SystemFlag)
 
 
 # FlagSection = str_p("flags") >> Flags >> End;
-FlagSection = (pp.Keyword("flags") + Flags + End)\
+FlagSection = pp.Group(pp.Keyword("flags") + Flags + End)\
     .setResultsName("FlagSection")
 
 # TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
@@ -235,7 +236,7 @@ Testfunction = (Identifier + COLON + TestfunctionDefinition)
 Testfunctions = pp.ZeroOrMore(Testfunction) + End
 
 # TestfunctionSection = str_p("testfunctions") >> Testfunctions;
-TestfunctionSection = (pp.Keyword("testfunctions") + Testfunctions)\
+TestfunctionSection = pp.Group(pp.Keyword("testfunctions") + Testfunctions)\
     .setResultsName("TestfunctionSection")
 
 # UTMTestmethodParameters = *(TestmethodParameter);
@@ -249,7 +250,7 @@ UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
 #         >> End
 #     #endif
 #     ;
-TestmethodParameterSection = (pp.Keyword("testmethodparameters") + UTMTestmethodParameters + End)\
+TestmethodParameterSection = pp.Group(pp.Keyword("testmethodparameters") + UTMTestmethodParameters + End)\
     .setResultsName("TestmethodParameterSection")
 
 # LowLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
@@ -309,7 +310,7 @@ UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 #   >> End
 # #endif
 # ;
-TestmethodLimitSection = (pp.Keyword("testmethodlimits") + UTMTestmethodLimits + End)\
+TestmethodLimitSection = pp.Group(pp.Keyword("testmethodlimits") + UTMTestmethodLimits + End)\
     .setResultsName("TestmethodLimitSection")
 
 # UTMTestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
@@ -364,7 +365,7 @@ Testmethod = (Identifier + ':' + UTMTestmethodClass | TestmethodDefinition)
 Testmethods = pp.ZeroOrMore(Testmethod) + End
 
 # TestmethodSection = str_p("testmethods") >> Testmethods;
-TestmethodSection = (pp.Keyword("testmethods") + Testmethods)\
+TestmethodSection = pp.Group(pp.Keyword("testmethods") + Testmethods)\
     .setResultsName("TestmethodSection")
 
 # Userprocedure = ((Identifier)[Userprocedure.identifier = construct_<string>(arg1, arg2)] >> ':' >>
@@ -376,7 +377,7 @@ Userprocedure = (Identifier + COLON + pp.Keyword("user_procedure") + EQ + Quoted
 Userprocedures = pp.ZeroOrMore(Userprocedure) + End
 
 # UserprocedureSection = str_p("tests") >> Userprocedures;
-UserprocedureSection = (pp.Keyword("tests") + Userprocedures)\
+UserprocedureSection = pp.Group(pp.Keyword("tests") + Userprocedures)\
     .setResultsName("UserprocedureSection")
 
 # TestsuiteName = Identifier >> *ch_p(' ') >> ':';
@@ -501,7 +502,7 @@ Testsuite = TestsuiteName + TestsuiteDefinition
 Testsuites = pp.ZeroOrMore(Testsuite)
 
 # TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
-TestsuiteSection = (pp.Keyword("test_suites") + Testsuites  + End)\
+TestsuiteSection = pp.Group(pp.Keyword("test_suites") + Testsuites  + End)\
     .setResultsName("TestsuiteSection")
 
 # RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
@@ -644,7 +645,7 @@ EmptyStatement = ';'
 
 
 # TestflowSection = str_p("test_flow")[bind(&FlowSectionStart)()] >> FlowStatements >> End;
-TestflowSection = (pp.Keyword("test_flow") + FlowStatements + End)\
+TestflowSection = pp.Group(pp.Keyword("test_flow") + FlowStatements + End)\
     .setResultsName("TestflowSection")
 
 # FlowStatement = RunStatement |
@@ -708,15 +709,15 @@ DisconnectTestsuite = (pp.Keyword("bin_disconnect") + TestsuiteDefinition + End)
 MultiBinDecisionTestsuite = (pp.Keyword("multi_bin_decision") + TestsuiteDefinition + End)
 
 # SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
-SpecialTestsuiteSection = (DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
-                           ResetTestsuite | ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite)\
+SpecialTestsuiteSection = pp.Group(DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
+                                   ResetTestsuite | ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite)\
     .setResultsName("SpecialTestsuiteSection")
 
 # OtherwiseBin = (str_p("otherwise bin") >> '= ' >> BinDefinition >> ';')[bind(&CreateOtherwiseBin)()];
 OtherwiseBin = (pp.Keyword("otherwise bin") + EQ + BinDefinition + SEMI)
 
 # BinningSection = str_p("binning") >> *(OtherwiseBin| (BinDefinition >> ';')) >> End;
-BinningSection = (pp.Keyword("binning") + pp.ZeroOrMore(OtherwiseBin | (BinDefinition + SEMI)) + End)\
+BinningSection = pp.Group(pp.Keyword("binning") + pp.ZeroOrMore(OtherwiseBin | (BinDefinition + SEMI)) + End)\
     .setResultsName("BinningSection")
 
 # ConfigFile = str_p("context_config_file") >> '= ' >> QuotedString [bind(&SetConfigFile)(arg1)] >> ';';
@@ -760,18 +761,18 @@ SetupFiles = (ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | C
                       AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols)
 
 # SetupSection = str_p("context") >> *(SetupFiles) >> End;
-SetupSection = (pp.Keyword("context") + pp.ZeroOrMore(SetupFiles) + End)\
+SetupSection = pp.Group(pp.Keyword("context") + pp.ZeroOrMore(SetupFiles) + End)\
     .setResultsName("SetupSection")
 
 # OOCSection = str_p("oocrule") >> OOCRule >> End;
-OOCSection = (pp.Keyword("oocrule") + OOCRule + End)\
+OOCSection = pp.Group(pp.Keyword("oocrule") + OOCRule + End)\
     .setResultsName("OOCSection")
 
 # HardBinDescription = (int_p[HardBinDescription.hwBin =  arg1] >> '= ' >> QuotedString[HardBinDescription.description =  arg1] >> ';')[bind(&SetHardBinDescription)(HardBinDescription.hwBin, HardBinDescription.description)];
 HardBinDescription = (integer + EQ + QuotedString + SEMI)
 
 # HardwareBinSection = str_p("hardware_bin_descriptions") >> *(HardBinDescription) >> End;
-HardwareBinSection = (pp.Keyword("hardware_bin_descriptions") + pp.ZeroOrMore(HardBinDescription) + End)\
+HardwareBinSection = pp.Group(pp.Keyword("hardware_bin_descriptions") + pp.ZeroOrMore(HardBinDescription) + End)\
     .setResultsName("HardwareBinSection")
 
 #   Sections =
@@ -815,11 +816,11 @@ Sections << pp.ZeroOrMore(EmptySection |
                           OOCSection |
                           HardwareBinSection + pp.Optional(Sections))
 
-DebugSections = pp.Forward()
-DebugSections << TestsuiteSection
-
 # Start = OptFileHeader[Start.isUTMBased=false] >> OptRevision >> Sections;
 Start = OptFileHeader + OptRevision + Sections
+
+# DebugSections = pp.Forward()
+# DebugSections << TestsuiteSection
 # Start = (OptFileHeader + OptRevision + InformationSection + DeclarationSection + ImplicitDeclarationSection
 #          + FlagSection + pp.Optional(TestfunctionSection) + TestmethodParameterSection + TestmethodLimitSection
 #          + TestmethodSection + pp.Optional(UserprocedureSection) + TestsuiteSection + pp.ZeroOrMore(SpecialTestsuiteSection)

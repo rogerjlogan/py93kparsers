@@ -1,7 +1,459 @@
 hp93000,testflow,0.1
 language_revision = 1;
 
+information
+temperature = 40.5;
+application = "yadda";
+end
+-----------------------------------------------------------------
 declarations
 
 @my_double = 2.333;
+@my_string = "this is my string";
+end
+-----------------------------------------------------------------
+implicit_declarations
+
+end
+-----------------------------------------------------------------
+flags
+
+datalog_formatter = 0;
+datalog_sample_size = 1;
+graphic_result_displa = 1;
+state_display = 0;
+print_wafermap = 0;
+ink_wafer = 0;
+max_reprobes = 1;
+temp_monitor = 1;
+calib_age_monitor = 1;
+diag_monitor = 1;
+current_monitor = 1;
+log_events_enable = 1;
+set_pass_level = 0;
+set_fail_level = 0;
+set_bypass_level = 0;
+hold_on_fail = 0;
+global_hold = 0;
+debug_mode = 0;
+debug_analog = 0;
+parallel_mode = 1;
+site_match_mode = 2;
+global_overon = 0;
+limits_enable = 0;
+test_number_enable = 1;
+test_number_inc = 1;
+log_cycles_before = 0;
+log_cycles_after = 0;
+unburst_mode = 0;
+sqst_mode = 0;
+warn_as_fail = 1;
+use_hw_dsp = 0;
+dsp_file_enable = 0;
+buffer_testflow_log = 0;
+check_testmethod_api = 0;
+stdf_generation = 1;
+tm_crash_as_fatal = 1;
+hidden_datalog_mode = 0;
+multibin_mode = 0;
+user	my_inc_var = 0;
+user	my_userflag = 1;
+end
+-----------------------------------------------------------------
+testmethodparameters
+tm_1:
+  "testName" = "Functional";
+  "output" = "None";
+tm_10:
+  "testName" = "Functional";
+  "output" = "None";
+tm_11:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_12:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_13:
+  "testName" = "Functional";
+  "output" = "None";
+tm_14:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_15:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_16:
+  "testName" = "Functional";
+  "output" = "None";
+tm_17:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_18:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_19:
+  "testName" = "Functional";
+  "output" = "None";
+tm_2:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_20:
+  "testName" = "Functional";
+  "output" = "None";
+tm_21:
+  "spec" = "";
+  "setupPinlist" = "";
+  "method" = "linear";
+  "min" = "9999";
+  "max" = "9999";
+  "step" = "";
+  "resolution" = "";
+  "resultPinlist" = "";
+  "output" = "None";
+  "testName" = "SpecSearch_Test";
+tm_22:
+  "testName" = "Functional";
+  "output" = "None";
+tm_23:
+  "testName" = "Functional";
+  "output" = "None";
+tm_24:
+  "testName" = "Functional";
+  "output" = "None";
+tm_25:
+  "testName" = "Functional";
+  "output" = "None";
+tm_26:
+  "testName" = "Functional";
+  "output" = "None";
+tm_27:
+  "testName" = "Functional";
+  "output" = "None";
+tm_28:
+  "testName" = "Functional";
+  "output" = "None";
+tm_29:
+  "testName" = "Functional";
+  "output" = "None";
+tm_3:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_30:
+  "testName" = "Functional";
+  "output" = "None";
+tm_31:
+  "testName" = "Functional";
+  "output" = "None";
+tm_32:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_33:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_34:
+  "testName" = "Functional";
+  "output" = "None";
+tm_35:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_36:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_37:
+  "testName" = "Functional";
+  "output" = "None";
+tm_38:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_39:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_4:
+  "testName" = "Functional";
+  "output" = "None";
+tm_5:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_6:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+tm_7:
+  "testName" = "Functional";
+  "output" = "None";
+tm_8:
+  "scanPins" = "@";
+  "maxFailsPerPin" = "-1";
+  "cycleBased" = "1";
+  "includeExpectedData" = "0";
+  "testerCycleMode" = "1";
+  "output" = "None";
+  "cycleNumberPerLabel" = "false";
+  "testName" = "ScanTest";
+tm_9:
+  "dpsPins" = "@";
+  "constantCurrent" = "OFF";
+  "unregulated" = "OFF";
+  "overVoltage" = "OFF";
+  "overPowerTemp" = "OFF";
+  "protect" = "OFF";
+  "testName" = "DPS_Status";
+  "output" = "None";
+end
+-----------------------------------------------------------------
+testmethodlimits
+tm_1:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_10:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_11:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_12:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_13:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_14:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_15:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_16:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_17:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_18:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_19:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_2:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_20:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_21:
+  "SpecSearch_Test" = "":"NA":"":"NA":"":"":"";
+tm_22:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_23:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_24:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_25:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_26:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_27:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_28:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_29:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_3:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_30:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_31:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_32:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_33:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_34:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_35:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_36:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_37:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_38:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_39:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_4:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_5:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_6:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+tm_7:
+  "Functional" = "":"NA":"":"NA":"":"":"";
+tm_8:
+  "ScanTest" = "":"NA":"":"NA":"":"":"";
+tm_9:
+  "DPS_Status" = "":"NA":"":"NA":"":"":"";
+end
+-----------------------------------------------------------------
+testmethods
+tm_1:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_10:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_11:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_12:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_13:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_14:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_15:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_16:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_17:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_18:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_19:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_2:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_20:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_21:
+  testmethod_class = "ac_tml.AcTest.SpecSearch";
+tm_22:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_23:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_24:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_25:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_26:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_27:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_28:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_29:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_3:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_30:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_31:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_32:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_33:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_34:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_35:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_36:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_37:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_38:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_39:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_4:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_5:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_6:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
+tm_7:
+  testmethod_class = "ac_tml.AcTest.FunctionalTest";
+tm_8:
+  testmethod_class = "scan_tml.ScanTest.ScanTest";
+tm_9:
+  testmethod_class = "dc_tml.DcTest.DpsStatus";
 end

@@ -1,16 +1,19 @@
 __author__ = 'Roger'
 
+# modified to True if certain sections are found
+isUTMBased = False
+
 import pyparsing as pp
 
 SEMI = pp.Literal(';').suppress()
-AT = pp.Literal('@')
-COLON = pp.Literal(':')
+AT = pp.Literal('@').suppress()
+COLON = pp.Literal(':').suppress()
 COMMA = pp.Literal(',')
 UNDER = pp.Literal('_')
-DOT = pp.Literal('.')
+DOT = pp.Literal('.').suppress()
 PERIOD = DOT
-EQ = pp.Literal('=')
-DASH = pp.Literal('-').suppress()
+EQ = pp.Literal('=').suppress()
+DASH = pp.Literal('-')
 MINUS = DASH
 PLUS = pp.Literal('+')
 MULT = pp.Literal('*')
@@ -33,9 +36,7 @@ E = pp.CaselessLiteral("E")
 number = pp.Word(pp.nums)
 plusorminus = PLUS | MINUS
 integer = pp.Combine(pp.Optional(plusorminus) + number)
-Float = pp.Combine(integer +
-        pp.Optional('.' + pp.Optional(number)) +
-        pp.Optional(E + integer))
+Float = pp.Combine(integer + pp.Optional('.' + pp.Optional(number)) + pp.Optional(E + integer))
 Bool = pp.Literal('0') | '1'
 
 # BinaryAdd = str_p("+") | "-"  ;
@@ -84,14 +85,13 @@ StringFunction = pp.Keyword("burstfirst") | pp.Keyword("burstnext")
 Number = Float | integer
 
 # End = str_p("end");
-End = pp.Keyword("end") + pp.ZeroOrMore(DASH)
+End = (pp.Keyword("end") + pp.ZeroOrMore(DASH)).suppress()
 
 # Identifier = lexeme_d[(*((alnum_p | ch_p('_')))) - (str_p("end"))];
 Identifier = pp.Word(pp.alphanums + '_')
 
 # TestsuiteFlag = ch_p('@') >> (Identifier >> "." >> Identifier)[TestsuiteFlag.varName = construct_<string>(arg1, arg2)];
 TestsuiteFlag = AT + (Identifier + DOT + Identifier)
-
 
 # Variable = str_p("@") >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] |
 #                  "@{" >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] >> "}";
@@ -105,7 +105,7 @@ String = pp.Combine(pp.Word(pp.alphanums,excludeChars='!') + pp.ZeroOrMore(pp.Wo
 #                [QuotedString.noQuotes = construct_<string>(arg1, arg2)] >> ch_p('"') >> !QuotedString;
 QuotedString = pp.Forward()
 
-QuotedString << pp.Combine(pp.QuotedString(quoteChar = '"', escChar = '\\',multiline=True) + pp.Optional(QuotedString))
+QuotedString << pp.Combine(pp.QuotedString(quoteChar='"', escChar='\\',multiline=True) + pp.Optional(QuotedString))
 
 # Literal = Number | TestsuiteFlag | Variable | QuotedString | String;
 Literal = Number | TestsuiteFlag | Variable | QuotedString | String
@@ -113,11 +113,9 @@ Literal = Number | TestsuiteFlag | Variable | QuotedString | String
 # Term = "(" >> Expression >> ")" | NumberFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")"
 # | StringFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")" | Unary >> Term | Literal;
 Term = pp.Forward()
-Term = (LPAR + Expression + RPAR | NumberFunction + LPAR +
-                pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression)) +
-                RPAR | StringFunction + LPAR +
-                pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression)) +
-                RPAR | Unary + Term | Literal)
+Term = (LPAR + Expression + RPAR | NumberFunction + LPAR + pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression))
+        + RPAR | StringFunction + LPAR + pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression))
+        + RPAR | Unary + Term | Literal)
 
 BinaryRelTerm << Term + pp.ZeroOrMore(BinaryRel + BinaryRelTerm)
 
@@ -142,67 +140,125 @@ OptRevision = pp.Group(pp.Optional(pp.Keyword("language_revision")) + EQ + pp.Wo
     .setResultsName("OptRevision")
 
 # EmptySection = ch_p(';');
+class ParseEmptySection(object):
+    def __init__(self,toks):
+        self.section_name = ""
 EmptySection = pp.Group(SEMI)\
     .setResultsName("EmptySection")
+EmptySection.setParseAction(ParseEmptySection)
 
 # DeviceName = str_p("device_name") >> '=' >> (QuotedString)[bind(&SetDeviceName)(arg1)] >> ';';
-DeviceName = pp.Keyword("device_name") + EQ + QuotedString + SEMI
+DeviceName = pp.Group(pp.Keyword("device_name") + EQ + QuotedString + SEMI)
 
 # DeviceRevision = str_p("device_revision") >> '=' >> QuotedString[bind(&SetDeviceRevision)(arg1)] >> ';';
-DeviceRevision = pp.Keyword("device_revision") + EQ + QuotedString + SEMI
+DeviceRevision = pp.Group(pp.Keyword("device_revision") + EQ + QuotedString + SEMI)
 
 # TestRevision = str_p("test_revision") >> '=' >> QuotedString[bind(&SetTestRevision)(arg1)] >> ';';
-TestRevision = pp.Keyword("test_revision") + EQ + QuotedString + SEMI
+TestRevision = pp.Group(pp.Keyword("test_revision") + EQ + QuotedString + SEMI)
 
 # Description = str_p("description") >> '=' >> QuotedString[bind(&SetDescription)(arg1)] >> ';';
-Description = pp.Keyword("description") + EQ + QuotedString + SEMI
+Description = pp.Group(pp.Keyword("description") + EQ + QuotedString + SEMI)
 
 # Application = str_p("application") >> '=' >> QuotedString[bind(&SetApplication)(arg1)] >> ';';
-Application = pp.Keyword("application") + EQ + QuotedString + SEMI
+Application = pp.Group(pp.Keyword("application") + EQ + QuotedString + SEMI)
 
 # Temperature = str_p("temperature") >> '=' >> real_p[bind(&SetTemperature)] >> ';';
-Temperature = pp.Keyword("temperature") + EQ + Float + SEMI
-
+Temperature = pp.Group(pp.Keyword("temperature") + EQ + Float + SEMI)
 
 # InformationElements = *(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature);
 InformationElements = pp.ZeroOrMore(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature)
 
-
 # InformationSection = str_p("information") >> InformationElements >> End;
-InformationSection = pp.Group(pp.Keyword("information") + InformationElements + End)\
+InformationSection = (pp.Keyword("information").suppress() + InformationElements + End)\
     .setResultsName("InformationSection")
+class ParseInformationSection(object):
+    def __init__(self,toks):
+        self.section_name = "information"
+        for i,tok in enumerate(toks):
+            if tok[0] == "device_name":
+                self.SetDeviceName = tok[1]
+            elif tok[0] == "device_revision":
+                self.SetDeviceRevision = tok[1]
+            elif tok[0] == "test_revision":
+                self.SetTestRevision = tok[1]
+            elif tok[0] == "description":
+                self.SetDescription = tok[1]
+            elif tok[0] == "application":
+                self.SetApplication = tok[1]
+            elif tok[0] == "temperature":
+                self.SetTemperature = tok[1]
+            else:
+                print tok
+                sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for k,v in self.__dict__.items():
+            if k == "section_name":
+                rstr += v + "\n"
+            elif k == "SetDeviceName":
+                rstr += "device_name = \"" + v + "\";\n"
+            elif k == "SetDeviceRevision":
+                rstr += "device_revision = \"" + v + "\";\n"
+            elif k == "SetTestRevision":
+                rstr += "test_revision = \"" + v + "\";\n"
+            elif k == "SetDescription":
+                rstr += "description = \"" + v + "\";\n"
+            elif k == "SetApplication":
+                rstr += "application = \"" + v + "\";\n"
+            elif k == "SetTemperature":
+                rstr += "temperature = " + v + ";\n"
+            else:
+                print k,v
+                sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
+        rstr += "end\n-----------------------------------------------------------------\n"
+        return rstr
+InformationSection.setParseAction(ParseInformationSection)
 
 # Declaration = (Variable[Declaration.varName = arg1] >> ':' >> Type[Declaration.varType = arg1] >> ';' )
 #                [bind(&CreateImplicitVariable)(Declaration.varName, Declaration.varType)];
-Declaration = (Variable + COLON + Type + SEMI)
+Declaration = pp.Group(Variable + COLON + Type + SEMI)
 
 # ImplicitDeclarations = (*Declaration);
 ImplicitDeclarations = pp.ZeroOrMore(Declaration)
 
 # ImplicitDeclarationSection = str_p("implicit_declarations") >> ImplicitDeclarations >> End;
-ImplicitDeclarationSection = pp.Group(pp.Keyword("implicit_declarations") + ImplicitDeclarations + End)\
+ImplicitDeclarationSection = (pp.Keyword("implicit_declarations").suppress() + ImplicitDeclarations + End)\
     .setResultsName("ImplicitDeclarationSection")
+class ParseImplicitDeclarationSection(object):
+    def __init__(self,toks):
+        self.section_name = "implicit_declarations"
+        self.Declaration = {}
+        for tok in toks:
+            self.Declaration[tok[0]] = tok[1]
+ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
 
 # Definition = (Variable[Definition.varName = arg1] >> '=' >> Expression[Definition.value = arg1] >> ';')
 #              [bind(&CreateVariable)(Definition.varName, Definition.value)];
 # Definition = (Variable + EQ + Expression + SEMI)
-Definition = (Variable + EQ + Expression + SEMI)
+Definition = pp.Group(Variable + EQ + Expression + SEMI)
 
 # Declarations = (*Definition);
 Declarations = pp.ZeroOrMore(Definition)
 
 # DeclarationSection = str_p("declarations") >> Declarations >> End;
-DeclarationSection = pp.Group(pp.Keyword("declarations") + Declarations + End)\
+DeclarationSection = (pp.Keyword("declarations").suppress() + Declarations + End)\
     .setResultsName("DeclarationSection")
+class ParseDeclarationSection(object):
+    def __init__(self,toks):
+        self.section_name = "implicit_declarations"
+        self.Definition = {}
+        for tok in toks:
+            self.Definition[tok[0]] = tok[1]
+DeclarationSection.setParseAction(ParseDeclarationSection)
 
 
 # SystemFlag = *(alnum_p | ch_p('_')) >> '=' >> *(alnum_p | '-') >> ';';
-SystemFlag = pp.Word(pp.alphanums + '_') + EQ + pp.Word(pp.alphanums + '-') + SEMI
+SystemFlag = pp.Group(pp.Word(pp.alphanums + '_') + EQ + pp.Word(pp.alphanums + '-') + SEMI)
 
 # UserFlag = (str_p("user") >> (alpha_p >> *(alnum_p | '_'))[UserFlag.varName = construct_<string>(arg1, arg2)]
 #            >> '=' >> Expression[UserFlag.value = arg1] >> ';')
 #            [bind(&CreateUserVariable)(UserFlag.varName, UserFlag.value)];
-UserFlag = (pp.Keyword("user") + pp.Combine(pp.Word(pp.alphas) + pp.Word(pp.alphanums + '_')) + EQ + Expression + SEMI)
+UserFlag = pp.Group(pp.Keyword("user") + pp.Word(pp.alphas,pp.alphanums + '_') + EQ + Expression + SEMI)
 
 # //Systemflags are ignored for now, as they are still handled by the flag_ui
 # Flags = *(UserFlag | SystemFlag);
@@ -210,8 +266,21 @@ Flags = pp.ZeroOrMore(UserFlag | SystemFlag)
 
 
 # FlagSection = str_p("flags") >> Flags >> End;
-FlagSection = pp.Group(pp.Keyword("flags") + Flags + End)\
+FlagSection = (pp.Keyword("flags").suppress() + Flags + End)\
     .setResultsName("FlagSection")
+class ParseFlagSection(object):
+    def __init__(self,toks):
+        self.section_name = "flags"
+        self.UserFlag = {}
+        self.SystemFlag = {}
+        for tok in toks:
+            if len(tok) == 3:
+                self.UserFlag[tok[1]] = tok[2]
+            elif len(tok) == 2:
+                self.SystemFlag[tok[0]] = tok[1]
+            else:
+                sys.exit("ERROR!!! Unknown element in 'flags' section! Exiting ...")
+FlagSection.setParseAction(ParseFlagSection)
 
 # TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
 TestfunctionDescription = pp.Keyword("testfunction_description") + EQ + QuotedString + SEMI
@@ -289,15 +358,14 @@ HighLimitSymbol = pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("L
 #  )[bind(&SetTestmethodLimits)()]
 #    | Error
 # ;
-TestmethodLimit = (Identifier + COLON
-                           + pp.ZeroOrMore((QuotedString + EQ
-                           + QuotedString + COLON
-                           + LowLimitSymbol + COLON
-                           + QuotedString + COLON
-                           + HighLimitSymbol + COLON
-                           + QuotedString + COLON
-                           + QuotedString + COLON
-                           + QuotedString + SEMI)))
+TestmethodLimit = (Identifier + COLON + pp.ZeroOrMore((QuotedString + EQ
+                                                       + QuotedString + COLON
+                                                       + LowLimitSymbol + COLON
+                                                       + QuotedString + COLON
+                                                       + HighLimitSymbol + COLON
+                                                       + QuotedString + COLON
+                                                       + QuotedString + COLON
+                                                       + QuotedString + SEMI)))
 
 # UTMTestmethodLimits = *(TestmethodLimit);
 UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
@@ -334,11 +402,7 @@ TestmethodName = pp.Keyword("testmethod_name") + EQ + QuotedString + SEMI
 
 # TestmethodDefinition = (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName ) >> !TestmethodDefinition;
 TestmethodDefinition = pp.Forward()
-TestmethodDefinition << ((TestmethodClass |
-                                 TestmethodId |
-                                 TestmethodParameters |
-                                 TestmethodLimits |
-                                 TestmethodName) + pp.Optional(TestmethodDefinition))
+TestmethodDefinition << (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName) + pp.Optional(TestmethodDefinition)
 
 
 # TODO: figure out setting for isUTMBased
@@ -665,20 +729,20 @@ TestflowSection = pp.Group(pp.Keyword("test_flow") + FlowStatements + End)\
 #                 EmptyStatement |
 #                 Error;
 FlowStatement = (RunStatement |
-                         RunAndBranchStatement |
-                         GroupStatement |
-                         IfStatement |
-                         AssignmentStatement |
-                         StopBinStatement |
-                         PrintStatement |
-                         PrintDatalogStatement |
-                         SVLRTimingStatement |
-                         SVLRLevelStatement |
-                         WhileStatement |
-                         RepeatStatement |
-                         ForStatement |
-                         MultiBinStatement |
-                         EmptyStatement)
+                 RunAndBranchStatement |
+                 GroupStatement |
+                 IfStatement |
+                 AssignmentStatement |
+                 StopBinStatement |
+                 PrintStatement |
+                 PrintDatalogStatement |
+                 SVLRTimingStatement |
+                 SVLRLevelStatement |
+                 WhileStatement |
+                 RepeatStatement |
+                 ForStatement |
+                 MultiBinStatement |
+                 EmptyStatement)
 
 
 # FlowStatements = *(FlowStatement);
@@ -821,7 +885,7 @@ Start = OptFileHeader + OptRevision + Sections
 
 # DebugSections = pp.Forward()
 # DebugSections << TestsuiteSection
-# Start = (OptFileHeader + OptRevision + InformationSection + DeclarationSection + ImplicitDeclarationSection
+# Start = (OptFileHeader + OptRevision + InformationSection + DeclarationSection + pp.Optional(ImplicitDeclarationSection)
 #          + FlagSection + pp.Optional(TestfunctionSection) + TestmethodParameterSection + TestmethodLimitSection
 #          + TestmethodSection + pp.Optional(UserprocedureSection) + TestsuiteSection + pp.ZeroOrMore(SpecialTestsuiteSection)
 #          + pp.ZeroOrMore(TestflowSection) + BinningSection + SetupSection + pp.Optional(OOCSection) + HardwareBinSection)
@@ -829,13 +893,6 @@ Start = OptFileHeader + OptRevision + Sections
 
 from print_debug import *
 import sys
-
-class parse_TestFlow(object):
-    def __init__(self, toks):
-        for tok in toks:
-            pprint(tok)
-
-Start.setParseAction(parse_TestFlow)
 
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -847,3 +904,8 @@ if __name__ == '__main__':
     f = open(args[0])
     result = Start.parseFile(f)
     f.close()
+    print result["InformationSection"]
+    # print result["ImplicitDeclarationSection"]
+    # print result["DeclarationSection"]
+    # print result["FlagSection"]
+

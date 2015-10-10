@@ -31,6 +31,8 @@ RCURL = pp.Literal('}')
 LPAR = pp.Literal('(')
 RPAR = pp.Literal(')')
 
+# common output strings
+EndStr = "end\n-----------------------------------------------------------------"
 
 E = pp.CaselessLiteral("E")
 number = pp.Word(pp.nums)
@@ -95,7 +97,7 @@ TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 
 # Variable = str_p("@") >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] |
 #                  "@{" >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] >> "}";
-Variable = AT + Identifier | pp.Combine("@{") + Identifier + "}"
+Variable = pp.Combine((pp.Literal("@") + Identifier) | ("@{" + Identifier + "}"))
 
 
 # String = (alnum_p - ch_p('!')) >> *(alnum_p | "_");
@@ -132,12 +134,26 @@ TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 Type = pp.Keyword("double") | pp.Keyword("string")
 
 # OptFileHeader = !str_p("hp93000,testflow,0.1");
-OptFileHeader = pp.Group(pp.Optional(pp.Keyword("hp93000,testflow,0.1")))\
+OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))\
     .setResultsName("OptFileHeader")
+class ParseOptFileHeader(object):
+    def __init__(self,toks):
+        self.section_name = "OptFileHeader"
+        self.header = toks[0]
+    def __repr__(self):
+        return self.header
+OptFileHeader.setParseAction(ParseOptFileHeader)
 
 # OptRevision = !(str_p("language_revision") >> ch_p('=') >> int_p >> ch_p(';'));
-OptRevision = pp.Group(pp.Optional(pp.Keyword("language_revision")) + EQ + pp.Word(pp.nums) + SEMI)\
+OptRevision = (pp.Optional(pp.Keyword("language_revision")).suppress() + EQ + pp.Word(pp.nums) + SEMI)\
     .setResultsName("OptRevision")
+class ParseOptRevision(object):
+    def __init__(self,toks):
+        self.section_name = "OptRevision"
+        self.language_revision = toks[0]
+    def __repr__(self):
+        return "language_revision" + ' = ' + self.language_revision + ';\n'
+OptRevision.setParseAction(ParseOptRevision)
 
 # EmptySection = ch_p(';');
 class ParseEmptySection(object):
@@ -190,7 +206,7 @@ class ParseInformationSection(object):
             else:
                 print tok
                 sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
-    def __str__(self):
+    def __repr__(self):
         rstr = self.section_name + "\n"
         for k,v in self.__dict__.items():
             if k == "section_name":
@@ -210,7 +226,7 @@ class ParseInformationSection(object):
             else:
                 print k,v
                 sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
-        rstr += "end\n-----------------------------------------------------------------\n"
+        rstr += EndStr
         return rstr
 InformationSection.setParseAction(ParseInformationSection)
 
@@ -230,6 +246,12 @@ class ParseImplicitDeclarationSection(object):
         self.Declaration = {}
         for tok in toks:
             self.Declaration[tok[0]] = tok[1]
+    def __repr__(self):
+        rstr = self.section_name + "\n"
+        for varName,varType in self.Declaration.iteritems():
+            rstr += varName + ' : ' + varType + ';\n'
+        rstr += EndStr
+        return rstr
 ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
 
 # Definition = (Variable[Definition.varName = arg1] >> '=' >> Expression[Definition.value = arg1] >> ';')
@@ -245,10 +267,16 @@ DeclarationSection = (pp.Keyword("declarations").suppress() + Declarations + End
     .setResultsName("DeclarationSection")
 class ParseDeclarationSection(object):
     def __init__(self,toks):
-        self.section_name = "implicit_declarations"
+        self.section_name = "declarations"
         self.Definition = {}
         for tok in toks:
             self.Definition[tok[0]] = tok[1]
+    def __repr__(self):
+        rstr = self.section_name + "\n"
+        for varName,value in self.Definition.iteritems():
+            rstr += varName + ' = ' + value + ';\n'
+        rstr += EndStr
+        return rstr
 DeclarationSection.setParseAction(ParseDeclarationSection)
 
 
@@ -280,6 +308,14 @@ class ParseFlagSection(object):
                 self.SystemFlag[tok[0]] = tok[1]
             else:
                 sys.exit("ERROR!!! Unknown element in 'flags' section! Exiting ...")
+    def __repr__(self):
+        rstr = self.section_name + "\n"
+        for varName,value in self.SystemFlag.iteritems():
+            rstr += varName + ' = ' + value + ';\n'
+        for varName,value in self.UserFlag.iteritems():
+            rstr += "user " + varName + ' = ' + value + ';\n'
+        rstr += EndStr
+        return rstr
 FlagSection.setParseAction(ParseFlagSection)
 
 # TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
@@ -871,7 +907,7 @@ Sections << pp.ZeroOrMore(EmptySection |
                           TestmethodParameterSection |
                           TestmethodLimitSection |
                           TestmethodSection |
-                          UserprocedureSection | # TODO: UserprocedureSection is untested code
+                          UserprocedureSection | # TODO: UserprocedureSection is untested code and may need debugging
                           TestsuiteSection |
                           TestflowSection |
                           SpecialTestsuiteSection |
@@ -904,8 +940,5 @@ if __name__ == '__main__':
     f = open(args[0])
     result = Start.parseFile(f)
     f.close()
-    print result["InformationSection"]
-    # print result["ImplicitDeclarationSection"]
-    # print result["DeclarationSection"]
-    # print result["FlagSection"]
-
+    for section in result:
+        print section

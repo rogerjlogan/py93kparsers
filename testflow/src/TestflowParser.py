@@ -747,13 +747,102 @@ Testsuites = pp.ZeroOrMore(Testsuite)
 # TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
 TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites  + End)\
     .setResultsName("TestsuiteSection")
-def ParseTestsuiteDefinition(toks):
+
+def parseTestsuiteDefinition(ts_name,ts_def):
     """
         Used by ParseTestsuiteSection and also ParseSpecialTestsuiteSection
     """
-    # TODO: let's finish this so that we can re-use the code for SpecialTestsuites
-    for tok in toks:
-        print tok
+    Testsuites = {}
+    # for tok in toks:
+    #     ts_name = tok["TestsuiteName"][0]
+    #     ts_def = tok["TestsuiteDefinition"]
+    if ts_name not in Testsuites:
+        Testsuites[ts_name] = {}
+    if "TestsuiteTest" in ts_def:
+        Testsuites[ts_name]["TestsuiteTest"] = {}
+        Testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
+        Testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
+    if "TestsuiteTimEquSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
+    if "TestsuiteLevEquSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
+    if "TestsuiteTimSpecSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
+    if "TestsuiteLevSpecSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
+    if "TestsuiteTimSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
+    if "TestsuiteLevSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
+    if "TestsuiteSequencerLabel" in ts_def:
+        Testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
+    if "TestsuiteFlags" in ts_def:
+        Testsuites[ts_name]["TestsuiteFlags"] = []
+        for flag in ts_def["TestsuiteFlags"]:
+            Testsuites[ts_name]["TestsuiteFlags"].append(flag)
+    if "TestsuiteSiteControl" in ts_def:
+        Testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
+    if "TestsuiteFFCCount" in ts_def:
+        Testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
+    if "TestsuiteTestLevel" in ts_def:
+        Testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
+    if "TestsuiteDPSSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
+    if "TestsuiteTestNumber" in ts_def:
+        Testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
+    if "TestsuiteAnalogSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
+    if "TestsuiteSiteMatch" in ts_def:
+        Testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
+    if "TestsuiteWaveformSet" in ts_def:
+        Testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
+    if "TestsuiteComment" in ts_def:
+        Testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
+    return Testsuites
+
+def formatTestsuiteDefinition(ts_name,testsuites):
+    rstr = ''
+    if "TestsuiteTest" in testsuites[ts_name]:
+        for k,v in testsuites[ts_name]["TestsuiteTest"].iteritems():
+            rstr += "  "+ k + " = " + v + ";\n"
+    if "TestsuiteOverride" in testsuites[ts_name]:
+        rstr += "  override = " + testsuites[ts_name]["TestsuiteOverride"] + ";\n"
+    if "TestsuiteTimEquSet" in testsuites[ts_name]:
+        rstr += "  override_tim_equ_set = " + testsuites[ts_name]["TestsuiteTimEquSet"] + ";\n"
+    if "TestsuiteLevEquSet" in testsuites[ts_name]:
+        rstr += "  override_lev_equ_set = " + testsuites[ts_name]["TestsuiteLevEquSet"] + ";\n"
+    if "TestsuiteTimSpecSet" in testsuites[ts_name]:
+        rstr += "  override_tim_spec_set = " + testsuites[ts_name]["TestsuiteTimSpecSet"] + ";\n"
+    if "TestsuiteLevSpecSet" in testsuites[ts_name]:
+        rstr += "  override_lev_spec_set = " + testsuites[ts_name]["TestsuiteLevSpecSet"] + ";\n"
+    if "TestsuiteTimSet" in testsuites[ts_name]:
+        rstr += "  override_timset = " + testsuites[ts_name]["TestsuiteTimSet"] + ";\n"
+    if "TestsuiteLevSet" in testsuites[ts_name]:
+        rstr += "  override_levset = " + testsuites[ts_name]["TestsuiteLevSet"] + ";\n"
+    if "TestsuiteSequencerLabel" in testsuites[ts_name]:
+        rstr += "  override_seqlbl = " + testsuites[ts_name]["TestsuiteSequencerLabel"] + ";\n"
+    if "TestsuiteFlags" in testsuites[ts_name]:
+        rstr += "  local_flags = " + ','.join(testsuites[ts_name]["TestsuiteFlags"]) + ";\n"
+    if "TestsuiteSiteControl" in testsuites[ts_name]:
+        rstr += "  site_control = " + testsuites[ts_name]["TestsuiteSiteControl"] + ";\n"
+    if "TestsuiteFFCCount" in testsuites[ts_name]:
+        rstr += "  ffc_on_fail = " + testsuites[ts_name]["TestsuiteFFCCount"] + ";\n"
+    if "TestsuiteTestLevel" in testsuites[ts_name]:
+        rstr += "  test_level = " + testsuites[ts_name]["TestsuiteTestLevel"] + ";\n"
+    if "TestsuiteDPSSet" in testsuites[ts_name]:
+        rstr += "  override_dpsset = " + testsuites[ts_name]["TestsuiteDPSSet"] + ";\n"
+    if "TestsuiteTestNumber" in testsuites[ts_name]:
+        rstr += "  override_test_number = " + testsuites[ts_name]["TestsuiteTestNumber"] + ";\n"
+    if "TestsuiteAnalogSet" in testsuites[ts_name]:
+        rstr += "  override_anaset = " + testsuites[ts_name]["TestsuiteAnalogSet"] + ";\n"
+    if "TestsuiteSiteMatch" in testsuites[ts_name]:
+        rstr += "  site_match = " + testsuites[ts_name]["TestsuiteSiteMatch"] + ";\n"
+    if "TestsuiteWaveformSet" in testsuites[ts_name]:
+        rstr += "  override_wvfset = " + testsuites[ts_name]["TestsuiteWaveformSet"] + ";\n"
+    if "TestsuiteComment" in testsuites[ts_name]:
+        rstr += "  comment = " + testsuites[ts_name]["TestsuiteComment"] + ";\n"
+    return rstr
+
 class ParseTestsuiteSection(object):
     def __init__(self,toks):
         self.section_name = "test_suites"
@@ -761,93 +850,13 @@ class ParseTestsuiteSection(object):
         for tok in toks:
             ts_name = tok["TestsuiteName"][0]
             ts_def = tok["TestsuiteDefinition"]
-            if ts_name not in self.Testsuites:
-                self.Testsuites[ts_name] = {}
-            if "TestsuiteTest" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTest"] = {}
-                self.Testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
-                self.Testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
-            if "TestsuiteTimEquSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
-            if "TestsuiteLevEquSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
-            if "TestsuiteTimSpecSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
-            if "TestsuiteLevSpecSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
-            if "TestsuiteTimSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
-            if "TestsuiteLevSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
-            if "TestsuiteSequencerLabel" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
-            if "TestsuiteFlags" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteFlags"] = []
-                for flag in ts_def["TestsuiteFlags"]:
-                    self.Testsuites[ts_name]["TestsuiteFlags"].append(flag)
-            if "TestsuiteSiteControl" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
-            if "TestsuiteFFCCount" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
-            if "TestsuiteTestLevel" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
-            if "TestsuiteDPSSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
-            if "TestsuiteTestNumber" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
-            if "TestsuiteAnalogSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
-            if "TestsuiteSiteMatch" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
-            if "TestsuiteWaveformSet" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
-            if "TestsuiteComment" in ts_def:
-                self.Testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
+            self.Testsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
     def __str__(self):
         rstr = self.section_name + "\n"
         for ts_name in self.Testsuites:
             rstr += ts_name + ":\n"
-            if "TestsuiteTest" in self.Testsuites[ts_name]:
-                for k,v in self.Testsuites[ts_name]["TestsuiteTest"].iteritems():
-                    rstr += "  "+ k + " = " + v + ";\n"
-            if "TestsuiteOverride" in self.Testsuites[ts_name]:
-                rstr += "  override = " + self.Testsuites[ts_name]["TestsuiteOverride"] + ";\n"
-            if "TestsuiteTimEquSet" in self.Testsuites[ts_name]:
-                rstr += "  override_tim_equ_set = " + self.Testsuites[ts_name]["TestsuiteTimEquSet"] + ";\n"
-            if "TestsuiteLevEquSet" in self.Testsuites[ts_name]:
-                rstr += "  override_lev_equ_set = " + self.Testsuites[ts_name]["TestsuiteLevEquSet"] + ";\n"
-            if "TestsuiteTimSpecSet" in self.Testsuites[ts_name]:
-                rstr += "  override_tim_spec_set = " + self.Testsuites[ts_name]["TestsuiteTimSpecSet"] + ";\n"
-            if "TestsuiteLevSpecSet" in self.Testsuites[ts_name]:
-                rstr += "  override_lev_spec_set = " + self.Testsuites[ts_name]["TestsuiteLevSpecSet"] + ";\n"
-            if "TestsuiteTimSet" in self.Testsuites[ts_name]:
-                rstr += "  override_timset = " + self.Testsuites[ts_name]["TestsuiteTimSet"] + ";\n"
-            if "TestsuiteLevSet" in self.Testsuites[ts_name]:
-                rstr += "  override_levset = " + self.Testsuites[ts_name]["TestsuiteLevSet"] + ";\n"
-            if "TestsuiteSequencerLabel" in self.Testsuites[ts_name]:
-                rstr += "  override_seqlbl = " + self.Testsuites[ts_name]["TestsuiteSequencerLabel"] + ";\n"
-            if "TestsuiteFlags" in self.Testsuites[ts_name]:
-                rstr += "  local_flags = " + ','.join(self.Testsuites[ts_name]["TestsuiteFlags"]) + ";\n"
-            if "TestsuiteSiteControl" in self.Testsuites[ts_name]:
-                rstr += "  site_control = " + self.Testsuites[ts_name]["TestsuiteSiteControl"] + ";\n"
-            if "TestsuiteFFCCount" in self.Testsuites[ts_name]:
-                rstr += "  ffc_on_fail = " + self.Testsuites[ts_name]["TestsuiteFFCCount"] + ";\n"
-            if "TestsuiteTestLevel" in self.Testsuites[ts_name]:
-                rstr += "  test_level = " + self.Testsuites[ts_name]["TestsuiteTestLevel"] + ";\n"
-            if "TestsuiteDPSSet" in self.Testsuites[ts_name]:
-                rstr += "  override_dpsset = " + self.Testsuites[ts_name]["TestsuiteDPSSet"] + ";\n"
-            if "TestsuiteTestNumber" in self.Testsuites[ts_name]:
-                rstr += "  override_test_number = " + self.Testsuites[ts_name]["TestsuiteTestNumber"] + ";\n"
-            if "TestsuiteAnalogSet" in self.Testsuites[ts_name]:
-                rstr += "  override_anaset = " + self.Testsuites[ts_name]["TestsuiteAnalogSet"] + ";\n"
-            if "TestsuiteSiteMatch" in self.Testsuites[ts_name]:
-                rstr += "  site_match = " + self.Testsuites[ts_name]["TestsuiteSiteMatch"] + ";\n"
-            if "TestsuiteWaveformSet" in self.Testsuites[ts_name]:
-                rstr += "  override_wvfset = " + self.Testsuites[ts_name]["TestsuiteWaveformSet"] + ";\n"
-            if "TestsuiteComment" in self.Testsuites[ts_name]:
-                rstr += "  comment = " + self.Testsuites[ts_name]["TestsuiteComment"] + ";\n"
+            rstr += formatTestsuiteDefinition(ts_name,self.Testsuites)
         rstr += EndStr
-        # sys.exit()
         return rstr
 TestsuiteSection.setParseAction(ParseTestsuiteSection)
 
@@ -1059,12 +1068,24 @@ DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect").setResultsName("bin_
 MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision").setResultsName("multi_bin_decision") + TestsuiteDefinition + End)
 
 # SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
-SpecialTestsuiteSection = (DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
-                                   ResetTestsuite | ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite)\
+SpecialTestsuiteSection = (DownloadTestsuite & InitTestsuite & PauseTestsuite & AbortTestsuite &
+                                   ResetTestsuite & ExitTestsuite & DisconnectTestsuite & MultiBinDecisionTestsuite)\
     .setResultsName("SpecialTestsuiteSection")
 class ParseSpecialTestsuiteSection(object):
     def __init__(self,toks):
-        self.section_name = "test_suites"
+        self.section_name = ""
+        self.SpecialTestsuites = {}
+        for tok in toks:
+            ts_name = tok.pop(0)
+            ts_def = tok
+            self.SpecialTestsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
+    def __str__(self):
+        rstr = ""
+        for ts_name in self.SpecialTestsuites:
+            rstr += "\n" + ts_name + "\n"
+            rstr += formatTestsuiteDefinition(ts_name,self.SpecialTestsuites)
+            rstr += EndStr
+        return rstr
 SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
 
 # -------------------------------------------------------------------------------------------

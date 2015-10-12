@@ -1035,38 +1035,35 @@ FlowStatements << pp.ZeroOrMore(FlowStatement)
 # -------------------------------------------------------------------------------------------
 
 # DownloadTestsuite = (str_p("download")[bind(&StartTestsuite)("download")] >> TestsuiteDefinition >> End) [bind(&SetDownloadSuite)()];
-DownloadTestsuite = pp.Group(pp.Keyword("download").setResultsName("download")  + TestsuiteDefinition + End)
+DownloadTestsuite = pp.Group(pp.Keyword("download").setResultsName("download") + TestsuiteDefinition + End)
 
 # InitTestsuite = (str_p("initialize")[bind(&StartTestsuite)("initialize")] >> TestsuiteDefinition >> End )[bind(&SetInitSuite)()];
-InitTestsuite = pp.Group(pp.Keyword("initialize").setResultsName("initialize")  + TestsuiteDefinition + End)
+InitTestsuite = pp.Group(pp.Keyword("initialize").setResultsName("initialize") + TestsuiteDefinition + End)
 
 # PauseTestsuite = (str_p("pause")[bind(&StartTestsuite)("pause")] >> TestsuiteDefinition >> End)[bind(&SetPauseSuite)()];
-PauseTestsuite = pp.Group(pp.Keyword("pause").setResultsName("pause")  + TestsuiteDefinition + End)
+PauseTestsuite = pp.Group(pp.Keyword("pause").setResultsName("pause") + TestsuiteDefinition + End)
 
 # AbortTestsuite = (str_p("abort")[bind(&StartTestsuite)("abort")] >> TestsuiteDefinition >> End)[bind(&SetAbortSuite)()];
-AbortTestsuite = pp.Group(pp.Keyword("abort").setResultsName("abort")  + TestsuiteDefinition + End)
+AbortTestsuite = pp.Group(pp.Keyword("abort").setResultsName("abort") + TestsuiteDefinition + End)
 
 # ResetTestsuite = (str_p("reset")[bind(&StartTestsuite)("reset")] >> TestsuiteDefinition >> End)[bind(&SetResetSuite)()];
-ResetTestsuite = pp.Group(pp.Keyword("reset").setResultsName("reset")  + TestsuiteDefinition + End)
+ResetTestsuite = pp.Group(pp.Keyword("reset").setResultsName("reset") + TestsuiteDefinition + End)
 
 # ExitTestsuite = (str_p("exit")[bind(&StartTestsuite)("exit")] >> TestsuiteDefinition >> End)[bind(&SetExitSuite)()];
-ExitTestsuite = pp.Group(pp.Keyword("exit").setResultsName("exit")  + TestsuiteDefinition + End)
+ExitTestsuite = pp.Group(pp.Keyword("exit").setResultsName("exit") + TestsuiteDefinition + End)
 
 # DisconnectTestsuite = (str_p("bin_disconnect")[bind(&StartTestsuite)("bin_disconnect")] >> TestsuiteDefinition >> End)[bind(&SetDisconnectSuite)()];
-DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect").setResultsName("bin_disconnect")  + TestsuiteDefinition + End)
+DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect").setResultsName("bin_disconnect") + TestsuiteDefinition + End)
 
 # MultiBinDecisionTestsuite = (str_p("multi_bin_decision")[bind(&StartTestsuite)("multi_bin_decision")] >> TestsuiteDefinition >> End)[bind(&SetMultiBinDecisionSuite)()];
-MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision").setResultsName("multi_bin_decision")  + TestsuiteDefinition + End)
+MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision").setResultsName("multi_bin_decision") + TestsuiteDefinition + End)
 
 # SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
-SpecialTestsuiteSection = pp.ZeroOrMore(DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
+SpecialTestsuiteSection = (DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
                                    ResetTestsuite | ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite)\
     .setResultsName("SpecialTestsuiteSection")
 class ParseSpecialTestsuiteSection(object):
     def __init__(self,toks):
-        for tok in toks:
-            print tok
-        sys.exit()
         self.section_name = "test_suites"
 SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
 

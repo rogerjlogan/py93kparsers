@@ -8,7 +8,7 @@ import pyparsing as pp
 SEMI = pp.Literal(';').suppress()
 AT = pp.Literal('@').suppress()
 COLON = pp.Literal(':').suppress()
-COMMA = pp.Literal(',')
+COMMA = pp.Literal(',').suppress()
 UNDER = pp.Literal('_')
 DOT = pp.Literal('.').suppress()
 PERIOD = DOT
@@ -140,7 +140,7 @@ class ParseOptFileHeader(object):
     def __init__(self,toks):
         self.section_name = "OptFileHeader"
         self.header = toks[0]
-    def __repr__(self):
+    def __str__(self):
         return self.header
 OptFileHeader.setParseAction(ParseOptFileHeader)
 
@@ -151,7 +151,7 @@ class ParseOptRevision(object):
     def __init__(self,toks):
         self.section_name = "OptRevision"
         self.language_revision = toks[0]
-    def __repr__(self):
+    def __str__(self):
         return "language_revision" + ' = ' + self.language_revision + ';\n'
 OptRevision.setParseAction(ParseOptRevision)
 
@@ -163,26 +163,30 @@ EmptySection = pp.Group(SEMI)\
     .setResultsName("EmptySection")
 EmptySection.setParseAction(ParseEmptySection)
 
+# -------------------------------------------------------------------------------------------
+# BEGIN InformationSection
+# -------------------------------------------------------------------------------------------
+
 # DeviceName = str_p("device_name") >> '=' >> (QuotedString)[bind(&SetDeviceName)(arg1)] >> ';';
-DeviceName = pp.Group(pp.Keyword("device_name") + EQ + QuotedString + SEMI)
+DeviceName = pp.Keyword("device_name").suppress() + EQ + QuotedString.setResultsName("SetDeviceName") + SEMI
 
 # DeviceRevision = str_p("device_revision") >> '=' >> QuotedString[bind(&SetDeviceRevision)(arg1)] >> ';';
-DeviceRevision = pp.Group(pp.Keyword("device_revision") + EQ + QuotedString + SEMI)
+DeviceRevision = pp.Keyword("device_revision").suppress() + EQ + QuotedString.setResultsName("SetDeviceRevision") + SEMI
 
 # TestRevision = str_p("test_revision") >> '=' >> QuotedString[bind(&SetTestRevision)(arg1)] >> ';';
-TestRevision = pp.Group(pp.Keyword("test_revision") + EQ + QuotedString + SEMI)
+TestRevision = pp.Keyword("test_revision").suppress() + EQ + QuotedString.setResultsName("SetTestRevision") + SEMI
 
 # Description = str_p("description") >> '=' >> QuotedString[bind(&SetDescription)(arg1)] >> ';';
-Description = pp.Group(pp.Keyword("description") + EQ + QuotedString + SEMI)
+Description = pp.Keyword("description").suppress() + EQ + QuotedString.setResultsName("SetDescription") + SEMI
 
 # Application = str_p("application") >> '=' >> QuotedString[bind(&SetApplication)(arg1)] >> ';';
-Application = pp.Group(pp.Keyword("application") + EQ + QuotedString + SEMI)
+Application = pp.Keyword("application").suppress() + EQ + QuotedString.setResultsName("SetApplication") + SEMI
 
 # Temperature = str_p("temperature") >> '=' >> real_p[bind(&SetTemperature)] >> ';';
-Temperature = pp.Group(pp.Keyword("temperature") + EQ + Float + SEMI)
+Temperature = pp.Keyword("temperature").suppress() + EQ + Float.setResultsName("SetTemperature") + SEMI
 
 # InformationElements = *(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature);
-InformationElements = pp.ZeroOrMore(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature)
+InformationElements = pp.Group(pp.ZeroOrMore(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature))
 
 # InformationSection = str_p("information") >> InformationElements >> End;
 InformationSection = (pp.Keyword("information").suppress() + InformationElements + End)\
@@ -190,23 +194,23 @@ InformationSection = (pp.Keyword("information").suppress() + InformationElements
 class ParseInformationSection(object):
     def __init__(self,toks):
         self.section_name = "information"
-        for i,tok in enumerate(toks):
-            if tok[0] == "device_name":
-                self.SetDeviceName = tok[1]
-            elif tok[0] == "device_revision":
-                self.SetDeviceRevision = tok[1]
-            elif tok[0] == "test_revision":
-                self.SetTestRevision = tok[1]
-            elif tok[0] == "description":
-                self.SetDescription = tok[1]
-            elif tok[0] == "application":
-                self.SetApplication = tok[1]
-            elif tok[0] == "temperature":
-                self.SetTemperature = tok[1]
+        for tok in toks:
+            if "SetDeviceName" in tok:
+                self.SetDeviceName = tok["SetDeviceName"]
+            elif "SetDeviceRevision" in tok:
+                self.SetDeviceRevision = tok["SetDeviceRevision"]
+            elif "SetTestRevision" in tok:
+                self.SetTestRevision = tok["SetTestRevision"]
+            elif "SetDescription" in tok:
+                self.SetDescription = tok["SetDescription"]
+            elif "SetApplication" in tok:
+                self.SetApplication = tok["SetApplication"]
+            elif "SetTemperature" in tok:
+                self.SetTemperature = tok["SetTemperature"]
             else:
                 print tok
                 sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
-    def __repr__(self):
+    def __str__(self):
         rstr = self.section_name + "\n"
         for k,v in self.__dict__.items():
             if k == "section_name":
@@ -230,6 +234,10 @@ class ParseInformationSection(object):
         return rstr
 InformationSection.setParseAction(ParseInformationSection)
 
+# -------------------------------------------------------------------------------------------
+# BEGIN ImplicitDeclarationSection
+# -------------------------------------------------------------------------------------------
+
 # Declaration = (Variable[Declaration.varName = arg1] >> ':' >> Type[Declaration.varType = arg1] >> ';' )
 #                [bind(&CreateImplicitVariable)(Declaration.varName, Declaration.varType)];
 Declaration = pp.Group(Variable + COLON + Type + SEMI)
@@ -246,13 +254,17 @@ class ParseImplicitDeclarationSection(object):
         self.Declaration = {}
         for tok in toks:
             self.Declaration[tok[0]] = tok[1]
-    def __repr__(self):
+    def __str__(self):
         rstr = self.section_name + "\n"
         for varName,varType in self.Declaration.iteritems():
             rstr += varName + ' : ' + varType + ';\n'
         rstr += EndStr
         return rstr
 ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN DeclarationSection
+# -------------------------------------------------------------------------------------------
 
 # Definition = (Variable[Definition.varName = arg1] >> '=' >> Expression[Definition.value = arg1] >> ';')
 #              [bind(&CreateVariable)(Definition.varName, Definition.value)];
@@ -271,7 +283,7 @@ class ParseDeclarationSection(object):
         self.Definition = {}
         for tok in toks:
             self.Definition[tok[0]] = tok[1]
-    def __repr__(self):
+    def __str__(self):
         rstr = self.section_name + "\n"
         for varName,value in self.Definition.iteritems():
             rstr += varName + ' = ' + value + ';\n'
@@ -279,6 +291,9 @@ class ParseDeclarationSection(object):
         return rstr
 DeclarationSection.setParseAction(ParseDeclarationSection)
 
+# -------------------------------------------------------------------------------------------
+# BEGIN FlagSection
+# -------------------------------------------------------------------------------------------
 
 # SystemFlag = *(alnum_p | ch_p('_')) >> '=' >> *(alnum_p | '-') >> ';';
 SystemFlag = pp.Group(pp.Word(pp.alphanums + '_') + EQ + pp.Word(pp.alphanums + '-') + SEMI)
@@ -308,7 +323,7 @@ class ParseFlagSection(object):
                 self.SystemFlag[tok[0]] = tok[1]
             else:
                 sys.exit("ERROR!!! Unknown element in 'flags' section! Exiting ...")
-    def __repr__(self):
+    def __str__(self):
         rstr = self.section_name + "\n"
         for varName,value in self.SystemFlag.iteritems():
             rstr += varName + ' = ' + value + ';\n'
@@ -317,6 +332,10 @@ class ParseFlagSection(object):
         rstr += EndStr
         return rstr
 FlagSection.setParseAction(ParseFlagSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN TestfunctionSection
+# -------------------------------------------------------------------------------------------
 
 # TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
 TestfunctionDescription = pp.Keyword("testfunction_description") + EQ + QuotedString + SEMI
@@ -328,7 +347,7 @@ TestfunctionParameter = pp.Keyword("testfunction_parameters") + EQ + QuotedStrin
 #                       *((QuotedString[TestmethodParameter.name = arg1] >> '=' >> QuotedString[TestmethodParameter.value = arg1])
 #                       [bind(&AddTestmethodParameter)(TestmethodParameter.name, TestmethodParameter.value)] >> ';'))
 #                       [bind(&SetTestmethodParameters)()];
-TestmethodParameter = (Identifier + COLON + pp.ZeroOrMore((QuotedString + EQ + QuotedString) + SEMI))
+TestmethodParameter = pp.Group(Identifier + COLON + pp.ZeroOrMore(pp.Group(QuotedString + EQ + QuotedString + SEMI)))
 
 # TestfunctionDefinition = ((TestfunctionDescription >> TestfunctionParameter) | (TestfunctionParameter >> TestfunctionDescription));
 TestfunctionDefinition = ((TestfunctionDescription + TestfunctionParameter) | (TestfunctionParameter + TestfunctionDescription))
@@ -341,8 +360,18 @@ Testfunction = (Identifier + COLON + TestfunctionDefinition)
 Testfunctions = pp.ZeroOrMore(Testfunction) + End
 
 # TestfunctionSection = str_p("testfunctions") >> Testfunctions;
-TestfunctionSection = pp.Group(pp.Keyword("testfunctions") + Testfunctions)\
+TestfunctionSection = (pp.Keyword("testfunctions").suppress() + Testfunctions)\
     .setResultsName("TestfunctionSection")
+class ParseTestfunctionSection(object):
+    def __init__(self,toks):
+        # TODO: need to work out syntax for this section
+        for tok in toks:
+            print tok
+TestfunctionSection.setParseAction(ParseTestfunctionSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN TestmethodParameterSection
+# -------------------------------------------------------------------------------------------
 
 # UTMTestmethodParameters = *(TestmethodParameter);
 UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
@@ -355,20 +384,43 @@ UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
 #         >> End
 #     #endif
 #     ;
-TestmethodParameterSection = pp.Group(pp.Keyword("testmethodparameters") + UTMTestmethodParameters + End)\
+TestmethodParameterSection = (pp.Keyword("testmethodparameters").suppress() + UTMTestmethodParameters + End)\
     .setResultsName("TestmethodParameterSection")
+class ParseTestmethodParameterSection(object):
+    def __init__(self,toks):
+        global isUTMBased
+        isUTMBased = True
+        self.section_name = "testmethodparameters"
+        self.UTMTestmethodParameters = {}
+        for tok in toks:
+            self.UTMTestmethodParameters[tok[0]] = {}
+            for t in tok[1:]:
+                self.UTMTestmethodParameters[tok[0]][t[0]] = t[1]
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for tm_id in self.UTMTestmethodParameters:
+            rstr += tm_id + ":\n"
+            for k,v in self.UTMTestmethodParameters[tm_id].iteritems():
+                rstr += "  "+ k + " = \"" + v + "\";\n"
+        rstr += EndStr
+        return rstr
+TestmethodParameterSection.setParseAction(ParseTestmethodParameterSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN TestmethodLimitSection
+# -------------------------------------------------------------------------------------------
 
 # LowLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
 #                                str_p("GT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER] |
 #                                str_p("GE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER_EQUAL])
 #                            >> ch_p('"');
-LowLimitSymbol = pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("GT") | pp.Keyword("GE")) + pp.Literal('"').suppress()
+LowLimitSymbol = pp.Combine(pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("GT") | pp.Keyword("GE")) + pp.Literal('"').suppress())
 
 # HighLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
 #                                 str_p("LT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER] |
 #                                 str_p("LE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER_EQUAL])
 #                             >> ch_p('"');
-HighLimitSymbol = pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("LT") | pp.Keyword("LE")) + pp.Literal('"').suppress()
+HighLimitSymbol = pp.Combine(pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("LT") | pp.Keyword("LE")) + pp.Literal('"').suppress())
 
 # TestmethodLimit = ((Identifier)[bind(&StartTestmethod)(construct_<string>(arg1, arg2))] >> ch_p(':') >>
 #  *(
@@ -394,14 +446,15 @@ HighLimitSymbol = pp.Literal('"').suppress() + (pp.Keyword("NA") | pp.Keyword("L
 #  )[bind(&SetTestmethodLimits)()]
 #    | Error
 # ;
-TestmethodLimit = (Identifier + COLON + pp.ZeroOrMore((QuotedString + EQ
-                                                       + QuotedString + COLON
-                                                       + LowLimitSymbol + COLON
-                                                       + QuotedString + COLON
-                                                       + HighLimitSymbol + COLON
-                                                       + QuotedString + COLON
-                                                       + QuotedString + COLON
-                                                       + QuotedString + SEMI)))
+TestmethodLimit = pp.Group(Identifier.setResultsName("StartTestmethod")
+                           + COLON + pp.ZeroOrMore((QuotedString.setResultsName("name") + EQ
+                                                    + QuotedString.setResultsName("loVal") + COLON
+                                                    + LowLimitSymbol.setResultsName("LowLimitSymbol") + COLON
+                                                    + QuotedString.setResultsName("hiVal") + COLON
+                                                    + HighLimitSymbol.setResultsName("HighLimitSymbol") + COLON
+                                                    + QuotedString.setResultsName("unit") + COLON
+                                                    + QuotedString.setResultsName("numOffset") + COLON
+                                                    + QuotedString.setResultsName("numInc") + SEMI)))
 
 # UTMTestmethodLimits = *(TestmethodLimit);
 UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
@@ -414,27 +467,64 @@ UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 #   >> End
 # #endif
 # ;
-TestmethodLimitSection = pp.Group(pp.Keyword("testmethodlimits") + UTMTestmethodLimits + End)\
+TestmethodLimitSection = (pp.Keyword("testmethodlimits").suppress() + UTMTestmethodLimits + End)\
     .setResultsName("TestmethodLimitSection")
+class ParseTestmethodLimitSection(object):
+    def __init__(self,toks):
+        global isUTMBased
+        isUTMBased = True
+        self.section_name = "testmethodlimits"
+        self.UTMTestmethodLimits = {}
+        for tok in toks:
+            tm_id = tok["StartTestmethod"]
+            if tm_id not in self.UTMTestmethodLimits:
+                self.UTMTestmethodLimits[tm_id] = {}
+            self.UTMTestmethodLimits[tm_id]["name"] = tok["name"]
+            self.UTMTestmethodLimits[tm_id]["loVal"] = tok["loVal"]
+            self.UTMTestmethodLimits[tm_id]["LowLimitSymbol"] = tok["LowLimitSymbol"]
+            self.UTMTestmethodLimits[tm_id]["hiVal"] = tok["hiVal"]
+            self.UTMTestmethodLimits[tm_id]["HighLimitSymbol"] = tok["HighLimitSymbol"]
+            self.UTMTestmethodLimits[tm_id]["unit"] = tok["unit"]
+            self.UTMTestmethodLimits[tm_id]["numOffset"] = tok["numOffset"]
+            self.UTMTestmethodLimits[tm_id]["numInc"] = tok["numInc"]
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for tm_id in self.UTMTestmethodLimits:
+            rstr += tm_id + ":\n  "
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["name"] + "\" = "
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["loVal"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["LowLimitSymbol"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["hiVal"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["HighLimitSymbol"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["unit"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["numOffset"] + "\":"
+            rstr += "\"" + self.UTMTestmethodLimits[tm_id]["numInc"] + "\";\n"
+        rstr += EndStr
+        return rstr
+TestmethodLimitSection.setParseAction(ParseTestmethodLimitSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN TestmethodSection
+# -------------------------------------------------------------------------------------------
 
 # UTMTestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
-UTMTestmethodClass = pp.Keyword("testmethod_class") + EQ + QuotedString + SEMI
+UTMTestmethodClass = pp.Keyword("testmethod_class").suppress() + EQ + QuotedString.setResultsName("Class") + SEMI
 
 # TestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
-TestmethodClass = pp.Keyword("testmethod_class") + EQ + QuotedString + SEMI
+TestmethodClass = pp.Keyword("testmethod_class").suppress() + EQ + QuotedString.setResultsName("Class") + SEMI
 
 # TestmethodId = str_p("testmethod_id") >> '=' >> (String[Testmethod.methodId = construct_<string>(arg1, arg2)] |
 #                QuotedString[Testmethod.methodId = arg1]) >> ';';
-TestmethodId = pp.Keyword("testmethod_id") + EQ + (String | QuotedString) + SEMI
+TestmethodId = pp.Keyword("testmethod_id").suppress() + EQ + (String | QuotedString).setResultsName("methodId") + SEMI
 
 # TestmethodParameters = str_p("testmethod_parameters") >> '=' >> QuotedString[Testmethod.parameter = arg1] >> ';';
-TestmethodParameters = pp.Keyword("testmethod_parameters") + EQ + QuotedString + SEMI
+TestmethodParameters = pp.Keyword("testmethod_parameters").suppress() + EQ + QuotedString.setResultsName("parameter") + SEMI
 
 # TestmethodLimits = str_p("testmethod_limits") >> '=' >> QuotedString[Testmethod.limits = arg1] >> ';';
-TestmethodLimits = pp.Keyword("testmethod_limits") + EQ + QuotedString + SEMI
+TestmethodLimits = pp.Keyword("testmethod_limits").suppress() + EQ + QuotedString.setResultsName("limits") + SEMI
 
 # TestmethodName = str_p("testmethod_name") >> '=' >> QuotedString[Testmethod.name = arg1] >> ';';
-TestmethodName = pp.Keyword("testmethod_name") + EQ + QuotedString + SEMI
+TestmethodName = pp.Keyword("testmethod_name").suppress() + EQ + QuotedString.setResultsName("name") + SEMI
 
 # TestmethodDefinition = (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName ) >> !TestmethodDefinition;
 TestmethodDefinition = pp.Forward()
@@ -459,14 +549,45 @@ TestmethodDefinition << (TestmethodClass | TestmethodId | TestmethodParameters |
 #  ]
 #  )
 # ;
-Testmethod = (Identifier + ':' + UTMTestmethodClass | TestmethodDefinition)
+if isUTMBased:
+    Testmethod = pp.Group(Identifier.setResultsName("tm_id") + COLON + UTMTestmethodClass)
+else:
+    Testmethod = pp.Group(Identifier.setResultsName("tm_id") + COLON + TestmethodDefinition)
 
 # Testmethods = *(Testmethod) >> End;
 Testmethods = pp.ZeroOrMore(Testmethod) + End
 
 # TestmethodSection = str_p("testmethods") >> Testmethods;
-TestmethodSection = pp.Group(pp.Keyword("testmethods") + Testmethods)\
+TestmethodSection = (pp.Keyword("testmethods").suppress() + Testmethods)\
     .setResultsName("TestmethodSection")
+class ParseTestmethodSection(object):
+    def __init__(self,toks):
+        self.section_name = "testmethods"
+        self.isUTMBased = isUTMBased
+        self.Testmethods = {}
+        for tok in toks:
+            tm_id = tok["tm_id"]
+            if tm_id not in self.Testmethods:
+                self.Testmethods[tm_id] = {}
+                self.Testmethods[tm_id]["Class"] = tok["Class"]
+                if not self.isUTMBased:
+                    self.Testmethods[tm_id]["methodId"] = tok["methodId"]
+                    self.Testmethods[tm_id]["parameter"] = tok["parameter"]
+                    self.Testmethods[tm_id]["limits"] = tok["limits"]
+                    self.Testmethods[tm_id]["name"] = tok["name"]
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for tm_id in self.Testmethods:
+            rstr += tm_id + ":\n  "
+            rstr += "testmethod_class = \"" + self.Testmethods[tm_id]["Class"] + "\";\n"
+            if not self.isUTMBased:
+                rstr += "testmethod_id = \"" + self.Testmethods[tm_id]["methodId"] + "\";\n"
+                rstr += "testmethod_parameters = \"" + self.Testmethods[tm_id]["parameter"] + "\";\n"
+                rstr += "testmethod_limits = \"" + self.Testmethods[tm_id]["limits"] + "\";\n"
+                rstr += "testmethod_name = \"" + self.Testmethods[tm_id]["name"] + "\";\n"
+        rstr += EndStr
+        return rstr
+TestmethodSection.setParseAction(ParseTestmethodSection)
 
 # Userprocedure = ((Identifier)[Userprocedure.identifier = construct_<string>(arg1, arg2)] >> ':' >>
 #                 str_p("user_procedure") >> '=' >> QuotedString[Userprocedure.commandline = arg1] >> ';')
@@ -480,41 +601,54 @@ Userprocedures = pp.ZeroOrMore(Userprocedure) + End
 UserprocedureSection = pp.Group(pp.Keyword("tests") + Userprocedures)\
     .setResultsName("UserprocedureSection")
 
+# -------------------------------------------------------------------------------------------
+# BEGIN TestsuiteSection
+# -------------------------------------------------------------------------------------------
+
 # TestsuiteName = Identifier >> *ch_p(' ') >> ':';
 TestsuiteName = Identifier + COLON
 
-
 # TestsuiteTest = (str_p("override_testf") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >>';') |
 #                 (str_p("tests") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >> ';');
-TestsuiteTest = (pp.Keyword("override_testf") + EQ + Identifier + SEMI) |  (pp.Keyword("tests") + EQ + Identifier + SEMI)
+TestsuiteTest = pp.Group((pp.Keyword("override_testf") + EQ + Identifier + SEMI) |  (pp.Keyword("tests") + EQ + Identifier + SEMI))\
+    .setResultsName("TestsuiteTest")
 
 # TestsuiteOverride = str_p("override") >> '=' >> int_p >> ';';
-TestsuiteOverride = pp.Keyword("override") + EQ + integer + SEMI
+TestsuiteOverride = pp.Group(pp.Keyword("override").suppress() + EQ + integer + SEMI)\
+    .setResultsName("TestsuiteOverride")
 
 # TestsuiteTimEquSet = str_p("override_tim_equ_set") >> '=' >> Expression[bind(&SetTestsuiteTimEquSet)(arg1)] >> ';';
-TestsuiteTimEquSet = pp.Keyword("override_tim_equ_set") + EQ + Expression + SEMI
+TestsuiteTimEquSet = pp.Group(pp.Keyword("override_tim_equ_set").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteTimEquSet")
 
 # TestsuiteLevEquSet = str_p("override_lev_equ_set") >> '=' >> Expression[bind(&SetTestsuiteLevEquSet)(arg1)] >> ';';
-TestsuiteLevEquSet = pp.Keyword("override_lev_equ_set") + EQ + Expression + SEMI
+TestsuiteLevEquSet = pp.Group(pp.Keyword("override_lev_equ_set").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteLevEquSet")
 
 # TestsuiteTimSpecSet = str_p("override_tim_spec_set") >> '=' >> Expression[bind(&SetTestsuiteTimSpecSet)(arg1)] >> ';';
-TestsuiteTimSpecSet = pp.Keyword("override_tim_spec_set") + EQ + Expression + SEMI
+TestsuiteTimSpecSet = pp.Group(pp.Keyword("override_tim_spec_set").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteTimSpecSet")
 
 # TestsuiteLevSpecSet = str_p("override_lev_spec_set") >> '=' >> Expression[bind(&SetTestsuiteLevSpecSet)(arg1)] >> ';';
-TestsuiteLevSpecSet = pp.Keyword("override_lev_spec_set") + EQ + Expression + SEMI
+TestsuiteLevSpecSet = pp.Group(pp.Keyword("override_lev_spec_set").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteLevSpecSet")
 
 # TestsuiteTimSet = str_p("override_timset") >> '=' >> Expression[bind(&SetTestsuiteTimSet)(arg1)] >> ';';
-TestsuiteTimSet = pp.Keyword("override_timset") + EQ + Expression + SEMI
+TestsuiteTimSet = pp.Group(pp.Keyword("override_timset").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteTimSet")
 
 # TestsuiteLevSet = str_p("override_levset") >> '=' >> Expression[bind(&SetTestsuiteLevSet)(arg1)] >> ';';
-TestsuiteLevSet = pp.Keyword("override_levset") + EQ + Expression + SEMI
+TestsuiteLevSet = pp.Group(pp.Keyword("override_levset").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteLevSet")
 
 # TestsuiteSequencerLabel = str_p("override_seqlbl") >> '=' >> Expression[bind(&SetTestsuiteSequencerLabel)(arg1)] >> ';';
-TestsuiteSequencerLabel = pp.Keyword("override_seqlbl") + EQ + Expression + SEMI
+TestsuiteSequencerLabel = pp.Group(pp.Keyword("override_seqlbl").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteSequencerLabel")
 
 # //Ignore this for now, because flag_ui handles the flags
 # TestsuiteFlags = str_p("local_flags") >> '=' >> list_p(Identifier[bind(&SetTestsuiteFlag)(construct_<string>(arg1, arg2))], ch_p(',')) >> ';';
-TestsuiteFlags = pp.Keyword("local_flags") + EQ + pp.ZeroOrMore(Identifier + COMMA) + Identifier + SEMI
+TestsuiteFlags = pp.Group(pp.Keyword("local_flags").suppress() + EQ + pp.ZeroOrMore(Identifier + COMMA) + Identifier + SEMI)\
+    .setResultsName("TestsuiteFlags")
 
 # SiteControlExpression = (str_p("\"serial:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_SERIAL] |
 #                          str_p("\"parallel:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_PARALLEL] |
@@ -523,36 +657,45 @@ TestsuiteFlags = pp.Keyword("local_flags") + EQ + pp.ZeroOrMore(Identifier + COM
 #                         (str_p("\"other:")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_OTHER] >>
 #                          list_p.direct(int_p[bind(&NewSiteControlArgument)(arg1)], ch_p(':')) >> !ch_p(':') >> ch_p('"')))
 #                         [bind(&SetTestsuiteSiteControl)(SiteControlExpression.type)];
-SiteControlExpression = (pp.Keyword("\"serial:\"") | pp.Keyword("\"parallel:\"") |
+SiteControlExpression = pp.Combine(pp.Keyword("\"serial:\"") | pp.Keyword("\"parallel:\"") |
                         (pp.Keyword("\"semiparallel:") + integer + COLON + integer + pp.Optional(COLON) + pp.Literal('"')) |
                         (pp.Keyword("\"other:") + pp.Optional(integer + COLON) + pp.Optional(COLON) + pp.Literal('"')))
 
 # TestsuiteSiteControl = str_p("site_control")[bind(&ClearSiteControlArguments)()] >> '=' >> SiteControlExpression >> ';';
-TestsuiteSiteControl = pp.Keyword("site_control") + EQ + SiteControlExpression + SEMI
+TestsuiteSiteControl = pp.Group(pp.Keyword("site_control").suppress() + EQ + SiteControlExpression + SEMI)\
+    .setResultsName("TestsuiteSiteControl")
 
 # TestsuiteFFCCount = str_p("ffc_on_fail") >> '=' >> int_p[bind(&SetTestsuiteFFCCount)(arg1)] >> ';';
-TestsuiteFFCCount = pp.Keyword("ffc_on_fail") + EQ + integer + SEMI
+TestsuiteFFCCount = pp.Group(pp.Keyword("ffc_on_fail").suppress() + EQ + integer + SEMI)\
+    .setResultsName("TestsuiteFFCCount")
 
 # TestsuiteTestLevel = str_p("test_level") >> '=' >> int_p[bind(&SetTestsuiteTestLevel)(arg1)] >> ';';
-TestsuiteTestLevel = pp.Keyword("test_level") + EQ + integer + SEMI
+TestsuiteTestLevel = pp.Group(pp.Keyword("test_level").suppress() + EQ + integer + SEMI)\
+    .setResultsName("TestsuiteTestLevel")
 
 # TestsuiteDPSSet = str_p("override_dpsset") >> '=' >> Expression[bind(&SetTestsuiteDPSSet)(arg1)] >> ';';
-TestsuiteDPSSet = pp.Keyword("override_dpsset") + EQ + Expression + SEMI
+TestsuiteDPSSet = pp.Group(pp.Keyword("override_dpsset").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteDPSSet")
 
 # TestsuiteTestNumber = str_p("override_test_number") >> '=' >> Expression[bind(&SetTestsuiteTestNumber)(arg1)] >> ';';
-TestsuiteTestNumber = pp.Keyword("override_test_number") + EQ + Expression + SEMI
+TestsuiteTestNumber = pp.Group(pp.Keyword("override_test_number").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteTestNumber")
 
 # TestsuiteAnalogSet = str_p("override_anaset") >> '=' >> Expression[bind(&SetTestsuiteAnalogSet)(arg1)] >> ';';
-TestsuiteAnalogSet = pp.Keyword("override_anaset") + EQ + Expression + SEMI
+TestsuiteAnalogSet = pp.Group(pp.Keyword("override_anaset").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteAnalogSet")
 
 # TestsuiteSiteMatch = str_p("site_match") >> '=' >> int_p[bind(&SetTestsuiteSiteMatch)(arg1)] >> ';';
-TestsuiteSiteMatch = pp.Keyword("site_match") + EQ + integer + SEMI
+TestsuiteSiteMatch = pp.Group(pp.Keyword("site_match").suppress() + EQ + integer + SEMI)\
+    .setResultsName("TestsuiteSiteMatch")
 
 # TestsuiteWaveformSet = str_p("override_wvfset") >> '=' >> Expression[bind(&SetTestsuiteWaveformSet)(arg1)] >> ';';
-TestsuiteWaveformSet = pp.Keyword("override_wvfset") + EQ + Expression + SEMI
+TestsuiteWaveformSet = pp.Group(pp.Keyword("override_wvfset").suppress() + EQ + Expression + SEMI)\
+    .setResultsName("TestsuiteWaveformSet")
 
 # TestsuiteComment = str_p("comment") >> '=' >> QuotedString[bind(&SetTestsuiteComment)(arg1)] >> ';';
-TestsuiteComment = pp.Keyword("comment") + EQ + QuotedString + SEMI
+TestsuiteComment = pp.Group(pp.Keyword("comment").suppress() + EQ + QuotedString + SEMI)\
+    .setResultsName("TestsuiteComment")
 
 # TestsuiteDefinition = (TestsuiteTest |
 #                        TestsuiteOverride |
@@ -596,14 +739,121 @@ TestsuiteDefinition << (TestsuiteTest |
                         TestsuiteComment) + pp.Optional(TestsuiteDefinition)
 
 # Testsuite = (TestsuiteName [bind(&StartTestsuite)(construct_<string>(arg1, arg2-1))]) >> TestsuiteDefinition;
-Testsuite = TestsuiteName + TestsuiteDefinition
+Testsuite = pp.Group(TestsuiteName.setResultsName("TestsuiteName") + TestsuiteDefinition.setResultsName("TestsuiteDefinition"))
 
 # Testsuites = *(Testsuite);
 Testsuites = pp.ZeroOrMore(Testsuite)
 
 # TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
-TestsuiteSection = pp.Group(pp.Keyword("test_suites") + Testsuites  + End)\
+TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites  + End)\
     .setResultsName("TestsuiteSection")
+def ParseTestsuiteDefinition(toks):
+    """
+        Used by ParseTestsuiteSection and also ParseSpecialTestsuiteSection
+    """
+    # TODO: let's finish this so that we can re-use the code for SpecialTestsuites
+    for tok in toks:
+        print tok
+class ParseTestsuiteSection(object):
+    def __init__(self,toks):
+        self.section_name = "test_suites"
+        self.Testsuites = {}
+        for tok in toks:
+            ts_name = tok["TestsuiteName"][0]
+            ts_def = tok["TestsuiteDefinition"]
+            if ts_name not in self.Testsuites:
+                self.Testsuites[ts_name] = {}
+            if "TestsuiteTest" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTest"] = {}
+                self.Testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
+                self.Testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
+            if "TestsuiteTimEquSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
+            if "TestsuiteLevEquSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
+            if "TestsuiteTimSpecSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
+            if "TestsuiteLevSpecSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
+            if "TestsuiteTimSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
+            if "TestsuiteLevSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
+            if "TestsuiteSequencerLabel" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
+            if "TestsuiteFlags" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteFlags"] = []
+                for flag in ts_def["TestsuiteFlags"]:
+                    self.Testsuites[ts_name]["TestsuiteFlags"].append(flag)
+            if "TestsuiteSiteControl" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
+            if "TestsuiteFFCCount" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
+            if "TestsuiteTestLevel" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
+            if "TestsuiteDPSSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
+            if "TestsuiteTestNumber" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
+            if "TestsuiteAnalogSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
+            if "TestsuiteSiteMatch" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
+            if "TestsuiteWaveformSet" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
+            if "TestsuiteComment" in ts_def:
+                self.Testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for ts_name in self.Testsuites:
+            rstr += ts_name + ":\n"
+            if "TestsuiteTest" in self.Testsuites[ts_name]:
+                for k,v in self.Testsuites[ts_name]["TestsuiteTest"].iteritems():
+                    rstr += "  "+ k + " = " + v + ";\n"
+            if "TestsuiteOverride" in self.Testsuites[ts_name]:
+                rstr += "  override = " + self.Testsuites[ts_name]["TestsuiteOverride"] + ";\n"
+            if "TestsuiteTimEquSet" in self.Testsuites[ts_name]:
+                rstr += "  override_tim_equ_set = " + self.Testsuites[ts_name]["TestsuiteTimEquSet"] + ";\n"
+            if "TestsuiteLevEquSet" in self.Testsuites[ts_name]:
+                rstr += "  override_lev_equ_set = " + self.Testsuites[ts_name]["TestsuiteLevEquSet"] + ";\n"
+            if "TestsuiteTimSpecSet" in self.Testsuites[ts_name]:
+                rstr += "  override_tim_spec_set = " + self.Testsuites[ts_name]["TestsuiteTimSpecSet"] + ";\n"
+            if "TestsuiteLevSpecSet" in self.Testsuites[ts_name]:
+                rstr += "  override_lev_spec_set = " + self.Testsuites[ts_name]["TestsuiteLevSpecSet"] + ";\n"
+            if "TestsuiteTimSet" in self.Testsuites[ts_name]:
+                rstr += "  override_timset = " + self.Testsuites[ts_name]["TestsuiteTimSet"] + ";\n"
+            if "TestsuiteLevSet" in self.Testsuites[ts_name]:
+                rstr += "  override_levset = " + self.Testsuites[ts_name]["TestsuiteLevSet"] + ";\n"
+            if "TestsuiteSequencerLabel" in self.Testsuites[ts_name]:
+                rstr += "  override_seqlbl = " + self.Testsuites[ts_name]["TestsuiteSequencerLabel"] + ";\n"
+            if "TestsuiteFlags" in self.Testsuites[ts_name]:
+                rstr += "  local_flags = " + ','.join(self.Testsuites[ts_name]["TestsuiteFlags"]) + ";\n"
+            if "TestsuiteSiteControl" in self.Testsuites[ts_name]:
+                rstr += "  site_control = " + self.Testsuites[ts_name]["TestsuiteSiteControl"] + ";\n"
+            if "TestsuiteFFCCount" in self.Testsuites[ts_name]:
+                rstr += "  ffc_on_fail = " + self.Testsuites[ts_name]["TestsuiteFFCCount"] + ";\n"
+            if "TestsuiteTestLevel" in self.Testsuites[ts_name]:
+                rstr += "  test_level = " + self.Testsuites[ts_name]["TestsuiteTestLevel"] + ";\n"
+            if "TestsuiteDPSSet" in self.Testsuites[ts_name]:
+                rstr += "  override_dpsset = " + self.Testsuites[ts_name]["TestsuiteDPSSet"] + ";\n"
+            if "TestsuiteTestNumber" in self.Testsuites[ts_name]:
+                rstr += "  override_test_number = " + self.Testsuites[ts_name]["TestsuiteTestNumber"] + ";\n"
+            if "TestsuiteAnalogSet" in self.Testsuites[ts_name]:
+                rstr += "  override_anaset = " + self.Testsuites[ts_name]["TestsuiteAnalogSet"] + ";\n"
+            if "TestsuiteSiteMatch" in self.Testsuites[ts_name]:
+                rstr += "  site_match = " + self.Testsuites[ts_name]["TestsuiteSiteMatch"] + ";\n"
+            if "TestsuiteWaveformSet" in self.Testsuites[ts_name]:
+                rstr += "  override_wvfset = " + self.Testsuites[ts_name]["TestsuiteWaveformSet"] + ";\n"
+            if "TestsuiteComment" in self.Testsuites[ts_name]:
+                rstr += "  comment = " + self.Testsuites[ts_name]["TestsuiteComment"] + ";\n"
+        rstr += EndStr
+        # sys.exit()
+        return rstr
+TestsuiteSection.setParseAction(ParseTestsuiteSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN TestflowSection
+# -------------------------------------------------------------------------------------------
 
 # RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
 #                [bind(&CreateRunStatement)(RunStatement.testsuite)];
@@ -693,8 +943,6 @@ BinDefinition = (QuotedString + COMMA + QuotedString + COMMA + pp.Optional(OOCRu
 #                    [bind(&CreateStopBinStatement)()];
 StopBinStatement = (pp.Keyword("stop_bin") + BinDefinition + SEMI)
 
-
-
 # PrintStatement = (str_p("print") >> '(' >> Expression[PrintStatement.statement = arg1] >> ')' >> ';')
 #                  [bind(&CreatePrintStatement)(PrintStatement.statement)];
 PrintStatement = (pp.Keyword("print") + LPAR + Expression + RPAR + SEMI)
@@ -743,7 +991,6 @@ MultiBinStatement = pp.Keyword("multi_bin") + SEMI
 # EmptyStatement = ch_p(';');
 EmptyStatement = ';'
 
-
 # TestflowSection = str_p("test_flow")[bind(&FlowSectionStart)()] >> FlowStatements >> End;
 TestflowSection = pp.Group(pp.Keyword("test_flow") + FlowStatements + End)\
     .setResultsName("TestflowSection")
@@ -780,38 +1027,52 @@ FlowStatement = (RunStatement |
                  MultiBinStatement |
                  EmptyStatement)
 
-
 # FlowStatements = *(FlowStatement);
 FlowStatements << pp.ZeroOrMore(FlowStatement)
 
+# -------------------------------------------------------------------------------------------
+# BEGIN SpecialTestsuiteSection
+# -------------------------------------------------------------------------------------------
+
 # DownloadTestsuite = (str_p("download")[bind(&StartTestsuite)("download")] >> TestsuiteDefinition >> End) [bind(&SetDownloadSuite)()];
-DownloadTestsuite = (pp.Keyword("download") + TestsuiteDefinition + End)
+DownloadTestsuite = pp.Group(pp.Keyword("download").setResultsName("download")  + TestsuiteDefinition + End)
 
 # InitTestsuite = (str_p("initialize")[bind(&StartTestsuite)("initialize")] >> TestsuiteDefinition >> End )[bind(&SetInitSuite)()];
-InitTestsuite = (pp.Keyword("initialize") + TestsuiteDefinition + End)
+InitTestsuite = pp.Group(pp.Keyword("initialize").setResultsName("initialize")  + TestsuiteDefinition + End)
 
 # PauseTestsuite = (str_p("pause")[bind(&StartTestsuite)("pause")] >> TestsuiteDefinition >> End)[bind(&SetPauseSuite)()];
-PauseTestsuite = (pp.Keyword("pause") + TestsuiteDefinition + End)
+PauseTestsuite = pp.Group(pp.Keyword("pause").setResultsName("pause")  + TestsuiteDefinition + End)
 
 # AbortTestsuite = (str_p("abort")[bind(&StartTestsuite)("abort")] >> TestsuiteDefinition >> End)[bind(&SetAbortSuite)()];
-AbortTestsuite = (pp.Keyword("abort") + TestsuiteDefinition + End)
+AbortTestsuite = pp.Group(pp.Keyword("abort").setResultsName("abort")  + TestsuiteDefinition + End)
 
 # ResetTestsuite = (str_p("reset")[bind(&StartTestsuite)("reset")] >> TestsuiteDefinition >> End)[bind(&SetResetSuite)()];
-ResetTestsuite = (pp.Keyword("reset") + TestsuiteDefinition + End)
+ResetTestsuite = pp.Group(pp.Keyword("reset").setResultsName("reset")  + TestsuiteDefinition + End)
 
 # ExitTestsuite = (str_p("exit")[bind(&StartTestsuite)("exit")] >> TestsuiteDefinition >> End)[bind(&SetExitSuite)()];
-ExitTestsuite = (pp.Keyword("exit") + TestsuiteDefinition + End)
+ExitTestsuite = pp.Group(pp.Keyword("exit").setResultsName("exit")  + TestsuiteDefinition + End)
 
 # DisconnectTestsuite = (str_p("bin_disconnect")[bind(&StartTestsuite)("bin_disconnect")] >> TestsuiteDefinition >> End)[bind(&SetDisconnectSuite)()];
-DisconnectTestsuite = (pp.Keyword("bin_disconnect") + TestsuiteDefinition + End)
+DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect").setResultsName("bin_disconnect")  + TestsuiteDefinition + End)
 
 # MultiBinDecisionTestsuite = (str_p("multi_bin_decision")[bind(&StartTestsuite)("multi_bin_decision")] >> TestsuiteDefinition >> End)[bind(&SetMultiBinDecisionSuite)()];
-MultiBinDecisionTestsuite = (pp.Keyword("multi_bin_decision") + TestsuiteDefinition + End)
+MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision").setResultsName("multi_bin_decision")  + TestsuiteDefinition + End)
 
 # SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
-SpecialTestsuiteSection = pp.Group(DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
+SpecialTestsuiteSection = pp.ZeroOrMore(DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
                                    ResetTestsuite | ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite)\
     .setResultsName("SpecialTestsuiteSection")
+class ParseSpecialTestsuiteSection(object):
+    def __init__(self,toks):
+        for tok in toks:
+            print tok
+        sys.exit()
+        self.section_name = "test_suites"
+SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
+
+# -------------------------------------------------------------------------------------------
+# BEGIN BinningSection
+# -------------------------------------------------------------------------------------------
 
 # OtherwiseBin = (str_p("otherwise bin") >> '= ' >> BinDefinition >> ';')[bind(&CreateOtherwiseBin)()];
 OtherwiseBin = (pp.Keyword("otherwise bin") + EQ + BinDefinition + SEMI)
@@ -819,6 +1080,10 @@ OtherwiseBin = (pp.Keyword("otherwise bin") + EQ + BinDefinition + SEMI)
 # BinningSection = str_p("binning") >> *(OtherwiseBin| (BinDefinition >> ';')) >> End;
 BinningSection = pp.Group(pp.Keyword("binning") + pp.ZeroOrMore(OtherwiseBin | (BinDefinition + SEMI)) + End)\
     .setResultsName("BinningSection")
+
+# -------------------------------------------------------------------------------------------
+# BEGIN SetupSection
+# -------------------------------------------------------------------------------------------
 
 # ConfigFile = str_p("context_config_file") >> '= ' >> QuotedString [bind(&SetConfigFile)(arg1)] >> ';';
 ConfigFile = (pp.Keyword("context_config_file") + EQ + QuotedString + SEMI)
@@ -864,9 +1129,17 @@ SetupFiles = (ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | C
 SetupSection = pp.Group(pp.Keyword("context") + pp.ZeroOrMore(SetupFiles) + End)\
     .setResultsName("SetupSection")
 
+# -------------------------------------------------------------------------------------------
+# BEGIN OOCSection
+# -------------------------------------------------------------------------------------------
+
 # OOCSection = str_p("oocrule") >> OOCRule >> End;
 OOCSection = pp.Group(pp.Keyword("oocrule") + OOCRule + End)\
     .setResultsName("OOCSection")
+
+# -------------------------------------------------------------------------------------------
+# BEGIN HardwareBinSection
+# -------------------------------------------------------------------------------------------
 
 # HardBinDescription = (int_p[HardBinDescription.hwBin =  arg1] >> '= ' >> QuotedString[HardBinDescription.description =  arg1] >> ';')[bind(&SetHardBinDescription)(HardBinDescription.hwBin, HardBinDescription.description)];
 HardBinDescription = (integer + EQ + QuotedString + SEMI)
@@ -874,6 +1147,10 @@ HardBinDescription = (integer + EQ + QuotedString + SEMI)
 # HardwareBinSection = str_p("hardware_bin_descriptions") >> *(HardBinDescription) >> End;
 HardwareBinSection = pp.Group(pp.Keyword("hardware_bin_descriptions") + pp.ZeroOrMore(HardBinDescription) + End)\
     .setResultsName("HardwareBinSection")
+
+# -------------------------------------------------------------------------------------------
+# BEGIN ALL Sections collection
+# -------------------------------------------------------------------------------------------
 
 #   Sections =
 # (

@@ -75,10 +75,10 @@ Expression = BinaryAddTerm
 
 # NumberFunction  = str_p("pass") | "fail" | "has_run" | "has_not_run" | "tf_result" |"tf_pin_result" | "spst_timing" |
 #                         "spst_level" | "svlr_timing" | "svlr_level" | "wsus" | "bsus" | "lsus" | "tsus"          ;
-NumberFunction  = pp.Keyword("pass") | pp.Keyword("fail") | pp.Keyword("has_run") | pp.Keyword("has_not_run") |\
-                           pp.Keyword("tf_result") | pp.Keyword("tf_pin_result") | pp.Keyword("spst_timing") |\
-                           pp.Keyword("spst_level") | pp.Keyword("svlr_timing") | pp.Keyword("svlr_level") |\
-                           pp.Keyword("wsus") | pp.Keyword("bsus") | pp.Keyword("lsus") | pp.Keyword("tsus")
+NumberFunction = (pp.Keyword("pass") | pp.Keyword("fail") | pp.Keyword("has_run") | pp.Keyword("has_not_run") |
+                  pp.Keyword("tf_result") | pp.Keyword("tf_pin_result") | pp.Keyword("spst_timing") |
+                  pp.Keyword("spst_level") | pp.Keyword("svlr_timing") | pp.Keyword("svlr_level") |
+                  pp.Keyword("wsus") | pp.Keyword("bsus") | pp.Keyword("lsus") | pp.Keyword("tsus"))
 
 # StringFunction = str_p("burstfirst") | "burstnext";
 StringFunction = pp.Keyword("burstfirst") | pp.Keyword("burstnext")
@@ -164,21 +164,23 @@ class ParseOptRevision(object):
         self.section_name = "OptRevision"
         self.language_revision = toks[0]
 
-
     def __str__(self):
         return "language_revision" + ' = ' + self.language_revision + ';\n'
 
 OptRevision.setParseAction(ParseOptRevision)
 
 # EmptySection = ch_p(';');
-EmptySection = pp.Group(SEMI)\
+EmptySection = pp.Group(pp.Literal(';'))\
     .setResultsName("EmptySection")
+
+
 class ParseEmptySection(object):
     """
 
     """
     def __init__(self,toks):
         self.section_name = ""
+        self.empty_section = toks
 
 EmptySection.setParseAction(ParseEmptySection)
 
@@ -321,6 +323,7 @@ class ParseDeclarationSection(object):
         self.Definition = {}
         for tok in toks:
             self.Definition[tok[0]] = tok[1]
+
     def __str__(self):
 
         rstr = self.section_name + "\n"
@@ -459,7 +462,7 @@ class ParseTestmethodParameterSection(object):
         for tm_id in self.UTMTestmethodParameters:
             rstr += tm_id + ":\n"
             for k,v in self.UTMTestmethodParameters[tm_id].iteritems():
-                rstr += "  "+ k + " = \"" + v + "\";\n"
+                rstr += "  " + k + " = \"" + v + "\";\n"
         rstr += EndStr
         return rstr
 
@@ -659,17 +662,42 @@ class ParseTestmethodSection(object):
         return rstr
 TestmethodSection.setParseAction(ParseTestmethodSection)
 
+# -------------------------------------------------------------------------------------------
+# BEGIN UserprocedureSection
+# -------------------------------------------------------------------------------------------
+
 # Userprocedure = ((Identifier)[Userprocedure.identifier = construct_<string>(arg1, arg2)] >> ':' >>
 #                 str_p("user_procedure") >> '=' >> QuotedString[Userprocedure.commandline = arg1] >> ';')
 #                 [bind(&CreateUserprocedure)(Userprocedure.identifier, Userprocedure.commandline)];
-Userprocedure = (Identifier + COLON + pp.Keyword("user_procedure") + EQ + QuotedString + SEMI)
+Userprocedure = pp.Group(Identifier.setResultsName("tm_id") + COLON + pp.Keyword("user_procedure").suppress() + EQ + QuotedString.setResultsName("commandline") + SEMI)
 
 # Userprocedures = *(Userprocedure) >> End;
 Userprocedures = pp.ZeroOrMore(Userprocedure) + End
 
 # UserprocedureSection = str_p("tests") >> Userprocedures;
-UserprocedureSection = pp.Group(pp.Keyword("tests") + Userprocedures)\
+UserprocedureSection = (pp.Keyword("tests").suppress() + Userprocedures)\
     .setResultsName("UserprocedureSection")
+
+
+class ParseUserprocedureSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "tests"
+        self.Userprocedure = {}
+        for tok in toks:
+            self.Userprocedure[tok[0]] = tok[1]
+
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for tm_id in self.Userprocedure:
+            rstr += tm_id + ":\n  "
+            rstr += "user_procedure = \"" + self.Userprocedure[tm_id] + "\";\n"
+        rstr += EndStr
+        return rstr
+
+UserprocedureSection.setParseAction(ParseUserprocedureSection)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN TestsuiteSection
@@ -680,7 +708,7 @@ TestsuiteName = Identifier + COLON
 
 # TestsuiteTest = (str_p("override_testf") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >>';') |
 #                 (str_p("tests") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >> ';');
-TestsuiteTest = pp.Group((pp.Keyword("override_testf") + EQ + Identifier + SEMI) |  (pp.Keyword("tests") + EQ + Identifier + SEMI))\
+TestsuiteTest = pp.Group((pp.Keyword("override_testf") + EQ + Identifier + SEMI) | (pp.Keyword("tests") + EQ + Identifier + SEMI))\
     .setResultsName("TestsuiteTest")
 
 # TestsuiteOverride = str_p("override") >> '=' >> int_p >> ';';
@@ -728,8 +756,8 @@ TestsuiteFlags = pp.Group(pp.Keyword("local_flags").suppress() + EQ + pp.ZeroOrM
 #                          list_p.direct(int_p[bind(&NewSiteControlArgument)(arg1)], ch_p(':')) >> !ch_p(':') >> ch_p('"')))
 #                         [bind(&SetTestsuiteSiteControl)(SiteControlExpression.type)];
 SiteControlExpression = pp.Combine(pp.Keyword("\"serial:\"") | pp.Keyword("\"parallel:\"") |
-                        (pp.Keyword("\"semiparallel:") + integer + COLON + integer + pp.Optional(COLON) + pp.Literal('"')) |
-                        (pp.Keyword("\"other:") + pp.Optional(integer + COLON) + pp.Optional(COLON) + pp.Literal('"')))
+                                   (pp.Keyword("\"semiparallel:") + integer + COLON + integer + pp.Optional(COLON) + pp.Literal('"')) |
+                                   (pp.Keyword("\"other:") + pp.Optional(integer + COLON) + pp.Optional(COLON) + pp.Literal('"')))
 
 # TestsuiteSiteControl = str_p("site_control")[bind(&ClearSiteControlArguments)()] >> '=' >> SiteControlExpression >> ';';
 TestsuiteSiteControl = pp.Group(pp.Keyword("site_control").suppress() + EQ + SiteControlExpression + SEMI)\
@@ -815,66 +843,63 @@ Testsuite = pp.Group(TestsuiteName.setResultsName("TestsuiteName") + TestsuiteDe
 Testsuites = pp.ZeroOrMore(Testsuite)
 
 # TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
-TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites  + End)\
+TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites + End)\
     .setResultsName("TestsuiteSection")
 
-def parseTestsuiteDefinition(ts_name,ts_def):
+def parse_testsuite_def(ts_name,ts_def):
     """
         Used by ParseTestsuiteSection and also ParseSpecialTestsuiteSection
     """
-    Testsuites = {}
-    # for tok in toks:
-    #     ts_name = tok["TestsuiteName"][0]
-    #     ts_def = tok["TestsuiteDefinition"]
-    if ts_name not in Testsuites:
-        Testsuites[ts_name] = {}
+    testsuites = {}
+    if ts_name not in testsuites:
+        testsuites[ts_name] = {}
     if "TestsuiteTest" in ts_def:
-        Testsuites[ts_name]["TestsuiteTest"] = {}
-        Testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
-        Testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
+        testsuites[ts_name]["TestsuiteTest"] = {}
+        testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
+        testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
     if "TestsuiteTimEquSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
+        testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
     if "TestsuiteLevEquSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
+        testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
     if "TestsuiteTimSpecSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
+        testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
     if "TestsuiteLevSpecSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
+        testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
     if "TestsuiteTimSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
+        testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
     if "TestsuiteLevSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
+        testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
     if "TestsuiteSequencerLabel" in ts_def:
-        Testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
+        testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
     if "TestsuiteFlags" in ts_def:
-        Testsuites[ts_name]["TestsuiteFlags"] = []
+        testsuites[ts_name]["TestsuiteFlags"] = []
         for flag in ts_def["TestsuiteFlags"]:
-            Testsuites[ts_name]["TestsuiteFlags"].append(flag)
+            testsuites[ts_name]["TestsuiteFlags"].append(flag)
     if "TestsuiteSiteControl" in ts_def:
-        Testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
+        testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
     if "TestsuiteFFCCount" in ts_def:
-        Testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
+        testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
     if "TestsuiteTestLevel" in ts_def:
-        Testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
+        testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
     if "TestsuiteDPSSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
+        testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
     if "TestsuiteTestNumber" in ts_def:
-        Testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
+        testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
     if "TestsuiteAnalogSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
+        testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
     if "TestsuiteSiteMatch" in ts_def:
-        Testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
+        testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
     if "TestsuiteWaveformSet" in ts_def:
-        Testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
+        testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
     if "TestsuiteComment" in ts_def:
-        Testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
-    return Testsuites
+        testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
+    return testsuites
 
-def formatTestsuiteDefinition(ts_name,testsuites):
+def format_testsuite_def(ts_name,testsuites):
     rstr = ''
     if "TestsuiteTest" in testsuites[ts_name]:
         for k,v in testsuites[ts_name]["TestsuiteTest"].iteritems():
-            rstr += "  "+ k + " = " + v + ";\n"
+            rstr += "  " + k + " = " + v + ";\n"
     if "TestsuiteOverride" in testsuites[ts_name]:
         rstr += "  override = " + testsuites[ts_name]["TestsuiteOverride"] + ";\n"
     if "TestsuiteTimEquSet" in testsuites[ts_name]:
@@ -924,13 +949,13 @@ class ParseTestsuiteSection(object):
         for tok in toks:
             ts_name = tok["TestsuiteName"][0]
             ts_def = tok["TestsuiteDefinition"]
-            self.Testsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
+            self.Testsuites.update(parse_testsuite_def(ts_name,ts_def))
 
     def __str__(self):
         rstr = self.section_name + "\n"
         for ts_name in self.Testsuites:
             rstr += ts_name + ":\n"
-            rstr += formatTestsuiteDefinition(ts_name,self.Testsuites)
+            rstr += format_testsuite_def(ts_name,self.Testsuites)
         rstr += EndStr
         return rstr
 TestsuiteSection.setParseAction(ParseTestsuiteSection)
@@ -949,15 +974,15 @@ FlowStatements = pp.Forward()
 #                         >> str_p("then"))[bind(&CreateRunAndBranchStatement)(RunAndBranchStatement.testsuite)] >> str_p("{") [bind(&EnterSubBranch)(0)]
 #                         >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> !(str_p("else")
 #                         >> str_p("{") [bind(&EnterSubBranch)(1)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()]);
-RunAndBranchStatement = ((pp.Keyword("run_and_branch") + LPAR + Identifier + RPAR + pp.Keyword("then")) + LCURL +
-                                 FlowStatements + RCURL + pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("RunAndBranchStatement")
+RunAndBranchStatement = ((pp.Keyword("run_and_branch") + LPAR + Identifier + RPAR + pp.Keyword("then")) + LCURL
+                         + FlowStatements + RCURL + pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("RunAndBranchStatement")
 
 # IfStatement = (str_p("if") >> Expression[IfStatement.condition = arg1] >> str_p("then") )
 #               [bind(&CreateIfStatement)(IfStatement.condition)]
 #               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
 #               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
-IfStatement = ((pp.Keyword("if") + Expression + pp.Keyword("then") ) + LCURL + FlowStatements + RCURL +
-                       pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("IfStatement")
+IfStatement = ((pp.Keyword("if") + Expression + pp.Keyword("then")) + LCURL + FlowStatements + RCURL
+               + pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("IfStatement")
 
 # GroupBypass = str_p("groupbypass") >> ',';
 GroupBypass = pp.Keyword("groupbypass") + COMMA
@@ -968,8 +993,9 @@ GroupBypass = pp.Keyword("groupbypass") + COMMA
 #                 str_p("")[bind(&SetGroupNoBypass)()]) >> (str_p("open")[bind(&SetGroupOpen)()] |
 #                 str_p("closed")[bind(&SetGroupClosed)()]) >> ',' >> (QuotedString) [bind(&SetGroupLabel)(arg1)]
 #                 >> ',' >> (QuotedString) [bind(&SetGroupDescription)(arg1)];
-GroupStatement = (LCURL + FlowStatements + RCURL + COMMA + pp.Optional(GroupBypass) + (pp.Keyword("open") |
-                pp.Keyword("closed")) + COMMA + QuotedString + COMMA + QuotedString).setResultsName("GroupStatement")
+GroupStatement = (LCURL + FlowStatements + RCURL + COMMA + pp.Optional(GroupBypass)
+                  + (pp.Keyword("open") | pp.Keyword("closed")) + COMMA
+                  + QuotedString + COMMA + QuotedString).setResultsName("GroupStatement")
 
 # AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
 #                       >> '=' >> (Expression[AssignmentStatement.value = arg1] | TestsuiteFlag[AssignmentStatement.value = arg1])
@@ -996,7 +1022,7 @@ Reprobe = pp.Keyword("reprobe") | pp.Keyword("noreprobe")
 #     | str_p("blue") [BinDefinition.color = ::xoc::tapi::ZBinColor_BLUE]
 #     | str_p("magenta") [BinDefinition.color = ::xoc::tapi::ZBinColor_MAGENTA];
 Color = (integer | pp.Keyword("black") | pp.Keyword("white") | pp.Keyword("red") | pp.Keyword("yellow") |
-                 pp.Keyword("green") | pp.Keyword("cyan") | pp.Keyword("blue") | pp.Keyword("magenta"))
+         pp.Keyword("green") | pp.Keyword("cyan") | pp.Keyword("blue") | pp.Keyword("magenta"))
 
 # BinNumber = int_p [BinDefinition.binNumber = arg1];
 BinNumber = integer
@@ -1072,8 +1098,9 @@ RepeatStatement = (pp.Keyword("repeat") + FlowStatements + pp.Keyword("until") +
 #                [bind(&CreateForStatement)(ForStatement.assignVar, ForStatement.assignValue, ForStatement.condition, ForStatement.incrementVar,
 #                                           ForStatement.incrementValue, ForStatement.testnum)]
 #                >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
-ForStatement = ((pp.Keyword("for") + QualifiedIdentifier + EQ + Expression + SEMI + Expression + SEMI + QualifiedIdentifier +
-                         EQ + Expression + SEMI + pp.Keyword("do") + pp.Optional(TestNumLoopInc)) + LCURL + FlowStatements + RCURL).setResultsName("ForStatement")
+ForStatement = ((pp.Keyword("for") + QualifiedIdentifier + EQ + Expression + SEMI + Expression + SEMI
+                 + QualifiedIdentifier + EQ + Expression + SEMI + pp.Keyword("do") + pp.Optional(TestNumLoopInc))
+                + LCURL + FlowStatements + RCURL).setResultsName("ForStatement")
 
 # MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
 MultiBinStatement = (pp.Keyword("multi_bin") + SEMI).setResultsName("MultiBinStatement")
@@ -1094,13 +1121,12 @@ class ParseTestflowSection(object):
         self.section_name = "test_flow"
         for tok in toks:
             print tok
+            # TODO: parse this recursive flow into a data structure using "yield"
         sys.exit()
-    # def __str__(self):
-    #     rstr = self.section_name + "\n"
-    #     for k,v in self.SetupFiles.iteritems():
-    #         rstr += k + ' = ' + '"' + v + '";\n'
-    #     rstr += EndStr
-    #     return rstr
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        rstr += EndStr
+        return rstr
 TestflowSection.setParseAction(ParseTestflowSection)
 
 # FlowStatement = RunStatement |
@@ -1120,20 +1146,20 @@ TestflowSection.setParseAction(ParseTestflowSection)
 #                 EmptyStatement |
 #                 Error;
 FlowStatement = pp.Group(RunStatement |
-                 RunAndBranchStatement |
-                 GroupStatement |
-                 IfStatement |
-                 AssignmentStatement |
-                 StopBinStatement |
-                 PrintStatement |
-                 PrintDatalogStatement |
-                 SVLRTimingStatement |
-                 SVLRLevelStatement |
-                 WhileStatement |
-                 RepeatStatement |
-                 ForStatement |
-                 MultiBinStatement |
-                 EmptyStatement)
+                         RunAndBranchStatement |
+                         GroupStatement |
+                         IfStatement |
+                         AssignmentStatement |
+                         StopBinStatement |
+                         PrintStatement |
+                         PrintDatalogStatement |
+                         SVLRTimingStatement |
+                         SVLRLevelStatement |
+                         WhileStatement |
+                         RepeatStatement |
+                         ForStatement |
+                         MultiBinStatement |
+                         EmptyStatement)
 
 # FlowStatements = *(FlowStatement);
 FlowStatements << pp.ZeroOrMore(FlowStatement)
@@ -1184,13 +1210,13 @@ class ParseSpecialTestsuiteSection(object):
         for tok in toks:
             ts_name = tok.pop(0)
             ts_def = tok
-            self.SpecialTestsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
+            self.SpecialTestsuites.update(parse_testsuite_def(ts_name,ts_def))
 
     def __str__(self):
         rstr = ""
         for ts_name in self.SpecialTestsuites:
             rstr += ts_name + "\n"
-            rstr += formatTestsuiteDefinition(ts_name,self.SpecialTestsuites)
+            rstr += format_testsuite_def(ts_name,self.SpecialTestsuites)
             rstr += EndStr
         return rstr
 SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
@@ -1307,8 +1333,8 @@ TestTableFile = (pp.Keyword("context_testtable_file") + EQ + QuotedString + SEMI
 Protocols = (pp.Keyword("context_protocols") + EQ + QuotedString + SEMI)
 
 # SetupFiles = ConfigFile| LevelsFile| TimingFile| VectorFile| AttribFile| ChannelAttribFile| MixedSignalFile| AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols;
-SetupFiles = pp.Group(ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | ChannelAttribFile | MixedSignalFile |
-              AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols)
+SetupFiles = pp.Group(ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | ChannelAttribFile |
+                      MixedSignalFile | AnalogControlFile | WaveformFile | RoutingFile | TestTableFile | Protocols)
 
 # SetupSection = str_p("context") >> *(SetupFiles) >> End;
 SetupSection = (pp.Keyword("context").suppress() + pp.ZeroOrMore(SetupFiles) + End)\
@@ -1429,7 +1455,7 @@ Sections << pp.ZeroOrMore(EmptySection |
                           TestmethodParameterSection |
                           TestmethodLimitSection |
                           TestmethodSection |
-                          UserprocedureSection | # TODO: UserprocedureSection is untested code and may need debugging
+                          UserprocedureSection |
                           TestsuiteSection |
                           TestflowSection |
                           SpecialTestsuiteSection |
@@ -1455,7 +1481,7 @@ import sys
 if __name__ == '__main__':
     args = sys.argv[1:]
     if len(args) != 1:
-        print "usage: (python) testflow.py <input file>"
+        print "usage: (python) TestflowParser.py <input file>"
         exit()
     print '\n\n'
 

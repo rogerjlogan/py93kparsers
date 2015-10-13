@@ -459,6 +459,15 @@ tm_9:
   testmethod_class = "dc_tml.DcTest.DpsStatus";
 end
 -----------------------------------------------------------------
+tests
+tm_1:
+  user_procedure = "ac_tml.AcTest.FunctionalTest";
+tm_10:
+  user_procedure = "ac_tml.AcTest.FunctionalTest";
+tm_11:
+  user_procedure = "scan_tml.ScanTest.ScanTest";
+end
+-----------------------------------------------------------------
 test_suites
 floatingTestSuite:
   override = 1;

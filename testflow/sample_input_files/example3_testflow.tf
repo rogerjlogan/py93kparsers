@@ -922,17 +922,30 @@ until @my_inc_var > 5
 end
 -----------------------------------------------------------------
 binning
-otherwise bin = "db", "", , bad, noreprobe, red, , not_over_on;
+                  "1", "good_sbin1",oocwarning = 100 200 300 "yadda yadda" oocstop = 400 500 600 "nadda nadda", good, noreprobe, green, 1, over_on;
+  otherwise bin = "db", "",oocstop = 400 500 600 "nadda nadda" , bad, noreprobe, red, , not_over_on;
+
 end
 -----------------------------------------------------------------
 context
+
+context_config_file = "EN21_ISTARI_V3_WS_DPS32.cfg";
+context_levels_file = "EN21-NP401-12D_DPS32_LEV.mfh";
+context_protocols = "JTAG,TIC";
+context_testtable_file = "EN2X-NP401_1XD_PROD_V3_MASTER.mfh";
+context_timing_file = "EN2X-NP401-1XD_MASTER_TMG.mfh";
+context_vector_file = "EN2X-NP401_1XD_PROD.pmf";
 
 end
 -----------------------------------------------------------------
 oocrule
 
+oocwarning = 100 200 300 "yadda yadda"
+oocstop = 400 500 600 "nadda nadda"
+
 end
 -----------------------------------------------------------------
 hardware_bin_descriptions
   1 = "good_hbin1";
+  2 = "bad_hbin2";
 end

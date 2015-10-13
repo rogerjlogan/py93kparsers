@@ -26,10 +26,10 @@ LE = pp.Literal('<=')
 GE = pp.Literal('>=')
 LT = pp.Literal('<')
 GT = pp.Literal('>')
-LCURL = pp.Literal('{')
-RCURL = pp.Literal('}')
-LPAR = pp.Literal('(')
-RPAR = pp.Literal(')')
+LCURL = pp.Literal('{').suppress()
+RCURL = pp.Literal('}').suppress()
+LPAR = pp.Literal('(').suppress()
+RPAR = pp.Literal(')').suppress()
 
 # common output strings
 EndStr = "end\n-----------------------------------------------------------------"
@@ -136,31 +136,50 @@ Type = pp.Keyword("double") | pp.Keyword("string")
 # OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))\
     .setResultsName("OptFileHeader")
+
+
 class ParseOptFileHeader(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "OptFileHeader"
         self.header = toks[0]
+
     def __str__(self):
         return self.header
+
 OptFileHeader.setParseAction(ParseOptFileHeader)
 
 # OptRevision = !(str_p("language_revision") >> ch_p('=') >> int_p >> ch_p(';'));
 OptRevision = (pp.Optional(pp.Keyword("language_revision")).suppress() + EQ + pp.Word(pp.nums) + SEMI)\
     .setResultsName("OptRevision")
+
+
 class ParseOptRevision(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "OptRevision"
         self.language_revision = toks[0]
+
+
     def __str__(self):
         return "language_revision" + ' = ' + self.language_revision + ';\n'
+
 OptRevision.setParseAction(ParseOptRevision)
 
 # EmptySection = ch_p(';');
-class ParseEmptySection(object):
-    def __init__(self,toks):
-        self.section_name = ""
 EmptySection = pp.Group(SEMI)\
     .setResultsName("EmptySection")
+class ParseEmptySection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = ""
+
 EmptySection.setParseAction(ParseEmptySection)
 
 # -------------------------------------------------------------------------------------------
@@ -191,7 +210,12 @@ InformationElements = pp.Group(pp.ZeroOrMore(DeviceName | DeviceRevision | TestR
 # InformationSection = str_p("information") >> InformationElements >> End;
 InformationSection = (pp.Keyword("information").suppress() + InformationElements + End)\
     .setResultsName("InformationSection")
+
+
 class ParseInformationSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "information"
         for tok in toks:
@@ -210,6 +234,7 @@ class ParseInformationSection(object):
             else:
                 print tok
                 sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for k,v in self.__dict__.items():
@@ -232,6 +257,7 @@ class ParseInformationSection(object):
                 sys.exit("ERROR!!! Unknown element in 'information' section!  Exiting ...")
         rstr += EndStr
         return rstr
+
 InformationSection.setParseAction(ParseInformationSection)
 
 # -------------------------------------------------------------------------------------------
@@ -248,18 +274,25 @@ ImplicitDeclarations = pp.ZeroOrMore(Declaration)
 # ImplicitDeclarationSection = str_p("implicit_declarations") >> ImplicitDeclarations >> End;
 ImplicitDeclarationSection = (pp.Keyword("implicit_declarations").suppress() + ImplicitDeclarations + End)\
     .setResultsName("ImplicitDeclarationSection")
+
+
 class ParseImplicitDeclarationSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "implicit_declarations"
         self.Declaration = {}
         for tok in toks:
             self.Declaration[tok[0]] = tok[1]
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for varName,varType in self.Declaration.iteritems():
             rstr += varName + ' : ' + varType + ';\n'
         rstr += EndStr
         return rstr
+
 ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
 
 # -------------------------------------------------------------------------------------------
@@ -277,18 +310,25 @@ Declarations = pp.ZeroOrMore(Definition)
 # DeclarationSection = str_p("declarations") >> Declarations >> End;
 DeclarationSection = (pp.Keyword("declarations").suppress() + Declarations + End)\
     .setResultsName("DeclarationSection")
+
+
 class ParseDeclarationSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "declarations"
         self.Definition = {}
         for tok in toks:
             self.Definition[tok[0]] = tok[1]
     def __str__(self):
+
         rstr = self.section_name + "\n"
         for varName,value in self.Definition.iteritems():
             rstr += varName + ' = ' + value + ';\n'
         rstr += EndStr
         return rstr
+
 DeclarationSection.setParseAction(ParseDeclarationSection)
 
 # -------------------------------------------------------------------------------------------
@@ -311,7 +351,12 @@ Flags = pp.ZeroOrMore(UserFlag | SystemFlag)
 # FlagSection = str_p("flags") >> Flags >> End;
 FlagSection = (pp.Keyword("flags").suppress() + Flags + End)\
     .setResultsName("FlagSection")
+
+
 class ParseFlagSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "flags"
         self.UserFlag = {}
@@ -323,6 +368,7 @@ class ParseFlagSection(object):
                 self.SystemFlag[tok[0]] = tok[1]
             else:
                 sys.exit("ERROR!!! Unknown element in 'flags' section! Exiting ...")
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for varName,value in self.SystemFlag.iteritems():
@@ -331,6 +377,7 @@ class ParseFlagSection(object):
             rstr += "user " + varName + ' = ' + value + ';\n'
         rstr += EndStr
         return rstr
+
 FlagSection.setParseAction(ParseFlagSection)
 
 # -------------------------------------------------------------------------------------------
@@ -362,7 +409,12 @@ Testfunctions = pp.ZeroOrMore(Testfunction) + End
 # TestfunctionSection = str_p("testfunctions") >> Testfunctions;
 TestfunctionSection = (pp.Keyword("testfunctions").suppress() + Testfunctions)\
     .setResultsName("TestfunctionSection")
+
+
 class ParseTestfunctionSection(object):
+    """
+
+    """
     def __init__(self,toks):
         # TODO: need to work out syntax for this section
         for tok in toks:
@@ -386,7 +438,12 @@ UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
 #     ;
 TestmethodParameterSection = (pp.Keyword("testmethodparameters").suppress() + UTMTestmethodParameters + End)\
     .setResultsName("TestmethodParameterSection")
+
+
 class ParseTestmethodParameterSection(object):
+    """
+
+    """
     def __init__(self,toks):
         global isUTMBased
         isUTMBased = True
@@ -396,6 +453,7 @@ class ParseTestmethodParameterSection(object):
             self.UTMTestmethodParameters[tok[0]] = {}
             for t in tok[1:]:
                 self.UTMTestmethodParameters[tok[0]][t[0]] = t[1]
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for tm_id in self.UTMTestmethodParameters:
@@ -404,6 +462,7 @@ class ParseTestmethodParameterSection(object):
                 rstr += "  "+ k + " = \"" + v + "\";\n"
         rstr += EndStr
         return rstr
+
 TestmethodParameterSection.setParseAction(ParseTestmethodParameterSection)
 
 # -------------------------------------------------------------------------------------------
@@ -469,7 +528,12 @@ UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 # ;
 TestmethodLimitSection = (pp.Keyword("testmethodlimits").suppress() + UTMTestmethodLimits + End)\
     .setResultsName("TestmethodLimitSection")
+
+
 class ParseTestmethodLimitSection(object):
+    """
+
+    """
     def __init__(self,toks):
         global isUTMBased
         isUTMBased = True
@@ -487,6 +551,7 @@ class ParseTestmethodLimitSection(object):
             self.UTMTestmethodLimits[tm_id]["unit"] = tok["unit"]
             self.UTMTestmethodLimits[tm_id]["numOffset"] = tok["numOffset"]
             self.UTMTestmethodLimits[tm_id]["numInc"] = tok["numInc"]
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for tm_id in self.UTMTestmethodLimits:
@@ -531,7 +596,6 @@ TestmethodDefinition = pp.Forward()
 TestmethodDefinition << (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName) + pp.Optional(TestmethodDefinition)
 
 
-# TODO: figure out setting for isUTMBased
 # Testmethod = ((Identifier)[
 #              Testmethod.identifier = construct_<string>(arg1, arg2),
 #              Testmethod.Class = "",
@@ -560,7 +624,12 @@ Testmethods = pp.ZeroOrMore(Testmethod) + End
 # TestmethodSection = str_p("testmethods") >> Testmethods;
 TestmethodSection = (pp.Keyword("testmethods").suppress() + Testmethods)\
     .setResultsName("TestmethodSection")
+
+
 class ParseTestmethodSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "testmethods"
         self.isUTMBased = isUTMBased
@@ -575,6 +644,7 @@ class ParseTestmethodSection(object):
                     self.Testmethods[tm_id]["parameter"] = tok["parameter"]
                     self.Testmethods[tm_id]["limits"] = tok["limits"]
                     self.Testmethods[tm_id]["name"] = tok["name"]
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for tm_id in self.Testmethods:
@@ -843,7 +913,11 @@ def formatTestsuiteDefinition(ts_name,testsuites):
         rstr += "  comment = " + testsuites[ts_name]["TestsuiteComment"] + ";\n"
     return rstr
 
+
 class ParseTestsuiteSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = "test_suites"
         self.Testsuites = {}
@@ -851,6 +925,7 @@ class ParseTestsuiteSection(object):
             ts_name = tok["TestsuiteName"][0]
             ts_def = tok["TestsuiteDefinition"]
             self.Testsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
+
     def __str__(self):
         rstr = self.section_name + "\n"
         for ts_name in self.Testsuites:
@@ -866,7 +941,7 @@ TestsuiteSection.setParseAction(ParseTestsuiteSection)
 
 # RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
 #                [bind(&CreateRunStatement)(RunStatement.testsuite)];
-RunStatement = (pp.Keyword("run") + LPAR + Identifier + RPAR + SEMI)
+RunStatement = (pp.Keyword("run") + LPAR + Identifier + RPAR + SEMI).setResultsName("RunStatement")
 
 FlowStatements = pp.Forward()
 
@@ -875,14 +950,14 @@ FlowStatements = pp.Forward()
 #                         >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> !(str_p("else")
 #                         >> str_p("{") [bind(&EnterSubBranch)(1)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()]);
 RunAndBranchStatement = ((pp.Keyword("run_and_branch") + LPAR + Identifier + RPAR + pp.Keyword("then")) + LCURL +
-                                 FlowStatements + RCURL + pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL))
+                                 FlowStatements + RCURL + pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("RunAndBranchStatement")
 
 # IfStatement = (str_p("if") >> Expression[IfStatement.condition = arg1] >> str_p("then") )
 #               [bind(&CreateIfStatement)(IfStatement.condition)]
 #               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
 #               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
 IfStatement = ((pp.Keyword("if") + Expression + pp.Keyword("then") ) + LCURL + FlowStatements + RCURL +
-                       pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL))
+                       pp.Optional(pp.Keyword("else") + LCURL + FlowStatements + RCURL)).setResultsName("IfStatement")
 
 # GroupBypass = str_p("groupbypass") >> ',';
 GroupBypass = pp.Keyword("groupbypass") + COMMA
@@ -894,16 +969,16 @@ GroupBypass = pp.Keyword("groupbypass") + COMMA
 #                 str_p("closed")[bind(&SetGroupClosed)()]) >> ',' >> (QuotedString) [bind(&SetGroupLabel)(arg1)]
 #                 >> ',' >> (QuotedString) [bind(&SetGroupDescription)(arg1)];
 GroupStatement = (LCURL + FlowStatements + RCURL + COMMA + pp.Optional(GroupBypass) + (pp.Keyword("open") |
-                pp.Keyword("closed")) + COMMA + QuotedString + COMMA + QuotedString)
+                pp.Keyword("closed")) + COMMA + QuotedString + COMMA + QuotedString).setResultsName("GroupStatement")
 
 # AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
 #                       >> '=' >> (Expression[AssignmentStatement.value = arg1] | TestsuiteFlag[AssignmentStatement.value = arg1])
 #                       >> ';') [bind(&CreateAssignmentStatement)(AssignmentStatement.varName, AssignmentStatement.value)];
-AssignmentStatement = ((TestsuiteFlag | Variable) + EQ + (Expression | TestsuiteFlag) + SEMI)
+AssignmentStatement = ((TestsuiteFlag | Variable) + EQ + (Expression | TestsuiteFlag) + SEMI).setResultsName("AssignmentStatement")
 
 # OOCRule = !(str_p("oocwarning") >> '=' >> int_p >> int_p >> int_p >> QuotedString) >> !(str_p("oocstop") >> '=' >> int_p >> int_p >> int_p >> QuotedString);
-OOCRule = (pp.Optional(pp.Keyword("oocwarning") + EQ + integer + integer + integer + QuotedString) +
-                   pp.Optional(pp.Keyword("oocstop") + EQ + integer + integer + integer + QuotedString))
+OOCRule = (pp.Group(pp.Optional(pp.Keyword("oocwarning").setResultsName("oocwarning") + EQ + integer + integer + integer + QuotedString))
+           + pp.Group(pp.Optional(pp.Keyword("oocstop").setResultsName("oocstop") + EQ + integer + integer + integer + QuotedString)))
 
 # Quality = str_p("good") [BinDefinition.quality = true] | str_p("bad")[BinDefinition.quality = false];
 Quality = pp.Keyword("good") | pp.Keyword("bad")
@@ -942,35 +1017,41 @@ Overon = pp.Keyword("over_on") | pp.Keyword("not_over_on")
 #                   >> ',' >> !BinNumber >> ',' >> !Overon) [bind(&CreateBin)(BinDefinition.swBin, BinDefinition.swBinDescription,
 #                                                                             BinDefinition.quality, BinDefinition.reprobe, BinDefinition.color,
 #                                                                             BinDefinition.binNumber, BinDefinition.overon)];
-BinDefinition = (QuotedString + COMMA + QuotedString + COMMA + pp.Optional(OOCRule) + COMMA + pp.Optional(Quality)
-                  + COMMA + pp.Optional(Reprobe) + COMMA + Color + COMMA + pp.Optional(BinNumber) + COMMA + pp.Optional(Overon)
-                  | (QuotedString + COMMA + QuotedString + COMMA + pp.Optional(Quality) + COMMA + pp.Optional(Reprobe) + COMMA + Color
-                  + COMMA + pp.Optional(BinNumber) + COMMA + pp.Optional(Overon)))
+BinDefinition = ((QuotedString.setResultsName("swBin") + COMMA + QuotedString.setResultsName("swBinDescription") + COMMA
+                  + pp.Optional(OOCRule).setResultsName("oocrule") + COMMA + pp.Optional(Quality).setResultsName("quality") + COMMA
+                  + pp.Optional(Reprobe).setResultsName("reprobe") + COMMA + Color.setResultsName("color") + COMMA
+                  + pp.Optional(BinNumber).setResultsName("binNumber") + COMMA + pp.Optional(Overon).setResultsName("overon")) |
+                 (QuotedString.setResultsName("swBin") + COMMA + QuotedString.setResultsName("swBinDescription") + COMMA
+                  + pp.Optional(Quality).setResultsName("quality") + COMMA + pp.Optional(Reprobe).setResultsName("reprobe") + COMMA
+                  + Color.setResultsName("color") + COMMA + pp.Optional(BinNumber).setResultsName("binNumber") + COMMA
+                  + pp.Optional(Overon).setResultsName("overon")))
 
 
 # StopBinStatement = (str_p("stop_bin") >> (BinDefinition("", "", false, false, ::xoc::tapi::ZBinColor_BLACK, -1, false)) >> ';')
 #                    [bind(&CreateStopBinStatement)()];
-StopBinStatement = (pp.Keyword("stop_bin") + BinDefinition + SEMI)
+StopBinStatement = (pp.Keyword("stop_bin") + BinDefinition + SEMI).setResultsName("StopBinStatement")
 
 # PrintStatement = (str_p("print") >> '(' >> Expression[PrintStatement.statement = arg1] >> ')' >> ';')
 #                  [bind(&CreatePrintStatement)(PrintStatement.statement)];
-PrintStatement = (pp.Keyword("print") + LPAR + Expression + RPAR + SEMI)
+PrintStatement = (pp.Keyword("print") + LPAR + Expression + RPAR + SEMI).setResultsName("PrintStatement")
 
 # PrintDatalogStatement = (str_p("print_dl") >> '(' >> Expression[PrintDatalogStatement.statement = arg1] >> ')' >> ';')
 #                         [bind(&CreatePrintDatalogStatement)(PrintDatalogStatement.statement)];
-PrintDatalogStatement = (pp.Keyword("print_dl") + LPAR + Expression + RPAR + SEMI)
+PrintDatalogStatement = (pp.Keyword("print_dl") + LPAR + Expression + RPAR + SEMI).setResultsName("PrintDatalogStatement")
 
 # SVLRTimingStatement = (str_p("svlr_timing_command") >> '(' >> Expression[SVLRTimingStatement.equSet = arg1] >> ','
 #                       >> Expression[SVLRTimingStatement.specSet = arg1] >> ',' >> QuotedString[SVLRTimingStatement.variable = arg1]
 #                       >> ',' >> Expression[SVLRTimingStatement.value = arg1] >> ')' >> ';')
 #                       [bind(&CreateSVLRTimingStatement)(SVLRTimingStatement.equSet, SVLRTimingStatement.specSet,
 #                                                         SVLRTimingStatement.variable, SVLRTimingStatement.value)];
-SVLRTimingStatement = (pp.Keyword("svlr_timing_command") + LPAR + Expression + COMMA + Expression + COMMA + QuotedString + COMMA + Expression + RPAR + SEMI)
+SVLRTimingStatement = (pp.Keyword("svlr_timing_command") + LPAR + Expression + COMMA + Expression + COMMA
+                       + QuotedString + COMMA + Expression + RPAR + SEMI).setResultsName("SVLRTimingStatement")
 
 # SVLRLevelStatement = (str_p("svlr_level_command") >> '(' >> Expression[SVLRLevelStatement.equSet = arg1] >> ',' >> Expression[SVLRLevelStatement.specSet = arg1]
 #                       >> ',' >> QuotedString[SVLRLevelStatement.variable = arg1] >> ',' >> Expression[SVLRLevelStatement.value = arg1] >> ')' >> ';')
 #                     [bind(&CreateSVLRLevelStatement)(SVLRLevelStatement.equSet, SVLRLevelStatement.specSet, SVLRLevelStatement.variable, SVLRLevelStatement.value)];
-SVLRLevelStatement = (pp.Keyword("svlr_level_command") + LPAR + Expression + COMMA + Expression + COMMA + QuotedString + COMMA + Expression + RPAR + SEMI)
+SVLRLevelStatement = (pp.Keyword("svlr_level_command") + LPAR + Expression + COMMA + Expression + COMMA
+                      + QuotedString + COMMA + Expression + RPAR + SEMI).setResultsName("SVLRLevelStatement")
 
 # TestNumLoopInc = str_p("test_number_loop_increment") >> '=' >> Expression[TestNumLoopInc.expression = arg1];
 TestNumLoopInc = pp.Keyword("test_number_loop_increment") + EQ + Expression
@@ -978,11 +1059,11 @@ TestNumLoopInc = pp.Keyword("test_number_loop_increment") + EQ + Expression
 # WhileStatement = (str_p("while") >> Expression [WhileStatement.condition = arg1, WhileStatement.testnum = construct_<string>("")] >> str_p("do")
 #                  >> !(TestNumLoopInc [WhileStatement.testnum = arg1])) [bind(&CreateWhileStatement)(WhileStatement.condition, WhileStatement.testnum)]
 #                  >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
-WhileStatement = ((pp.Keyword("while") + Expression + pp.Keyword("do") + pp.Optional(TestNumLoopInc)) + LCURL + FlowStatements + RCURL)
+WhileStatement = ((pp.Keyword("while") + Expression + pp.Keyword("do") + pp.Optional(TestNumLoopInc)) + LCURL + FlowStatements + RCURL).setResultsName("WhileStatement")
 
 # RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
 #                   >> Expression [bind(&SetRepeatCondition)(arg1)] >> !(TestNumLoopInc [bind(&SetRepeatTestnum)(arg1)]);
-RepeatStatement = (pp.Keyword("repeat") + FlowStatements + pp.Keyword("until") + Expression + pp.Optional(TestNumLoopInc))
+RepeatStatement = (pp.Keyword("repeat") + FlowStatements + pp.Keyword("until") + Expression + pp.Optional(TestNumLoopInc)).setResultsName("RepeatStatement")
 
 # ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
 #                >> '=' >> Expression[ForStatement.assignValue = arg1] >> ';' >> Expression[ForStatement.condition = arg1]
@@ -992,17 +1073,35 @@ RepeatStatement = (pp.Keyword("repeat") + FlowStatements + pp.Keyword("until") +
 #                                           ForStatement.incrementValue, ForStatement.testnum)]
 #                >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
 ForStatement = ((pp.Keyword("for") + QualifiedIdentifier + EQ + Expression + SEMI + Expression + SEMI + QualifiedIdentifier +
-                         EQ + Expression + SEMI + pp.Keyword("do") + pp.Optional(TestNumLoopInc)) + LCURL + FlowStatements + RCURL)
+                         EQ + Expression + SEMI + pp.Keyword("do") + pp.Optional(TestNumLoopInc)) + LCURL + FlowStatements + RCURL).setResultsName("ForStatement")
 
 # MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
-MultiBinStatement = pp.Keyword("multi_bin") + SEMI
+MultiBinStatement = (pp.Keyword("multi_bin") + SEMI).setResultsName("MultiBinStatement")
 
 # EmptyStatement = ch_p(';');
 EmptyStatement = ';'
 
 # TestflowSection = str_p("test_flow")[bind(&FlowSectionStart)()] >> FlowStatements >> End;
-TestflowSection = pp.Group(pp.Keyword("test_flow") + FlowStatements + End)\
+TestflowSection = (pp.Keyword("test_flow").suppress() + FlowStatements + End)\
     .setResultsName("TestflowSection")
+
+
+class ParseTestflowSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "test_flow"
+        for tok in toks:
+            print tok
+        sys.exit()
+    # def __str__(self):
+    #     rstr = self.section_name + "\n"
+    #     for k,v in self.SetupFiles.iteritems():
+    #         rstr += k + ' = ' + '"' + v + '";\n'
+    #     rstr += EndStr
+    #     return rstr
+TestflowSection.setParseAction(ParseTestflowSection)
 
 # FlowStatement = RunStatement |
 #                 RunAndBranchStatement |
@@ -1020,7 +1119,7 @@ TestflowSection = pp.Group(pp.Keyword("test_flow") + FlowStatements + End)\
 #                 MultiBinStatement |
 #                 EmptyStatement |
 #                 Error;
-FlowStatement = (RunStatement |
+FlowStatement = pp.Group(RunStatement |
                  RunAndBranchStatement |
                  GroupStatement |
                  IfStatement |
@@ -1068,10 +1167,17 @@ DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect").setResultsName("bin_
 MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision").setResultsName("multi_bin_decision") + TestsuiteDefinition + End)
 
 # SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
-SpecialTestsuiteSection = (DownloadTestsuite & InitTestsuite & PauseTestsuite & AbortTestsuite &
-                                   ResetTestsuite & ExitTestsuite & DisconnectTestsuite & MultiBinDecisionTestsuite)\
+# Made this section recursive because TestsuiteDefinition is recursive (otherwise, pyparsing stops after the first element in the OR list)
+SpecialTestsuiteSection = pp.Forward()
+SpecialTestsuiteSection << (DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
+                            ResetTestsuite | ExitTestsuite | DisconnectTestsuite | MultiBinDecisionTestsuite)\
     .setResultsName("SpecialTestsuiteSection")
+
+
 class ParseSpecialTestsuiteSection(object):
+    """
+
+    """
     def __init__(self,toks):
         self.section_name = ""
         self.SpecialTestsuites = {}
@@ -1079,10 +1185,11 @@ class ParseSpecialTestsuiteSection(object):
             ts_name = tok.pop(0)
             ts_def = tok
             self.SpecialTestsuites.update(parseTestsuiteDefinition(ts_name,ts_def))
+
     def __str__(self):
         rstr = ""
         for ts_name in self.SpecialTestsuites:
-            rstr += "\n" + ts_name + "\n"
+            rstr += ts_name + "\n"
             rstr += formatTestsuiteDefinition(ts_name,self.SpecialTestsuites)
             rstr += EndStr
         return rstr
@@ -1093,11 +1200,71 @@ SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
 # -------------------------------------------------------------------------------------------
 
 # OtherwiseBin = (str_p("otherwise bin") >> '= ' >> BinDefinition >> ';')[bind(&CreateOtherwiseBin)()];
-OtherwiseBin = (pp.Keyword("otherwise bin") + EQ + BinDefinition + SEMI)
+OtherwiseBin = (pp.Keyword("otherwise bin").setResultsName("otherwise") + EQ + BinDefinition + SEMI)
 
 # BinningSection = str_p("binning") >> *(OtherwiseBin| (BinDefinition >> ';')) >> End;
-BinningSection = pp.Group(pp.Keyword("binning") + pp.ZeroOrMore(OtherwiseBin | (BinDefinition + SEMI)) + End)\
+BinningSection = (pp.Keyword("binning").suppress() + pp.ZeroOrMore(pp.Group(OtherwiseBin | (BinDefinition + SEMI))) + End)\
     .setResultsName("BinningSection")
+
+
+class ParseBinningSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "binning"
+        self.binning = []
+        for tok in toks:
+            tempdict = {}
+            if "otherwise" in tok:
+                tempdict["otherwise"] = True
+            else:
+                tempdict["otherwise"] = False
+            tempdict["swBin"] = tok["swBin"]
+            tempdict["swBinDescription"] = tok["swBinDescription"]
+            if "oocrule" in tok:
+                tempdict["oocrule"] = []
+                for rule in tok["oocrule"]:
+                    if len(rule):
+                        tempdict["oocrule"].append(rule)
+            if "quality" in tok:
+                tempdict["quality"] = tok["quality"]
+            if "reprobe" in tok:
+                tempdict["reprobe"] = tok["reprobe"]
+            tempdict["color"] = tok["color"]
+            if "binNumber" in tok:
+                tempdict["binNumber"] = tok["binNumber"]
+            if "overon" in tok:
+                tempdict["overon"] = tok["overon"]
+            self.binning.append(tempdict)
+
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for bindef in self.binning:
+            if bindef["otherwise"]:
+                rstr += "otherwise bin = "
+            rstr += '"' + bindef["swBin"] + '",'
+            rstr += '"' + bindef["swBinDescription"] + '",'
+            if "oocrule" in bindef:
+                for rule in bindef["oocrule"]:
+                    rstr += rule[0] + ' = ' + rule[1] + ' ' + rule[2] + ' ' + rule[3] + ' "' + rule[4] + '" '
+            rstr += ','
+            if "quality" in bindef:
+                rstr += bindef["quality"]
+            rstr += ','
+            if "reprobe" in bindef:
+                rstr += bindef["reprobe"]
+            rstr += ','
+            rstr += bindef["color"] + ','
+            if "binNumber" in bindef:
+                rstr += bindef["binNumber"]
+            rstr += ','
+            if "overon" in bindef:
+                rstr += bindef["overon"]
+            rstr += ';\n'
+        rstr += EndStr
+        return rstr
+BinningSection.setParseAction(ParseBinningSection)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN SetupSection
@@ -1140,31 +1307,91 @@ TestTableFile = (pp.Keyword("context_testtable_file") + EQ + QuotedString + SEMI
 Protocols = (pp.Keyword("context_protocols") + EQ + QuotedString + SEMI)
 
 # SetupFiles = ConfigFile| LevelsFile| TimingFile| VectorFile| AttribFile| ChannelAttribFile| MixedSignalFile| AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols;
-SetupFiles = (ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | ChannelAttribFile | MixedSignalFile |
-                      AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols)
+SetupFiles = pp.Group(ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | ChannelAttribFile | MixedSignalFile |
+              AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols)
 
 # SetupSection = str_p("context") >> *(SetupFiles) >> End;
-SetupSection = pp.Group(pp.Keyword("context") + pp.ZeroOrMore(SetupFiles) + End)\
+SetupSection = (pp.Keyword("context").suppress() + pp.ZeroOrMore(SetupFiles) + End)\
     .setResultsName("SetupSection")
+
+
+class ParseSetupSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "context"
+        self.SetupFiles = {}
+        for tok in toks:
+            self.SetupFiles[tok[0]] = tok[1]
+
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for k,v in self.SetupFiles.iteritems():
+            rstr += k + ' = ' + '"' + v + '";\n'
+        rstr += EndStr
+        return rstr
+
+SetupSection.setParseAction(ParseSetupSection)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN OOCSection
 # -------------------------------------------------------------------------------------------
 
 # OOCSection = str_p("oocrule") >> OOCRule >> End;
-OOCSection = pp.Group(pp.Keyword("oocrule") + OOCRule + End)\
+OOCSection = (pp.Keyword("oocrule").suppress() + OOCRule + End)\
     .setResultsName("OOCSection")
+
+
+class ParseOOCSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "oocrule"
+        self.OOCRule = []
+        for tok in toks:
+            self.OOCRule.append(tok)
+
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for rule in self.OOCRule:
+            rstr += rule[0] + ' = ' + rule[1] + ' ' + rule[2] + ' ' + rule[3] + ' "' + rule[4] + '";\n'
+        rstr += EndStr
+        return rstr
+
+OOCSection.setParseAction(ParseOOCSection)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN HardwareBinSection
 # -------------------------------------------------------------------------------------------
 
 # HardBinDescription = (int_p[HardBinDescription.hwBin =  arg1] >> '= ' >> QuotedString[HardBinDescription.description =  arg1] >> ';')[bind(&SetHardBinDescription)(HardBinDescription.hwBin, HardBinDescription.description)];
-HardBinDescription = (integer + EQ + QuotedString + SEMI)
+HardBinDescription = pp.Group(integer + EQ + QuotedString + SEMI)
 
 # HardwareBinSection = str_p("hardware_bin_descriptions") >> *(HardBinDescription) >> End;
-HardwareBinSection = pp.Group(pp.Keyword("hardware_bin_descriptions") + pp.ZeroOrMore(HardBinDescription) + End)\
+HardwareBinSection = (pp.Keyword("hardware_bin_descriptions").suppress() + pp.ZeroOrMore(HardBinDescription) + End)\
     .setResultsName("HardwareBinSection")
+
+
+class ParseHardwareBinSection(object):
+    """
+
+    """
+    def __init__(self,toks):
+        self.section_name = "hardware_bin_descriptions"
+        self.hbin_descriptions = {}
+        for tok in toks:
+            self.hbin_descriptions[tok[0]] = tok[1]
+
+    def __str__(self):
+        rstr = self.section_name + "\n"
+        for k,v in self.hbin_descriptions.iteritems():
+            rstr += k + ' = ' + '"' + v + '";\n'
+        rstr += EndStr
+        return rstr
+
+HardwareBinSection.setParseAction(ParseHardwareBinSection)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN ALL Sections collection

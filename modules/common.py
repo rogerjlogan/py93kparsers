@@ -1,8 +1,6 @@
 import sys
 import os
 
-
-
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'
@@ -15,7 +13,6 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-
 def progress_tracker(lineno):
     if lineno%1000 == 0:
         if lineno==1000:
@@ -27,11 +24,9 @@ def progress_tracker(lineno):
             sys.stdout.write(' ')
         sys.stdout.flush()
 
-
 def get_linecount(pathfn):
     # TODO: need windows equivalent
     return os.popen("wc -l "+pathfn).readline().split()[0]
-
 
 def humanize_time(secs):
     mins, secs = divmod(secs, 60)
@@ -45,7 +40,6 @@ def get_recursive_files(item,extension=".csv",zipped_ok=False):
             if fn.endswith(extension) or (zipped_ok and fn.endswith(extension+"gz")):
                 yield os.path.join(dir_,fn)
 
-
 def get_files(items,recursive=True,extension=".csv",zipped_ok=False):
     myfiles = []
     for item in items:
@@ -58,3 +52,27 @@ def get_files(items,recursive=True,extension=".csv",zipped_ok=False):
         sys.exit("ERROR! No files passed")
     return myfiles,numfiles
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+import itertools as it
+
+def splitfile_delim(filename,delim=''):
+    with open(filename,'r') as f:
+        for key,group in it.groupby(f,lambda line: line.startswith(delim)):
+            if not key:
+                return list(group)
+
+class LineSplitter(object):
+        def __init__(self, token):
+            self.token = token
+            self.count = 0
+            self.prev = ''
+        def __call__(self, token):
+            self.count += (self.prev == self.token)
+            self.prev = token
+            return self.count

@@ -906,10 +906,8 @@ class Statement(object):
         self.runCond = parentRunCond
     def deleteSelf(self):
         return self.parent.delete(self)
-    def nestedNames(self):
-        return self.type
-    def nestedIdsTypes(self):
-        return str(self.id)+'_'+self.type
+    def nestedKeys(self):
+        return self.key
 
 # RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
 #                [bind(&CreateRunStatement)(RunStatement.testsuite)];
@@ -918,6 +916,7 @@ class ParseRunStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'RunStatement'
+        self.key = str(self.id)+'_'+self.type
         self.testsuite = toks.testsuite
         self.toks = toks
     def __repr__(self):
@@ -936,6 +935,7 @@ class ParseRunAndBranchStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'RunAndBranchStatement'
+        self.key = str(self.id)+'_'+self.type
         self.testsuite = toks[0].testsuite
         self.rb_pass = toks[0].RB_PASS[:]
         self.rb_fail = toks[0].RB_FAIL[:]
@@ -971,10 +971,8 @@ class ParseRunAndBranchStatement(Statement):
             ind = self.rb_pass.index(elem)
             del self.rb_pass[ind]
             return ind
-    def nestedNames(self):
-        return [self.testsuite ,[x.nestedNames() for x in self.rb_pass],[x.nestedNames() for x in self.rb_fail]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type ,[x.nestedIdsTypes() for x in self.rb_pass],[x.nestedIdsTypes() for x in self.rb_fail]]
+    def nestedKeys(self):
+        return [self.key ,[x.nestedKeys() for x in self.rb_pass],[x.nestedKeys() for x in self.rb_fail]]
 
 RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 
@@ -989,6 +987,7 @@ class ParseIfStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'IfStatement'
+        self.key = str(self.id)+'_'+self.type
         self.condition = toks[0].condition
         self.if_true = toks[0].IF_TRUE[:]
         self.if_false = toks[0].IF_FALSE[:]
@@ -1025,10 +1024,8 @@ class ParseIfStatement(Statement):
             ind = self.if_true.index(elem)
             del self.if_false[ind]
             return ind
-    def nestedNames(self):
-        return [self.condition ,[x.nestedNames() for x in self.if_true],[x.nestedNames() for x in self.if_false]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type ,[x.nestedIdsTypes() for x in self.if_true],[x.nestedIdsTypes() for x in self.if_false]]
+    def nestedKeys(self):
+        return [self.key ,[x.nestedKeys() for x in self.if_true],[x.nestedKeys() for x in self.if_false]]
 IfStatement.setParseAction(ParseIfStatement)
 
 # GroupBypass = str_p("groupbypass") >> ',';
@@ -1047,6 +1044,7 @@ class ParseGroupStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'GroupStatement'
+        self.key = str(self.id)+'_'+self.type
         self.gr_bypass_cond = toks[0].SetGroupBypass
         self.gr_sub = toks[0].GR_SUB[:]
         self.gr_open = toks[0].SetGroupOpen
@@ -1063,10 +1061,8 @@ class ParseGroupStatement(Statement):
         self.runCond = parentRunCond
         for elem in self.gr_sub:
             elem.setRunCond(parentRunCond + " AND TRUE(" + self.gr_bypass_cond + ")")
-    def nestedNames(self):
-        return [self.gr_label , [x.nestedNames() for x in self.gr_sub]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type , [x.nestedIdsTypes() for x in self.gr_sub]]
+    def nestedKeys(self):
+        return [self.key , [x.nestedKeys() for x in self.gr_sub]]
 GroupStatement.setParseAction(ParseGroupStatement)
 
 # AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
@@ -1078,6 +1074,7 @@ class ParseAssignmentStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'AssignmentStatement'
+        self.key = str(self.id)+'_'+self.type
         self.assignment = '\n' + ' '.join(toks[0]) + ';'
         self.toks = toks
     def __repr__(self):
@@ -1141,6 +1138,7 @@ class ParseStopBinStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'StopBinStatement'
+        self.key = str(self.id)+'_'+self.type
         self.swBin = toks[0].swBin
         self.swBinDescription = toks[0].swBinDescription
         self.oocrule = toks[0].oocrule.oocwarning + ' ' + toks[0].oocrule.oocstop
@@ -1165,6 +1163,7 @@ class ParsePrintStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'PrintStatement'
+        self.key = str(self.id)+'_'+self.type
         self.statement = toks[0].statement
         self.toks = toks
     def __repr__(self):
@@ -1181,6 +1180,7 @@ class ParsePrintDatalogStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'PrintDatalogStatement'
+        self.key = str(self.id)+'_'+self.type
         self.statement = toks[0].statement
         self.toks = toks
     def __repr__(self):
@@ -1201,6 +1201,7 @@ class ParseSVLRTimingStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'SVLRTimingStatement'
+        self.key = str(self.id)+'_'+self.type
         self.equSet = toks[0].equSet
         self.specSet = toks[0].specSet
         self.variable = toks[0].variable
@@ -1220,6 +1221,7 @@ class ParseSVLRLevelStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'SVLRLevelStatement'
+        self.key = str(self.id)+'_'+self.type
         self.equSet = toks[0].equSet
         self.specSet = toks[0].specSet
         self.variable = toks[0].variable
@@ -1242,6 +1244,7 @@ class ParseWhileStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'WhileStatement'
+        self.key = str(self.id)+'_'+self.type
         self.condition = toks[0].condition
         self.testnum = ' '.join(toks[0].testnum)
         self.w_true = toks[0].W_TRUE[:]
@@ -1254,10 +1257,8 @@ class ParseWhileStatement(Statement):
         self.runCond = parentRunCond
         for elem in self.w_true:
             elem.setRunCond(parentRunCond + " AND TRUE(" + self.condition + ")")
-    def nestedNames(self):
-        return [self.condition ,[x.nestedNames() for x in self.w_true]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type ,[x.nestedIdsTypes() for x in self.w_true]]
+    def nestedKeys(self):
+        return [self.key ,[x.nestedKeys() for x in self.w_true]]
 WhileStatement.setParseAction(ParseWhileStatement)
 
 # RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
@@ -1268,16 +1269,15 @@ class ParseRepeatStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'RepeatStatement'
+        self.key = str(self.id)+'_'+self.type
         self.rpt_true = toks[0].RPT_TRUE[:]
         self.condition = toks[0].SetRepeatCondition
         self.testnum = ' '.join(toks[0].SetRepeatTestnum)
     def __repr__(self):
         rstr = 'repeat ' + '\n'.join([str(x) for x in self.rpt_true]) + '\nuntil ' + self.condition + ' ' + self.testnum
         return rstr
-    def nestedNames(self):
-        return [self.condition ,[x.nestedNames() for x in self.rpt_true]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type ,[x.nestedIdsTypes() for x in self.rpt_true]]
+    def nestedKeys(self):
+        return [self.key ,[x.nestedKeys() for x in self.rpt_true]]
 RepeatStatement.setParseAction(ParseRepeatStatement)
 
 # ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
@@ -1295,6 +1295,7 @@ class ParseForStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'ForStatement'
+        self.key = str(self.id)+'_'+self.type
         self.assignVar = toks[0].assignVar
         self.assignValue = toks[0].assignValue
         self.condition = toks[0].condition
@@ -1307,10 +1308,8 @@ class ParseForStatement(Statement):
         rstr += self.condition + ';' + self.incrementVar + ' = ' + self.incrementValue + '; do\n'
         rstr += self.testnum + '\n{\n' + '\n'.join([str(x) for x in self.for_true]) + '\n}'
         return rstr
-    def nestedNames(self):
-        return [self.condition ,[x.nestedNames() for x in self.for_true]]
-    def nestedIdsTypes(self):
-        return [str(self.id)+'_'+self.type ,[x.nestedIdsTypes() for x in self.for_true]]
+    def nestedKeys(self):
+        return [self.key ,[x.nestedKeys() for x in self.for_true]]
 ForStatement.setParseAction(ParseForStatement)
 
 # MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
@@ -1319,6 +1318,7 @@ class ParseMultiBinStatement(Statement):
     def __init__(self,toks):
         self.id = self.getId()
         self.type = 'MultiBinStatement'
+        self.key = str(self.id)+'_'+self.type
     def __repr__(self):
         return 'multi_bin\n'
 MultiBinStatement.setParseAction(ParseMultiBinStatement)
@@ -1676,20 +1676,12 @@ class ParseTestflowSection(Statement):
         rstr += ''.join([str(x) for x in self.data]) + '\n'
         rstr += EndStr
         return rstr
-    def nestedNames(self):
-        return ['testflow' , [x.nestedNames() for x in self.data]]
-    def nestedIdsTypes(self):
-        return ['testflow' , [x.nestedIdsTypes() for x in self.data]]
+    def nestedKeys(self):
+        return [x.nestedKeys() for x in self.data]
 
     # TODO : have methods to post parse the data
 
 TestflowSection.setParseAction(ParseTestflowSection)
-
-def get_section(obj,str,max=1):
-    section = None
-    for toks,start,stop in obj.scanString(str,max):
-        section = toks[start:stop]
-    return section
 
 def get_file_contents(infile,strip_comments=True):
         _f = open(infile)
@@ -1704,14 +1696,16 @@ class Testflow(object):
     def __init__(self,tf_file,debug=False):
         contents = get_file_contents(tf_file)
         self.tf = Start.parseString(contents,1)[0]
-
-
-        pprint(self.tf.TestflowSection.nestedIdsTypes())
-
+        # for stmnt in self.tf.TestflowSection.data:
+        #     print stmnt.id,stmnt.type
+        self.buildTree()
     def __str__(self):
         return str(self.tf)
 
-    # TODO : write some methods that could be called from the instance
+    def buildTree(self):
+        for item in self.tf.TestflowSection.nestedKeys():
+            print "item:",item
+
 
 if __name__ == '__main__':
     args = sys.argv[1:]

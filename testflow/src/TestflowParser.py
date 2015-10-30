@@ -484,7 +484,6 @@ TestmethodLimit = pp.Group(Identifier("StartTestmethod")
                                                     + QuotedString("unit") + COLON
                                                     + QuotedString("numOffset") + COLON
                                                     + QuotedString("numInc") + SEMI)))
-
 # UTMTestmethodLimits = *(TestmethodLimit);
 UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 
@@ -894,10 +893,10 @@ class Statement(object):
         Super class to contain common methods/data for XXXXStatement classes (children)
     """
     __id = -1 # unique node_id for each instance of child class
+    node_id = -1
     _nodeData = {}
     _nodeMap = []
     testsuites = {}
-
 
     @staticmethod
     def getNodeId():
@@ -1662,7 +1661,6 @@ class ParseStart(object):
         self.HardwareBinSection = toks[0].HardwareBinSection
     def __str__(self):
         return '\n'.join([str(x) for x in self.toks])
-    # TODO : have str() for top level all the way down (make sure defined recursively)
 Start.setParseAction(ParseStart)
 
 
@@ -1678,52 +1676,16 @@ class ParseTestflowSection(Statement):
     def _nodes(self):
         return [x._nodes() for x in self.data]
 
-    # TODO : have methods to post parse the data
-
 TestflowSection.setParseAction(ParseTestflowSection)
 
 def get_file_contents(infile,strip_comments=True):
         _f = open(infile)
-        contents = _f.read()
+        contents = '\n'.join(_f.read().splitlines())
         _f.close()
         if strip_comments:
             # string comments before parsing
-            contents = re.sub(re.compile(r'--.*?\n') ,'' ,contents)
+            contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
         return contents
-
-
-has_true_br = {
-    'RunStatement' : True,
-    'RunAndBranchStatement' : True,
-    'GroupStatement' : True,
-    'IfStatement' : True,
-    'AssignmentStatement' : False,
-    'StopBinStatement' : False,
-    'PrintStatement' : False,
-    'PrintDatalogStatement' : False,
-    'SVLRTimingStatement' : False,
-    'SVLRLevelStatement' : False,
-    'WhileStatement' : True,
-    'RepeatStatement' : True,
-    'ForStatement' : True,
-    'MultiBinStatement' : False
-}
-has_false_br = {
-    'RunStatement' : False,
-    'RunAndBranchStatement' : True,
-    'GroupStatement' : False,
-    'IfStatement' : True,
-    'AssignmentStatement' : False,
-    'StopBinStatement' : False,
-    'PrintStatement' : False,
-    'PrintDatalogStatement' : False,
-    'SVLRTimingStatement' : False,
-    'SVLRLevelStatement' : False,
-    'WhileStatement' : False,
-    'RepeatStatement' : False,
-    'ForStatement' : False,
-    'MultiBinStatement' : False
-}
 
 class Testflow(Statement):
     """
@@ -1733,19 +1695,18 @@ class Testflow(Statement):
             pprint(tf.showNodeMap())
             pprint(tf.testsuites)
     """
-    def __init__(self,tf_file,debug=False):
+    def __init__(self,tf_file,testflow_only=False):
         contents = get_file_contents(tf_file)
         self.tf = Start.parseString(contents,1)[0]
         self._nodeMap = self.tf.TestflowSection._nodes()
     def showNodeMap(self):
         return tf.traverse_tree(self._nodeMap)
+
     def traverse_tree(self,obj):
         if isinstance(obj, list):
             return [self.traverse_tree(elem) for elem in obj]
         else:
             return self._nodeData[obj]
-
-
     def __str__(self):
         return str(self.tf)
 
@@ -1755,15 +1716,14 @@ if __name__ == '__main__':
         print "usage: (python) TestflowParser.py <input file>"
         exit()
     print '\n\n'
-    tf = Testflow(args[0],debug=False)
+    tf = Testflow(args[0],True)
 
-    # print tf
-    # pprint(tf.showNodeMap())
+    print tf
+    print '===================================================================================================\n'*4
+    pprint(tf.showNodeMap())
+    print '===================================================================================================\n'*4
     pprint(tf.testsuites)
 
-
-    # --------------------------------------------------------------
-    # TODO : user can access/mutate data in tf
-    # --------------------------------------------------------------
-    # TODO : user could write tf to file now....  fp = open(args[1]).write(str(tf))
-    # --------------------------------------------------------------
+# TODO : push all code in __str__ for each class into functions so that we can create a testflow file from modified data
+# TODO : gather all testsuite meta data
+# TODO : get all parent ids/conditions so that we can add that to testsuite information

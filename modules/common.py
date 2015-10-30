@@ -76,3 +76,4 @@ class LineSplitter(object):
             self.count += (self.prev == self.token)
             self.prev = token
             return self.count
+

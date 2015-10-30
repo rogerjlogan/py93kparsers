@@ -893,32 +893,33 @@ class Statement(object):
     """
         Super class to contain common methods/data for XXXXStatement classes (children)
     """
-    __id = -1 # unique id for each instance of child class
-    parent = None
-    runCond = ''
+    __id = -1 # unique node_id for each instance of child class
+    _nodeData = {}
+    _nodeMap = []
+    testsuites = {}
+
+
     @staticmethod
-    def getId():
+    def getNodeId():
         Statement.__id += 1
         return Statement.__id
-    def setParent(self, parent):
-        self.parent = parent
-    def setRunCond(self, parentRunCond):
-        self.runCond = parentRunCond
-    def deleteSelf(self):
-        return self.parent.delete(self)
-    def nestedKeys(self):
-        return self.key
+    def _nodes(self):
+        return self.node_id
 
 # RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
 #                [bind(&CreateRunStatement)(RunStatement.testsuite)];
 RunStatement = (pp.Keyword("run").suppress() + LPAR + Identifier("testsuite") + RPAR + SEMI)
 class ParseRunStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'RunStatement'
-        self.key = str(self.id)+'_'+self.type
         self.testsuite = toks.testsuite
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'testsuite' : self.testsuite
+        }
+        self.testsuites[self.testsuite] = self.node_id
     def __repr__(self):
         return '\nrun(' + self.testsuite + ');'
 
@@ -933,46 +934,24 @@ RunAndBranchStatement = pp.Group(pp.Keyword("run_and_branch").suppress() + LPAR 
                                  + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("RB_FAIL") + RCURL))
 class ParseRunAndBranchStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'RunAndBranchStatement'
-        self.key = str(self.id)+'_'+self.type
         self.testsuite = toks[0].testsuite
         self.rb_pass = toks[0].RB_PASS[:]
         self.rb_fail = toks[0].RB_FAIL[:]
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'testsuite' : self.testsuite
+        }
+        self.testsuites[self.testsuite] = self.node_id
     def __repr__(self):
         rstr = '\nrun_and_branch(' + self.testsuite + ')\n'
         rstr += 'then\n{\n' + '\n'.join([str(x) for x in self.rb_pass]) + '\n}'
         rstr += '\nelse\n{\n' + '\n'.join([str(x) for x in self.rb_fail]) + '\n}'
         return rstr
-    def insert(self,data,branch=True):
-        if branch:
-            self.rb_pass.insert(data)
-        else:
-            self.rb_fail.insert(data)
-    def setParent(self, parent):
-        self.parent = parent
-        for elem in self.rb_pass:
-            elem.setParent(self)
-        for elem in self.rb_fail:
-            elem.setParent(self)
-    def setRunCond(self, parentRunCond):
-        self.runCond = parentRunCond
-        for elem in self.rb_pass:
-            elem.setRunCond(parentRunCond + " AND PASS(" + self.testsuite + ")")
-        for elem in self.rb_fail:
-            elem.setRunCond(parentRunCond + " AND FAIL(" + self.testsuite + ")")
-    def delete(self, elem):
-        try:
-            ind = self.rb_fail.index(elem)
-            del self.rb_fail[ind]
-            return ind
-        except IndexError:
-            ind = self.rb_pass.index(elem)
-            del self.rb_pass[ind]
-            return ind
-    def nestedKeys(self):
-        return [self.key ,[x.nestedKeys() for x in self.rb_pass],[x.nestedKeys() for x in self.rb_fail]]
+    def _nodes(self):
+        return [self.node_id ,[x._nodes() for x in self.rb_pass],[x._nodes() for x in self.rb_fail]]
 
 RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 
@@ -985,47 +964,24 @@ IfStatement = pp.Group(pp.Keyword("if").suppress() + Expression("condition")
                        + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("IF_FALSE") + RCURL))
 class ParseIfStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'IfStatement'
-        self.key = str(self.id)+'_'+self.type
         self.condition = toks[0].condition
         self.if_true = toks[0].IF_TRUE[:]
         self.if_false = toks[0].IF_FALSE[:]
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'condition' : self.condition
+        }
     def __repr__(self):
         rstr = '\nif ' + self.condition + '\n'
         rstr += 'then\n{\n' + '\n'.join([str(x) for x in self.if_true]) + '\n}'
         if len(self.if_false):
             rstr += '\nelse\n{\n' + '\n'.join([str(x) for x in self.if_false]) + '\n}'
         return rstr
-    def insert(self,data,branch=True):
-        if branch:
-            self.if_true.insert(data)
-        else:
-            self.if_false.insert(data)
-    def setParent(self, parent):
-        self.parent = parent
-        for elem in self.if_true:
-            elem.setParent(self)
-        for elem in self.if_false:
-            elem.setParent(self)
-    def setRunCond(self, parentRunCond):
-        self.runCond = parentRunCond
-        for elem in self.if_true:
-            elem.setRunCond(parentRunCond + " AND TRUE(" + self.condition + ")")
-        for elem in self.if_false:
-            elem.setRunCond(parentRunCond + " AND FALSE(" + self.condition + ")")
-    def delete(self, elem):
-        try:
-            ind = self.if_true.index(elem)
-            del self.if_false[ind]
-            return ind
-        except IndexError:
-            ind = self.if_true.index(elem)
-            del self.if_false[ind]
-            return ind
-    def nestedKeys(self):
-        return [self.key ,[x.nestedKeys() for x in self.if_true],[x.nestedKeys() for x in self.if_false]]
+    def _nodes(self):
+        return [self.node_id ,[x._nodes() for x in self.if_true],[x._nodes() for x in self.if_false]]
 IfStatement.setParseAction(ParseIfStatement)
 
 # GroupBypass = str_p("groupbypass") >> ',';
@@ -1042,27 +998,29 @@ GroupStatement = pp.Group(LCURL + pp.Group(FlowStatements)("GR_SUB") + RCURL + C
                           + QuotedString("SetGroupLabel") + COMMA + QuotedString("SetGroupDescription"))
 class ParseGroupStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'GroupStatement'
-        self.key = str(self.id)+'_'+self.type
         self.gr_bypass_cond = toks[0].SetGroupBypass
         self.gr_sub = toks[0].GR_SUB[:]
         self.gr_open = toks[0].SetGroupOpen
         self.gr_label = toks[0].SetGroupLabel
         self.gr_desc = toks[0].SetGroupDescription
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'gr_bypass_cond' : self.gr_bypass_cond,
+            'gr_open' : self.gr_open,
+            'gr_label' : self.gr_label,
+            'gr_desc' : self.gr_desc
+        }
     def __repr__(self):
         rstr = '\n{\n' + '\n'.join([str(x) for x in self.gr_sub]) + '\n},'
         if len(self.gr_bypass_cond):
             rstr += self.gr_bypass_cond
         rstr += self.gr_open + ',' + self.gr_label + ',' + self.gr_desc
         return rstr
-    def setRunCond(self, parentRunCond):
-        self.runCond = parentRunCond
-        for elem in self.gr_sub:
-            elem.setRunCond(parentRunCond + " AND TRUE(" + self.gr_bypass_cond + ")")
-    def nestedKeys(self):
-        return [self.key , [x.nestedKeys() for x in self.gr_sub]]
+    def _nodes(self):
+        return [self.node_id , [x._nodes() for x in self.gr_sub]]
 GroupStatement.setParseAction(ParseGroupStatement)
 
 # AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
@@ -1072,13 +1030,16 @@ GroupStatement.setParseAction(ParseGroupStatement)
 AssignmentStatement = pp.Group((TestsuiteFlag | Variable) + EQtok + (Expression | TestsuiteFlag) + SEMI)
 class ParseAssignmentStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'AssignmentStatement'
-        self.key = str(self.id)+'_'+self.type
-        self.assignment = '\n' + ' '.join(toks[0]) + ';'
+        self.assignment = ' '.join(toks[0]) + ';'
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'assignment' : self.assignment
+        }
     def __repr__(self):
-        return self.assignment
+        return '\n' + self.assignment
 AssignmentStatement.setParseAction(ParseAssignmentStatement)
 
 # OOCRule = !(str_p("oocwarning") >> '=' >> int_p >> int_p >> int_p >> QuotedString) >> !(str_p("oocstop") >> '=' >> int_p >> int_p >> int_p >> QuotedString);
@@ -1136,9 +1097,8 @@ BinDefinition = ((QuotedString("swBin") + COMMA + QuotedString("swBinDescription
 StopBinStatement = pp.Group(pp.Keyword("stop_bin") + BinDefinition("CreateStopBinStatement") + SEMI)
 class ParseStopBinStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'StopBinStatement'
-        self.key = str(self.id)+'_'+self.type
         self.swBin = toks[0].swBin
         self.swBinDescription = toks[0].swBinDescription
         self.oocrule = toks[0].oocrule.oocwarning + ' ' + toks[0].oocrule.oocstop
@@ -1148,6 +1108,16 @@ class ParseStopBinStatement(Statement):
         self.binNumber = toks[0].binNumber
         self.overon = toks[0].overon
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'swBin' : self.swBin,
+            'swBinDescription' : self.swBinDescription,
+            'oocrule' : self.oocrule,
+            'quality' : self.quality,
+            'reprobe' : self.reprobe,
+            'binNumber' : self.binNumber,
+            'overon' : self.overon
+        }
     def __repr__(self):
         rstr = 'stop_bin ' +  self.swBin + ',' + self.swBinDescription + ','
         rstr += self.oocrule + ','
@@ -1161,11 +1131,14 @@ StopBinStatement.setParseAction(ParseStopBinStatement)
 PrintStatement = pp.Group(pp.Keyword("print") + LPAR + Expression("statement") + RPAR + SEMI)
 class ParsePrintStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'PrintStatement'
-        self.key = str(self.id)+'_'+self.type
         self.statement = toks[0].statement
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'statement' : self.statement
+        }
     def __repr__(self):
         rstr = ''
         if len(self.statement):
@@ -1178,11 +1151,14 @@ PrintStatement.setParseAction(ParsePrintStatement)
 PrintDatalogStatement = pp.Group(pp.Keyword("print_dl") + LPAR + Expression("statement") + RPAR + SEMI)
 class ParsePrintDatalogStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'PrintDatalogStatement'
-        self.key = str(self.id)+'_'+self.type
         self.statement = toks[0].statement
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'statement' : self.statement
+        }
     def __repr__(self):
         rstr = ''
         if len(self.statement):
@@ -1199,14 +1175,20 @@ SVLRTimingStatement = pp.Group(pp.Keyword("svlr_timing_command") + LPAR + Expres
                                + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 class ParseSVLRTimingStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'SVLRTimingStatement'
-        self.key = str(self.id)+'_'+self.type
         self.equSet = toks[0].equSet
         self.specSet = toks[0].specSet
         self.variable = toks[0].variable
         self.value = toks[0].value
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'equSet' : self.equSet,
+            'specSet' : self.specSet,
+            'variable' : self.variable,
+            'value' : self.value
+        }
     def __repr__(self):
         rstr = '\nsvlr_timing_command(' + self.equSet + ',' + self.specSet + ',' + self.variable + ',' + self.value + ');'
         return rstr
@@ -1219,14 +1201,20 @@ SVLRLevelStatement = pp.Group(pp.Keyword("svlr_level_command") + LPAR + Expressi
                               + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 class ParseSVLRLevelStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'SVLRLevelStatement'
-        self.key = str(self.id)+'_'+self.type
         self.equSet = toks[0].equSet
         self.specSet = toks[0].specSet
         self.variable = toks[0].variable
         self.value = toks[0].value
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'equSet' : self.equSet,
+            'specSet' : self.specSet,
+            'variable' : self.variable,
+            'value' : self.value
+        }
     def __repr__(self):
         rstr = '\nsvlr_level_command(' + self.equSet + ',' + self.specSet + ',' + self.variable + ',' + self.value + ');'
         return rstr
@@ -1242,23 +1230,23 @@ WhileStatement = pp.Group((pp.Keyword("while").suppress() + Expression("conditio
                           + LCURL + pp.Group(FlowStatements)("W_TRUE") + RCURL)
 class ParseWhileStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'WhileStatement'
-        self.key = str(self.id)+'_'+self.type
         self.condition = toks[0].condition
         self.testnum = ' '.join(toks[0].testnum)
         self.w_true = toks[0].W_TRUE[:]
         self.toks = toks
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'condition' : self.condition,
+            'testnum' : self.testnum
+        }
     def __repr__(self):
         rstr = 'while ' + self.condition + ' do ' + self.testnum + '\n{\n'
         rstr += '\n'.join([str(x) for x in self.w_true]) + '\n}'
         return rstr
-    def setRunCond(self, parentRunCond):
-        self.runCond = parentRunCond
-        for elem in self.w_true:
-            elem.setRunCond(parentRunCond + " AND TRUE(" + self.condition + ")")
-    def nestedKeys(self):
-        return [self.key ,[x.nestedKeys() for x in self.w_true]]
+    def _nodes(self):
+        return [self.node_id ,[x._nodes() for x in self.w_true]]
 WhileStatement.setParseAction(ParseWhileStatement)
 
 # RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
@@ -1267,17 +1255,21 @@ RepeatStatement = pp.Group(pp.Keyword("repeat").suppress() + pp.Group(FlowStatem
                            + Expression("SetRepeatCondition") + pp.Optional(TestNumLoopInc)("SetRepeatTestnum"))
 class ParseRepeatStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'RepeatStatement'
-        self.key = str(self.id)+'_'+self.type
         self.rpt_true = toks[0].RPT_TRUE[:]
         self.condition = toks[0].SetRepeatCondition
         self.testnum = ' '.join(toks[0].SetRepeatTestnum)
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'condition' : self.condition,
+            'testnum' : self.testnum
+        }
     def __repr__(self):
         rstr = 'repeat ' + '\n'.join([str(x) for x in self.rpt_true]) + '\nuntil ' + self.condition + ' ' + self.testnum
         return rstr
-    def nestedKeys(self):
-        return [self.key ,[x.nestedKeys() for x in self.rpt_true]]
+    def _nodes(self):
+        return [self.node_id ,[x._nodes() for x in self.rpt_true]]
 RepeatStatement.setParseAction(ParseRepeatStatement)
 
 # ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
@@ -1293,9 +1285,8 @@ ForStatement = pp.Group((pp.Keyword("for").suppress() + QualifiedIdentifier("ass
                         + LCURL + pp.Group(FlowStatements)("FOR_TRUE") + RCURL)
 class ParseForStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'ForStatement'
-        self.key = str(self.id)+'_'+self.type
         self.assignVar = toks[0].assignVar
         self.assignValue = toks[0].assignValue
         self.condition = toks[0].condition
@@ -1303,22 +1294,32 @@ class ParseForStatement(Statement):
         self.incrementValue = toks[0].incrementValue
         self.testnum = ' '.join(toks[0].testnum)
         self.for_true = toks[0].FOR_TRUE[:]
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+            'assignVar' : self.assignVar,
+            'condition' : self.condition,
+            'incrementVar' : self.incrementVar,
+            'incrementValue' : self.incrementValue,
+            'testnum' : self.testnum
+        }
     def __repr__(self):
         rstr = 'for "' + self.assignVar + ' = ' + self.assignValue + ';'
         rstr += self.condition + ';' + self.incrementVar + ' = ' + self.incrementValue + '; do\n'
         rstr += self.testnum + '\n{\n' + '\n'.join([str(x) for x in self.for_true]) + '\n}'
         return rstr
-    def nestedKeys(self):
-        return [self.key ,[x.nestedKeys() for x in self.for_true]]
+    def _nodes(self):
+        return [self.node_id ,[x._nodes() for x in self.for_true]]
 ForStatement.setParseAction(ParseForStatement)
 
 # MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
 MultiBinStatement = (pp.Keyword("multi_bin") + SEMI)
 class ParseMultiBinStatement(Statement):
     def __init__(self,toks):
-        self.id = self.getId()
+        self.node_id = self.getNodeId()
         self.type = 'MultiBinStatement'
-        self.key = str(self.id)+'_'+self.type
+        self._nodeData[self.node_id] = {
+            'type' : self.type,
+        }
     def __repr__(self):
         return 'multi_bin\n'
 MultiBinStatement.setParseAction(ParseMultiBinStatement)
@@ -1345,20 +1346,20 @@ TestflowSection = (pp.Keyword("test_flow").suppress() + FlowStatements + End)("T
 #                 MultiBinStatement |
 #                 EmptyStatement |
 #                 Error;
-FlowStatement = (RunStatement("RunStatement") |
-                 RunAndBranchStatement("RunAndBranchStatement") |
-                 GroupStatement("GroupStatement") |
-                 IfStatement("IfStatement") |
-                 AssignmentStatement("AssignmentStatement") |
-                 StopBinStatement("StopBinStatement") |
-                 PrintStatement("PrintStatement") |
-                 PrintDatalogStatement("PrintDatalogStatement") |
-                 SVLRTimingStatement("SVLRTimingStatement") |
-                 SVLRLevelStatement("SVLRLevelStatement") |
-                 WhileStatement("WhileStatement") |
-                 RepeatStatement("RepeatStatement") |
-                 ForStatement("ForStatement") |
-                 MultiBinStatement("MultiBinStatement") |
+FlowStatement = (RunStatement('RunStatement') |
+                 RunAndBranchStatement('RunAndBranchStatement') |
+                 GroupStatement('GroupStatement') |
+                 IfStatement('IfStatement') |
+                 AssignmentStatement('AssignmentStatement') |
+                 StopBinStatement('StopBinStatement') |
+                 PrintStatement('PrintStatement') |
+                 PrintDatalogStatement('PrintDatalogStatement') |
+                 SVLRTimingStatement('SVLRTimingStatement') |
+                 SVLRLevelStatement('SVLRLevelStatement') |
+                 WhileStatement('WhileStatement') |
+                 RepeatStatement('RepeatStatement') |
+                 ForStatement('ForStatement') |
+                 MultiBinStatement('MultiBinStatement') |
                  EmptyStatement)
 
 # FlowStatements = *(FlowStatement);
@@ -1668,16 +1669,14 @@ Start.setParseAction(ParseStart)
 class ParseTestflowSection(Statement):
     def __init__(self,toks):
         self.data = toks[:]
-        self.condDict = {}
         self.section_name = "test_flow"
-        self.setRunCond('TRUE')
     def __repr__(self):
         rstr = self.section_name + '\n'
         rstr += ''.join([str(x) for x in self.data]) + '\n'
         rstr += EndStr
         return rstr
-    def nestedKeys(self):
-        return [x.nestedKeys() for x in self.data]
+    def _nodes(self):
+        return [x._nodes() for x in self.data]
 
     # TODO : have methods to post parse the data
 
@@ -1692,20 +1691,63 @@ def get_file_contents(infile,strip_comments=True):
             contents = re.sub(re.compile(r'--.*?\n') ,'' ,contents)
         return contents
 
-class Testflow(object):
+
+has_true_br = {
+    'RunStatement' : True,
+    'RunAndBranchStatement' : True,
+    'GroupStatement' : True,
+    'IfStatement' : True,
+    'AssignmentStatement' : False,
+    'StopBinStatement' : False,
+    'PrintStatement' : False,
+    'PrintDatalogStatement' : False,
+    'SVLRTimingStatement' : False,
+    'SVLRLevelStatement' : False,
+    'WhileStatement' : True,
+    'RepeatStatement' : True,
+    'ForStatement' : True,
+    'MultiBinStatement' : False
+}
+has_false_br = {
+    'RunStatement' : False,
+    'RunAndBranchStatement' : True,
+    'GroupStatement' : False,
+    'IfStatement' : True,
+    'AssignmentStatement' : False,
+    'StopBinStatement' : False,
+    'PrintStatement' : False,
+    'PrintDatalogStatement' : False,
+    'SVLRTimingStatement' : False,
+    'SVLRLevelStatement' : False,
+    'WhileStatement' : False,
+    'RepeatStatement' : False,
+    'ForStatement' : False,
+    'MultiBinStatement' : False
+}
+
+class Testflow(Statement):
+    """
+        usage:
+            tf = Testflow(testflow_file.tf)
+            print tf
+            pprint(tf.showNodeMap())
+            pprint(tf.testsuites)
+    """
     def __init__(self,tf_file,debug=False):
         contents = get_file_contents(tf_file)
         self.tf = Start.parseString(contents,1)[0]
-        # for stmnt in self.tf.TestflowSection.data:
-        #     print stmnt.id,stmnt.type
-        self.buildTree()
+        self._nodeMap = self.tf.TestflowSection._nodes()
+    def showNodeMap(self):
+        return tf.traverse_tree(self._nodeMap)
+    def traverse_tree(self,obj):
+        if isinstance(obj, list):
+            return [self.traverse_tree(elem) for elem in obj]
+        else:
+            return self._nodeData[obj]
+
+
     def __str__(self):
         return str(self.tf)
-
-    def buildTree(self):
-        for item in self.tf.TestflowSection.nestedKeys():
-            print "item:",item
-
 
 if __name__ == '__main__':
     args = sys.argv[1:]
@@ -1716,6 +1758,9 @@ if __name__ == '__main__':
     tf = Testflow(args[0],debug=False)
 
     # print tf
+    # pprint(tf.showNodeMap())
+    pprint(tf.testsuites)
+
 
     # --------------------------------------------------------------
     # TODO : user can access/mutate data in tf

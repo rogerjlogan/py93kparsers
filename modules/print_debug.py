@@ -1,6 +1,6 @@
 __author__ = 'Roger'
 
-from pprint import pprint
+from pprint import *
 
 def print2file(ostring, ofile="debug.out"):
     f = open(ofile,"wb")

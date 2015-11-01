@@ -54,76 +54,76 @@ integer = pp.Combine(pp.Optional(plusorminus) + number)
 Float = pp.Combine(integer + pp.Optional('.' + pp.Optional(number)) + pp.Optional(E + integer))
 Bool = pp.Literal('0') | '1'
 
-# BinaryAdd = str_p("+") | "-"  ;
+# FROM TestflowParser.cpp: BinaryAdd = str_p("+") | "-"  ;
 BinaryAdd = PLUS | MINUS
 
-# BinaryMult = str_p("*") | "/"  ;
+# FROM TestflowParser.cpp: BinaryMult = str_p("*") | "/"  ;
 BinaryMult = MULT | DIV
 
-# BinaryRel = str_p("==") |  "!="  | "<="  | ">="  | "<"   | ">";
+# FROM TestflowParser.cpp: BinaryRel = str_p("==") |  "!="  | "<="  | ">="  | "<"   | ">";
 BinaryRel = EQEQ | NOTEQ | LE | GE | LT | GT
 
-# BinaryLogic = str_p("or") | "and" ;
+# FROM TestflowParser.cpp: BinaryLogic = str_p("or") | "and" ;
 BinaryLogic = pp.Keyword("or") | pp.Keyword("and")
 
-# Unary = str_p("!") | "-"  | "not";
+# FROM TestflowParser.cpp: Unary = str_p("!") | "-"  | "not";
 Unary = NOT | DASH | Not
 
-# BinaryRelTerm = Term >> *(BinaryRel >> BinaryRelTerm);
+# FROM TestflowParser.cpp: BinaryRelTerm = Term >> *(BinaryRel >> BinaryRelTerm);
 BinaryRelTerm = pp.Forward()
 
-# BinaryLogicTerm = BinaryRelTerm >> *(BinaryLogic >> BinaryRelTerm);
+# FROM TestflowParser.cpp: BinaryLogicTerm = BinaryRelTerm >> *(BinaryLogic >> BinaryRelTerm);
 BinaryLogicTerm = BinaryRelTerm + pp.ZeroOrMore(BinaryLogic + BinaryRelTerm)
 
-# BinaryMultTerm = BinaryLogicTerm >> *(BinaryMult >> BinaryLogicTerm);
+# FROM TestflowParser.cpp: BinaryMultTerm = BinaryLogicTerm >> *(BinaryMult >> BinaryLogicTerm);
 BinaryMultTerm = BinaryLogicTerm + pp.ZeroOrMore(BinaryMult + BinaryLogicTerm)
 
-# BinaryAddTerm = BinaryMultTerm >> *(BinaryAdd >> BinaryMultTerm);
+# FROM TestflowParser.cpp: BinaryAddTerm = BinaryMultTerm >> *(BinaryAdd >> BinaryMultTerm);
 BinaryAddTerm = BinaryMultTerm + pp.ZeroOrMore(BinaryAdd + BinaryMultTerm)
 
-# Expression = BinaryAddTerm[Expression.expression = construct_<string>(arg1, arg2)];
+# FROM TestflowParser.cpp: Expression = BinaryAddTerm[Expression.expression = construct_<string>(arg1, arg2)];
 Expression = pp.Combine(BinaryAddTerm,joinString=' ',adjacent=False)
 
-# NumberFunction  = str_p("pass") | "fail" | "has_run" | "has_not_run" | "tf_result" |"tf_pin_result" | "spst_timing" |
-#                         "spst_level" | "svlr_timing" | "svlr_level" | "wsus" | "bsus" | "lsus" | "tsus"          ;
+# FROM TestflowParser.cpp: NumberFunction  = str_p("pass") | "fail" | "has_run" | "has_not_run" | "tf_result" |"tf_pin_result" | "spst_timing" |
+# FROM TestflowParser.cpp:                         "spst_level" | "svlr_timing" | "svlr_level" | "wsus" | "bsus" | "lsus" | "tsus"          ;
 NumberFunction = (pp.Keyword("pass") | pp.Keyword("fail") | pp.Keyword("has_run") | pp.Keyword("has_not_run") |
                   pp.Keyword("tf_result") | pp.Keyword("tf_pin_result") | pp.Keyword("spst_timing") |
                   pp.Keyword("spst_level") | pp.Keyword("svlr_timing") | pp.Keyword("svlr_level") |
                   pp.Keyword("wsus") | pp.Keyword("bsus") | pp.Keyword("lsus") | pp.Keyword("tsus"))
 
-# StringFunction = str_p("burstfirst") | "burstnext";
+# FROM TestflowParser.cpp: StringFunction = str_p("burstfirst") | "burstnext";
 StringFunction = pp.Keyword("burstfirst") | pp.Keyword("burstnext")
 
-# Number = real_p | int_p;
+# FROM TestflowParser.cpp: Number = real_p | int_p;
 Number = Float | integer
 
-# End = str_p("end");
+# FROM TestflowParser.cpp: End = str_p("end");
 End = (pp.Keyword("end") + pp.ZeroOrMore(DASH)).suppress()
 
-# Identifier = lexeme_d[(*((alnum_p | ch_p('_')))) - (str_p("end"))];
+# FROM TestflowParser.cpp: Identifier = lexeme_d[(*((alnum_p | ch_p('_')))) - (str_p("end"))];
 Identifier = pp.Word(pp.alphanums + '_')
 
-# TestsuiteFlag = ch_p('@') >> (Identifier >> "." >> Identifier)[TestsuiteFlag.varName = construct_<string>(arg1, arg2)];
+# FROM TestflowParser.cpp: TestsuiteFlag = ch_p('@') >> (Identifier >> "." >> Identifier)[TestsuiteFlag.varName = construct_<string>(arg1, arg2)];
 TestsuiteFlag = ATtok + (Identifier + DOTtok + Identifier)
 
-# Variable = str_p("@") >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] |
-#                  "@{" >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] >> "}";
+# FROM TestflowParser.cpp: Variable = str_p("@") >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] |
+# FROM TestflowParser.cpp:                  "@{" >> (Identifier)[Variable.varName = construct_<string>(arg1, arg2)] >> "}";
 Variable = pp.Combine((ATtok + Identifier) | ("@{" + Identifier + "}"))
 
-# String = (alnum_p - ch_p('!')) >> *(alnum_p | "_");
+# FROM TestflowParser.cpp: String = (alnum_p - ch_p('!')) >> *(alnum_p | "_");
 String = pp.Combine(pp.Word(pp.alphanums,excludeChars='!') + pp.ZeroOrMore(pp.Word(pp.alphanums) | UNDER))
 
-# QuotedString << ch_p('"') >> lexeme_d[(*(lex_escape_ch_p - ch_p('"')))]
-#                [QuotedString.noQuotes = construct_<string>(arg1, arg2)] >> ch_p('"') >> !QuotedString;
+# FROM TestflowParser.cpp: QuotedString << ch_p('"') >> lexeme_d[(*(lex_escape_ch_p - ch_p('"')))]
+# FROM TestflowParser.cpp:                [QuotedString.noQuotes = construct_<string>(arg1, arg2)] >> ch_p('"') >> !QuotedString;
 QuotedString = pp.Forward()
 
 QuotedString << pp.Combine(pp.QuotedString(unquoteResults=False, quoteChar='"', escChar='\\',multiline=True) + pp.Optional(QuotedString))
 
-# Literal = Number | TestsuiteFlag | Variable | QuotedString | String;
+# FROM TestflowParser.cpp: Literal = Number | TestsuiteFlag | Variable | QuotedString | String;
 Literal = Number | TestsuiteFlag | Variable | QuotedString | String
 
-# Term = "(" >> Expression >> ")" | NumberFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")"
-# | StringFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")" | Unary >> Term | Literal;
+# FROM TestflowParser.cpp: Term = "(" >> Expression >> ")" | NumberFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")"
+# FROM TestflowParser.cpp: | StringFunction >>  "(" >> !((Expression) >> *( "," >> (Expression))) >> ")" | Unary >> Term | Literal;
 Term = pp.Forward()
 # Term = (LPAR + Expression + RPAR | NumberFunction + LPAR + pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression))
 #         + RPAR | StringFunction + LPAR + pp.Optional(Expression + pp.ZeroOrMore(COMMA + Expression))
@@ -134,18 +134,18 @@ Term = (LPARtok + Expression + RPARtok | NumberFunction + LPARtok + pp.Optional(
 
 BinaryRelTerm << Term + pp.ZeroOrMore(BinaryRel + BinaryRelTerm)
 
-# QualifiedIdentifier = Variable[QualifiedIdentifier.varName = arg1] |
-#     Identifier[QualifiedIdentifier.varName = construct_<string>(arg1, arg2)];
+# FROM TestflowParser.cpp: QualifiedIdentifier = Variable[QualifiedIdentifier.varName = arg1] |
+# FROM TestflowParser.cpp:     Identifier[QualifiedIdentifier.varName = construct_<string>(arg1, arg2)];
 QualifiedIdentifier = Variable | Identifier
 
-# TestsuiteFlag = ch_p('@') >> (Identifier >> "." >> Identifier)[TestsuiteFlag.varName = construct_<string>(arg1, arg2)];
+# FROM TestflowParser.cpp: TestsuiteFlag = ch_p('@') >> (Identifier >> "." >> Identifier)[TestsuiteFlag.varName = construct_<string>(arg1, arg2)];
 TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 
-# Type = str_p("double")[Type.type = ::xoc::tapi::ZTestflowVariableType_DOUBLE] |
-#      str_p("string")[Type.type = ::xoc::tapi::ZTestflowVariableType_STRING];
+# FROM TestflowParser.cpp: Type = str_p("double")[Type.type = ::xoc::tapi::ZTestflowVariableType_DOUBLE] |
+# FROM TestflowParser.cpp:      str_p("string")[Type.type = ::xoc::tapi::ZTestflowVariableType_STRING];
 Type = pp.Keyword("double") | pp.Keyword("string")
 
-# OptFileHeader = !str_p("hp93000,testflow,0.1");
+# FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))("OptFileHeader")
 
 class ParseOptFileHeader(object):
@@ -157,7 +157,7 @@ class ParseOptFileHeader(object):
 
 OptFileHeader.setParseAction(ParseOptFileHeader)
 
-# OptRevision = !(str_p("language_revision") >> ch_p('=') >> int_p >> ch_p(';'));
+# FROM TestflowParser.cpp: OptRevision = !(str_p("language_revision") >> ch_p('=') >> int_p >> ch_p(';'));
 OptRevision = (pp.Optional(pp.Keyword("language_revision")).suppress() + EQ + pp.Word(pp.nums) + SEMI)("OptRevision")
 
 def create_OptRevision(lang):
@@ -172,7 +172,7 @@ class ParseOptRevision(object):
 
 OptRevision.setParseAction(ParseOptRevision)
 
-# EmptySection = ch_p(';');
+# FROM TestflowParser.cpp: EmptySection = ch_p(';');
 EmptySection = pp.Group(pp.Literal(';'))("EmptySection")
 
 class ParseEmptySection(object):
@@ -188,28 +188,28 @@ EmptySection.setParseAction(ParseEmptySection)
 # BEGIN InformationSection
 # -------------------------------------------------------------------------------------------
 
-# DeviceName = str_p("device_name") >> '=' >> (QuotedString)[bind(&SetDeviceName)(arg1)] >> ';';
+# FROM TestflowParser.cpp: DeviceName = str_p("device_name") >> '=' >> (QuotedString)[bind(&SetDeviceName)(arg1)] >> ';';
 DeviceName = pp.Keyword("device_name").suppress() + EQ + QuotedString("SetDeviceName") + SEMI
 
-# DeviceRevision = str_p("device_revision") >> '=' >> QuotedString[bind(&SetDeviceRevision)(arg1)] >> ';';
+# FROM TestflowParser.cpp: DeviceRevision = str_p("device_revision") >> '=' >> QuotedString[bind(&SetDeviceRevision)(arg1)] >> ';';
 DeviceRevision = pp.Keyword("device_revision").suppress() + EQ + QuotedString("SetDeviceRevision") + SEMI
 
-# TestRevision = str_p("test_revision") >> '=' >> QuotedString[bind(&SetTestRevision)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestRevision = str_p("test_revision") >> '=' >> QuotedString[bind(&SetTestRevision)(arg1)] >> ';';
 TestRevision = pp.Keyword("test_revision").suppress() + EQ + QuotedString("SetTestRevision") + SEMI
 
-# Description = str_p("description") >> '=' >> QuotedString[bind(&SetDescription)(arg1)] >> ';';
+# FROM TestflowParser.cpp: Description = str_p("description") >> '=' >> QuotedString[bind(&SetDescription)(arg1)] >> ';';
 Description = pp.Keyword("description").suppress() + EQ + QuotedString("SetDescription") + SEMI
 
-# Application = str_p("application") >> '=' >> QuotedString[bind(&SetApplication)(arg1)] >> ';';
+# FROM TestflowParser.cpp: Application = str_p("application") >> '=' >> QuotedString[bind(&SetApplication)(arg1)] >> ';';
 Application = pp.Keyword("application").suppress() + EQ + QuotedString("SetApplication") + SEMI
 
-# Temperature = str_p("temperature") >> '=' >> real_p[bind(&SetTemperature)] >> ';';
+# FROM TestflowParser.cpp: Temperature = str_p("temperature") >> '=' >> real_p[bind(&SetTemperature)] >> ';';
 Temperature = pp.Keyword("temperature").suppress() + EQ + Float("SetTemperature") + SEMI
 
-# InformationElements = *(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature);
+# FROM TestflowParser.cpp: InformationElements = *(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature);
 InformationElements = pp.Group(pp.ZeroOrMore(DeviceName | DeviceRevision | TestRevision | Description | Application | Temperature))
 
-# InformationSection = str_p("information") >> InformationElements >> End;
+# FROM TestflowParser.cpp: InformationSection = str_p("information") >> InformationElements >> End;
 InformationSection = (pp.Keyword("information").suppress() + InformationElements + End)("InformationSection")
 
 def create_InformationSection(dev_name='',dev_rev='',test_rev='',descr='',app='',temp=''):
@@ -248,14 +248,14 @@ InformationSection.setParseAction(ParseInformationSection)
 # BEGIN ImplicitDeclarationSection
 # -------------------------------------------------------------------------------------------
 
-# Declaration = (Variable[Declaration.varName = arg1] >> ':' >> Type[Declaration.varType = arg1] >> ';' )
-#                [bind(&CreateImplicitVariable)(Declaration.varName, Declaration.varType)];
+# FROM TestflowParser.cpp: Declaration = (Variable[Declaration.varName = arg1] >> ':' >> Type[Declaration.varType = arg1] >> ';' )
+# FROM TestflowParser.cpp:                [bind(&CreateImplicitVariable)(Declaration.varName, Declaration.varType)];
 Declaration = pp.Group(Variable + COLON + Type + SEMI)
 
-# ImplicitDeclarations = (*Declaration);
+# FROM TestflowParser.cpp: ImplicitDeclarations = (*Declaration);
 ImplicitDeclarations = pp.ZeroOrMore(Declaration)
 
-# ImplicitDeclarationSection = str_p("implicit_declarations") >> ImplicitDeclarations >> End;
+# FROM TestflowParser.cpp: ImplicitDeclarationSection = str_p("implicit_declarations") >> ImplicitDeclarations >> End;
 ImplicitDeclarationSection = (pp.Keyword("implicit_declarations").suppress() + ImplicitDeclarations + End)("ImplicitDeclarationSection")
 
 def create_ImplicitDeclarationSection(declarations):
@@ -280,15 +280,15 @@ ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
 # BEGIN DeclarationSection
 # -------------------------------------------------------------------------------------------
 
-# variables = (Variable[variables.varName = arg1] >> '=' >> Expression[variables.value = arg1] >> ';')
-#              [bind(&CreateVariable)(variables.varName, variables.value)];
+# FROM TestflowParser.cpp: variables = (Variable[variables.varName = arg1] >> '=' >> Expression[variables.value = arg1] >> ';')
+# FROM TestflowParser.cpp:              [bind(&CreateVariable)(variables.varName, variables.value)];
 # variables = (Variable + EQ + Expression + SEMI)
 Definition = pp.Group(Variable + EQ + Expression + SEMI)
 
-# Declarations = (*variables);
+# FROM TestflowParser.cpp: Declarations = (*variables);
 Declarations = pp.ZeroOrMore(Definition)
 
-# DeclarationSection = str_p("declarations") >> Declarations >> End;
+# FROM TestflowParser.cpp: DeclarationSection = str_p("declarations") >> Declarations >> End;
 DeclarationSection = (pp.Keyword("declarations").suppress() + Declarations + End)("DeclarationSection")
 
 def create_DeclarationSection(variables):
@@ -313,19 +313,19 @@ DeclarationSection.setParseAction(ParseDeclarationSection)
 # BEGIN FlagSection
 # -------------------------------------------------------------------------------------------
 
-# SystemFlag = *(alnum_p | ch_p('_')) >> '=' >> *(alnum_p | '-') >> ';';
+# FROM TestflowParser.cpp: SystemFlag = *(alnum_p | ch_p('_')) >> '=' >> *(alnum_p | '-') >> ';';
 SystemFlag = pp.Group(pp.Word(pp.alphanums + '_') + EQ + pp.Word(pp.alphanums + '-') + SEMI)
 
-# UserFlag = (str_p("user") >> (alpha_p >> *(alnum_p | '_'))[UserFlag.varName = construct_<string>(arg1, arg2)]
-#            >> '=' >> Expression[UserFlag.value = arg1] >> ';')
-#            [bind(&CreateUserVariable)(UserFlag.varName, UserFlag.value)];
+# FROM TestflowParser.cpp: UserFlag = (str_p("user") >> (alpha_p >> *(alnum_p | '_'))[UserFlag.varName = construct_<string>(arg1, arg2)]
+# FROM TestflowParser.cpp:            >> '=' >> Expression[UserFlag.value = arg1] >> ';')
+# FROM TestflowParser.cpp:            [bind(&CreateUserVariable)(UserFlag.varName, UserFlag.value)];
 UserFlag = pp.Group(pp.Keyword("user") + pp.Word(pp.alphas,pp.alphanums + '_') + EQ + Expression + SEMI)
 
-# //Systemflags are ignored for now, as they are still handled by the flag_ui
-# Flags = *(UserFlag | SystemFlag);
+# FROM TestflowParser.cpp: //Systemflags are ignored for now, as they are still handled by the flag_ui
+# FROM TestflowParser.cpp: Flags = *(UserFlag | SystemFlag);
 Flags = pp.ZeroOrMore(UserFlag | SystemFlag)
 
-# FlagSection = str_p("flags") >> Flags >> End;
+# FROM TestflowParser.cpp: FlagSection = str_p("flags") >> Flags >> End;
 FlagSection = (pp.Keyword("flags").suppress() + Flags + End)("FlagSection")
 
 def create_FlagSection(user_flags,sys_flags):
@@ -358,23 +358,23 @@ FlagSection.setParseAction(ParseFlagSection)
 # BEGIN TestfunctionSection
 # -------------------------------------------------------------------------------------------
 
-# TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
+# FROM TestflowParser.cpp: TestfunctionDescription = str_p("testfunction_description") >> '=' >> QuotedString[Testfunction.description = arg1] >> ';';
 TestfunctionDescription = pp.Group(pp.Keyword("testfunction_description")("testfunction_description") + EQ + QuotedString + SEMI)
 
-# TestfunctionParameter = str_p("testfunction_parameters")  >> '=' >> QuotedString[Testfunction.parameters = arg1] >> ';';
+# FROM TestflowParser.cpp: TestfunctionParameter = str_p("testfunction_parameters")  >> '=' >> QuotedString[Testfunction.parameters = arg1] >> ';';
 TestfunctionParameter = pp.Group(pp.Keyword("testfunction_parameters")("testfunction_parameters") + EQ + QuotedString + SEMI)
 
-# TestfunctionDefinition = ((TestfunctionDescription >> TestfunctionParameter) | (TestfunctionParameter >> TestfunctionDescription));
+# FROM TestflowParser.cpp: TestfunctionDefinition = ((TestfunctionDescription >> TestfunctionParameter) | (TestfunctionParameter >> TestfunctionDescription));
 TestfunctionDefinition = ((TestfunctionDescription + TestfunctionParameter) | (TestfunctionParameter + TestfunctionDescription))
 
-# Testfunction = ((Identifier)[Testfunction.identifier = construct_<string>(arg1, arg2)] >> ':'>> TestfunctionDefinition)
-#                [bind(&CreateTestfunction)(Testfunction.identifier, Testfunction.description, Testfunction.parameters)];
+# FROM TestflowParser.cpp: Testfunction = ((Identifier)[Testfunction.identifier = construct_<string>(arg1, arg2)] >> ':'>> TestfunctionDefinition)
+# FROM TestflowParser.cpp:                [bind(&CreateTestfunction)(Testfunction.identifier, Testfunction.description, Testfunction.parameters)];
 Testfunction = pp.Group(Identifier + COLON + TestfunctionDefinition)
 
-# Testfunctions = *(Testfunction) >> End;
+# FROM TestflowParser.cpp: Testfunctions = *(Testfunction) >> End;
 Testfunctions = pp.ZeroOrMore(Testfunction) + End
 
-# TestfunctionSection = str_p("testfunctions") >> Testfunctions;
+# FROM TestflowParser.cpp: TestfunctionSection = str_p("testfunctions") >> Testfunctions;
 TestfunctionSection = (pp.Keyword("testfunctions").suppress() + Testfunctions)("TestfunctionSection")
 
 def create_TestfunctionSection(test_funcs):
@@ -408,23 +408,23 @@ TestfunctionSection.setParseAction(ParseTestfunctionSection)
 # BEGIN TestmethodParameterSection
 # -------------------------------------------------------------------------------------------
 
-# TestmethodParameter = ((Identifier)[bind(&StartTestmethod)(construct_<string>(arg1, arg2))] >> ch_p(':') >>
-#                       *((QuotedString[TestmethodParameter.name = arg1] >> '=' >> QuotedString[TestmethodParameter.value = arg1])
-#                       [bind(&AddTestmethodParameter)(TestmethodParameter.name, TestmethodParameter.value)] >> ';'))
-#                       [bind(&SetTestmethodParameters)()];
+# FROM TestflowParser.cpp: TestmethodParameter = ((Identifier)[bind(&StartTestmethod)(construct_<string>(arg1, arg2))] >> ch_p(':') >>
+# FROM TestflowParser.cpp:                       *((QuotedString[TestmethodParameter.name = arg1] >> '=' >> QuotedString[TestmethodParameter.value = arg1])
+# FROM TestflowParser.cpp:                       [bind(&AddTestmethodParameter)(TestmethodParameter.name, TestmethodParameter.value)] >> ';'))
+# FROM TestflowParser.cpp:                       [bind(&SetTestmethodParameters)()];
 TestmethodParameter = pp.Group(Identifier + COLON + pp.ZeroOrMore(pp.Group(QuotedString + EQ + QuotedString + SEMI)))
 
-# UTMTestmethodParameters = *(TestmethodParameter);
+# FROM TestflowParser.cpp: UTMTestmethodParameters = *(TestmethodParameter);
 UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
 
-# TestmethodParameterSection = str_p("testmethodparameters")[Start.isUTMBased = true]
-#     #if NOUTM
-#         >> Error
-#     #else
-#         >> UTMTestmethodParameters
-#         >> End
-#     #endif
-#     ;
+# FROM TestflowParser.cpp: TestmethodParameterSection = str_p("testmethodparameters")[Start.isUTMBased = true]
+# FROM TestflowParser.cpp:     #if NOUTM
+# FROM TestflowParser.cpp:         >> Error
+# FROM TestflowParser.cpp:     #else
+# FROM TestflowParser.cpp:         >> UTMTestmethodParameters
+# FROM TestflowParser.cpp:         >> End
+# FROM TestflowParser.cpp:     #endif
+# FROM TestflowParser.cpp:     ;
 TestmethodParameterSection = (pp.Keyword("testmethodparameters").suppress() + UTMTestmethodParameters + End)("TestmethodParameterSection")
 
 def create_TestmethodParameterSection(utm_tm_params):
@@ -455,42 +455,42 @@ TestmethodParameterSection.setParseAction(ParseTestmethodParameterSection)
 # BEGIN TestmethodLimitSection
 # -------------------------------------------------------------------------------------------
 
-# LowLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
-#                                str_p("GT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER] |
-#                                str_p("GE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER_EQUAL])
-#                            >> ch_p('"');
+# FROM TestflowParser.cpp: LowLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
+# FROM TestflowParser.cpp:                                str_p("GT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER] |
+# FROM TestflowParser.cpp:                                str_p("GE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_GREATER_EQUAL])
+# FROM TestflowParser.cpp:                            >> ch_p('"');
 LowLimitSymbol = pp.Combine(pp.Literal('"') + (pp.Keyword("NA") | pp.Keyword("GT") | pp.Keyword("GE")) + pp.Literal('"'))
 
-# HighLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
-#                                 str_p("LT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER] |
-#                                 str_p("LE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER_EQUAL])
-#                             >> ch_p('"');
+# FROM TestflowParser.cpp: HighLimitSymbol = ch_p('"') >> (str_p("NA")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_DONT_CARE] |
+# FROM TestflowParser.cpp:                                 str_p("LT")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER] |
+# FROM TestflowParser.cpp:                                 str_p("LE")[TestmethodLimit.loSym = ::xoc::tapi::ZLimitSymbol_LESSER_EQUAL])
+# FROM TestflowParser.cpp:                             >> ch_p('"');
 HighLimitSymbol = pp.Combine(pp.Literal('"') + (pp.Keyword("NA") | pp.Keyword("LT") | pp.Keyword("LE")) + pp.Literal('"'))
 
-# TestmethodLimit = ((Identifier)[bind(&StartTestmethod)(construct_<string>(arg1, arg2))] >> ch_p(':') >>
-#  *(
-#    (
-#     QuotedString[TestmethodLimit.name = arg1]
-#     >> '='
-#     >> QuotedString[TestmethodLimit.loVal = arg1] >> ':'
-#     >> LowLimitSymbol >> ':'
-#     >> QuotedString[TestmethodLimit.hiVal = arg1] >> ':'
-#     >> HighLimitSymbol >> ':'
-#     >> QuotedString[TestmethodLimit.unit = arg1] >> ':'
-#     >> QuotedString[TestmethodLimit.numOffset = arg1] >> ':'
-#     >> QuotedString[TestmethodLimit.numInc = arg1] >> ';')
-#    [bind(&AddTestmethodLimit)(TestmethodLimit.name,
-#                   TestmethodLimit.loVal,
-#                   TestmethodLimit.loSym,
-#                   TestmethodLimit.hiVal,
-#                   TestmethodLimit.hiSym,
-#                   TestmethodLimit.unit,
-#                   TestmethodLimit.numOffset,
-#                   TestmethodLimit.numInc)]
-#    )
-#  )[bind(&SetTestmethodLimits)()]
-#    | Error
-# ;
+# FROM TestflowParser.cpp: TestmethodLimit = ((Identifier)[bind(&StartTestmethod)(construct_<string>(arg1, arg2))] >> ch_p(':') >>
+# FROM TestflowParser.cpp:  *(
+# FROM TestflowParser.cpp:    (
+# FROM TestflowParser.cpp:     QuotedString[TestmethodLimit.name = arg1]
+# FROM TestflowParser.cpp:     >> '='
+# FROM TestflowParser.cpp:     >> QuotedString[TestmethodLimit.loVal = arg1] >> ':'
+# FROM TestflowParser.cpp:     >> LowLimitSymbol >> ':'
+# FROM TestflowParser.cpp:     >> QuotedString[TestmethodLimit.hiVal = arg1] >> ':'
+# FROM TestflowParser.cpp:     >> HighLimitSymbol >> ':'
+# FROM TestflowParser.cpp:     >> QuotedString[TestmethodLimit.unit = arg1] >> ':'
+# FROM TestflowParser.cpp:     >> QuotedString[TestmethodLimit.numOffset = arg1] >> ':'
+# FROM TestflowParser.cpp:     >> QuotedString[TestmethodLimit.numInc = arg1] >> ';')
+# FROM TestflowParser.cpp:    [bind(&AddTestmethodLimit)(TestmethodLimit.name,
+# FROM TestflowParser.cpp:                   TestmethodLimit.loVal,
+# FROM TestflowParser.cpp:                   TestmethodLimit.loSym,
+# FROM TestflowParser.cpp:                   TestmethodLimit.hiVal,
+# FROM TestflowParser.cpp:                   TestmethodLimit.hiSym,
+# FROM TestflowParser.cpp:                   TestmethodLimit.unit,
+# FROM TestflowParser.cpp:                   TestmethodLimit.numOffset,
+# FROM TestflowParser.cpp:                   TestmethodLimit.numInc)]
+# FROM TestflowParser.cpp:    )
+# FROM TestflowParser.cpp:  )[bind(&SetTestmethodLimits)()]
+# FROM TestflowParser.cpp:    | Error
+# FROM TestflowParser.cpp: ;
 TestmethodLimit = pp.Group(Identifier("StartTestmethod")
                            + COLON + pp.ZeroOrMore((QuotedString("name") + EQ
                                                     + QuotedString("loVal") + COLON
@@ -500,17 +500,17 @@ TestmethodLimit = pp.Group(Identifier("StartTestmethod")
                                                     + QuotedString("unit") + COLON
                                                     + QuotedString("numOffset") + COLON
                                                     + QuotedString("numInc") + SEMI)))
-# UTMTestmethodLimits = *(TestmethodLimit);
+# FROM TestflowParser.cpp: UTMTestmethodLimits = *(TestmethodLimit);
 UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 
-# TestmethodLimitSection = str_p("testmethodlimits")[Start.isUTMBased = true, bind(&SetUTMBased)()]
-# #if NOUTM
-#   >> Error
-# #else
-#   >> UTMTestmethodLimits
-#   >> End
-# #endif
-# ;
+# FROM TestflowParser.cpp: TestmethodLimitSection = str_p("testmethodlimits")[Start.isUTMBased = true, bind(&SetUTMBased)()]
+# FROM TestflowParser.cpp: #if NOUTM
+# FROM TestflowParser.cpp:   >> Error
+# FROM TestflowParser.cpp: #else
+# FROM TestflowParser.cpp:   >> UTMTestmethodLimits
+# FROM TestflowParser.cpp:   >> End
+# FROM TestflowParser.cpp: #endif
+# FROM TestflowParser.cpp: ;
 TestmethodLimitSection = (pp.Keyword("testmethodlimits").suppress() + UTMTestmethodLimits + End)("TestmethodLimitSection")
 
 def create_TestmethodLimitSection(utm_tm_limits):
@@ -555,55 +555,55 @@ TestmethodLimitSection.setParseAction(ParseTestmethodLimitSection)
 # BEGIN TestmethodSection
 # -------------------------------------------------------------------------------------------
 
-# UTMTestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
+# FROM TestflowParser.cpp: UTMTestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
 UTMTestmethodClass = pp.Keyword("testmethod_class").suppress() + EQ + QuotedString("Class") + SEMI
 
-# TestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
+# FROM TestflowParser.cpp: TestmethodClass = str_p("testmethod_class") >> '=' >> QuotedString[Testmethod.Class = arg1] >> ';';
 TestmethodClass = pp.Keyword("testmethod_class").suppress() + EQ + QuotedString("Class") + SEMI
 
-# TestmethodId = str_p("testmethod_id") >> '=' >> (String[Testmethod.methodId = construct_<string>(arg1, arg2)] |
-#                QuotedString[Testmethod.methodId = arg1]) >> ';';
+# FROM TestflowParser.cpp: TestmethodId = str_p("testmethod_id") >> '=' >> (String[Testmethod.methodId = construct_<string>(arg1, arg2)] |
+# FROM TestflowParser.cpp:                QuotedString[Testmethod.methodId = arg1]) >> ';';
 TestmethodId = pp.Keyword("testmethod_id").suppress() + EQ + (String | QuotedString)("methodId") + SEMI
 
-# TestmethodParameters = str_p("testmethod_parameters") >> '=' >> QuotedString[Testmethod.parameter = arg1] >> ';';
+# FROM TestflowParser.cpp: TestmethodParameters = str_p("testmethod_parameters") >> '=' >> QuotedString[Testmethod.parameter = arg1] >> ';';
 TestmethodParameters = pp.Keyword("testmethod_parameters").suppress() + EQ + QuotedString("parameter") + SEMI
 
-# TestmethodLimits = str_p("testmethod_limits") >> '=' >> QuotedString[Testmethod.limits = arg1] >> ';';
+# FROM TestflowParser.cpp: TestmethodLimits = str_p("testmethod_limits") >> '=' >> QuotedString[Testmethod.limits = arg1] >> ';';
 TestmethodLimits = pp.Keyword("testmethod_limits").suppress() + EQ + QuotedString("limits") + SEMI
 
-# TestmethodName = str_p("testmethod_name") >> '=' >> QuotedString[Testmethod.name = arg1] >> ';';
+# FROM TestflowParser.cpp: TestmethodName = str_p("testmethod_name") >> '=' >> QuotedString[Testmethod.name = arg1] >> ';';
 TestmethodName = pp.Keyword("testmethod_name").suppress() + EQ + QuotedString("name") + SEMI
 
-# TestmethodDefinition = (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName ) >> !TestmethodDefinition;
+# FROM TestflowParser.cpp: TestmethodDefinition = (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName ) >> !TestmethodDefinition;
 TestmethodDefinition = pp.Forward()
 TestmethodDefinition << (TestmethodClass | TestmethodId | TestmethodParameters | TestmethodLimits | TestmethodName) + pp.Optional(TestmethodDefinition)
 
-# Testmethod = ((Identifier)[
-#              Testmethod.identifier = construct_<string>(arg1, arg2),
-#              Testmethod.Class = "",
-#              Testmethod.methodId = "",
-#              Testmethod.parameter = "",
-#              Testmethod.limits = "",
-#              Testmethod.name = ""]
-#  >> ':' >>
-#  if_p(Start.isUTMBased)
-#  [
-#   UTMTestmethodClass[bind(&CreateUTMTestmethod)(Testmethod.identifier, Testmethod.Class)]
-#   ]
-#  .else_p[
-#      TestmethodDefinition[bind(&CreateTestmethod)(Testmethod.identifier, Testmethod.Class, Testmethod.methodId, Testmethod.parameter, Testmethod.limits, Testmethod.name)]
-#  ]
-#  )
-# ;
+# FROM TestflowParser.cpp: Testmethod = ((Identifier)[
+# FROM TestflowParser.cpp:              Testmethod.identifier = construct_<string>(arg1, arg2),
+# FROM TestflowParser.cpp:              Testmethod.Class = "",
+# FROM TestflowParser.cpp:              Testmethod.methodId = "",
+# FROM TestflowParser.cpp:              Testmethod.parameter = "",
+# FROM TestflowParser.cpp:              Testmethod.limits = "",
+# FROM TestflowParser.cpp:              Testmethod.name = ""]
+# FROM TestflowParser.cpp:  >> ':' >>
+# FROM TestflowParser.cpp:  if_p(Start.isUTMBased)
+# FROM TestflowParser.cpp:  [
+# FROM TestflowParser.cpp:   UTMTestmethodClass[bind(&CreateUTMTestmethod)(Testmethod.identifier, Testmethod.Class)]
+# FROM TestflowParser.cpp:   ]
+# FROM TestflowParser.cpp:  .else_p[
+# FROM TestflowParser.cpp:      TestmethodDefinition[bind(&CreateTestmethod)(Testmethod.identifier, Testmethod.Class, Testmethod.methodId, Testmethod.parameter, Testmethod.limits, Testmethod.name)]
+# FROM TestflowParser.cpp:  ]
+# FROM TestflowParser.cpp:  )
+# FROM TestflowParser.cpp: ;
 if isUTMBased:
     Testmethod = pp.Group(Identifier("tm_id") + COLON + UTMTestmethodClass)
 else:
     Testmethod = pp.Group(Identifier("tm_id") + COLON + TestmethodDefinition)
 
-# Testmethods = *(Testmethod) >> End;
+# FROM TestflowParser.cpp: Testmethods = *(Testmethod) >> End;
 Testmethods = pp.ZeroOrMore(Testmethod) + End
 
-# TestmethodSection = str_p("testmethods") >> Testmethods;
+# FROM TestflowParser.cpp: TestmethodSection = str_p("testmethods") >> Testmethods;
 TestmethodSection = (pp.Keyword("testmethods").suppress() + Testmethods)("TestmethodSection")
 
 def create_TestmethodSection(test_methods,utm_based=True):
@@ -643,15 +643,15 @@ TestmethodSection.setParseAction(ParseTestmethodSection)
 # BEGIN UserprocedureSection
 # -------------------------------------------------------------------------------------------
 
-# Userprocedure = ((Identifier)[Userprocedure.identifier = construct_<string>(arg1, arg2)] >> ':' >>
-#                 str_p("user_procedure") >> '=' >> QuotedString[Userprocedure.commandline = arg1] >> ';')
-#                 [bind(&CreateUserprocedure)(Userprocedure.identifier, Userprocedure.commandline)];
+# FROM TestflowParser.cpp: Userprocedure = ((Identifier)[Userprocedure.identifier = construct_<string>(arg1, arg2)] >> ':' >>
+# FROM TestflowParser.cpp:                 str_p("user_procedure") >> '=' >> QuotedString[Userprocedure.commandline = arg1] >> ';')
+# FROM TestflowParser.cpp:                 [bind(&CreateUserprocedure)(Userprocedure.identifier, Userprocedure.commandline)];
 Userprocedure = pp.Group(Identifier("tm_id") + COLON + pp.Keyword("user_procedure").suppress() + EQ + QuotedString("commandline") + SEMI)
 
-# Userprocedures = *(Userprocedure) >> End;
+# FROM TestflowParser.cpp: Userprocedures = *(Userprocedure) >> End;
 Userprocedures = pp.ZeroOrMore(Userprocedure) + End
 
-# UserprocedureSection = str_p("tests") >> Userprocedures;
+# FROM TestflowParser.cpp: UserprocedureSection = str_p("tests") >> Userprocedures;
 UserprocedureSection = (pp.Keyword("tests").suppress() + Userprocedures)("UserprocedureSection")
 
 def create_UserprocedureSection(user_procs):
@@ -678,99 +678,99 @@ UserprocedureSection.setParseAction(ParseUserprocedureSection)
 # BEGIN TestsuiteSection
 # -------------------------------------------------------------------------------------------
 
-# TestsuiteName = Identifier >> *ch_p(' ') >> ':';
+# FROM TestflowParser.cpp: TestsuiteName = Identifier >> *ch_p(' ') >> ':';
 TestsuiteName = Identifier + COLON
 
-# TestsuiteTest = (str_p("override_testf") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >>';') |
-#                 (str_p("tests") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >> ';');
+# FROM TestflowParser.cpp: TestsuiteTest = (str_p("override_testf") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >>';') |
+# FROM TestflowParser.cpp:                 (str_p("tests") >> '=' >> Identifier[bind(&SetTestsuiteTest)(construct_<string>(arg1, arg2))] >> ';');
 TestsuiteTest = pp.Group((pp.Keyword("override_testf") + EQ + Identifier + SEMI) | (pp.Keyword("tests") + EQ + Identifier + SEMI))("TestsuiteTest")
 
-# TestsuiteOverride = str_p("override") >> '=' >> int_p >> ';';
+# FROM TestflowParser.cpp: TestsuiteOverride = str_p("override") >> '=' >> int_p >> ';';
 TestsuiteOverride = pp.Group(pp.Keyword("override").suppress() + EQ + integer + SEMI)("TestsuiteOverride")
 
-# TestsuiteTimEquSet = str_p("override_tim_equ_set") >> '=' >> Expression[bind(&SetTestsuiteTimEquSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteTimEquSet = str_p("override_tim_equ_set") >> '=' >> Expression[bind(&SetTestsuiteTimEquSet)(arg1)] >> ';';
 TestsuiteTimEquSet = pp.Group(pp.Keyword("override_tim_equ_set").suppress() + EQ + Expression + SEMI)("TestsuiteTimEquSet")
 
-# TestsuiteLevEquSet = str_p("override_lev_equ_set") >> '=' >> Expression[bind(&SetTestsuiteLevEquSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteLevEquSet = str_p("override_lev_equ_set") >> '=' >> Expression[bind(&SetTestsuiteLevEquSet)(arg1)] >> ';';
 TestsuiteLevEquSet = pp.Group(pp.Keyword("override_lev_equ_set").suppress() + EQ + Expression + SEMI)("TestsuiteLevEquSet")
 
-# TestsuiteTimSpecSet = str_p("override_tim_spec_set") >> '=' >> Expression[bind(&SetTestsuiteTimSpecSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteTimSpecSet = str_p("override_tim_spec_set") >> '=' >> Expression[bind(&SetTestsuiteTimSpecSet)(arg1)] >> ';';
 TestsuiteTimSpecSet = pp.Group(pp.Keyword("override_tim_spec_set").suppress() + EQ + Expression + SEMI)("TestsuiteTimSpecSet")
 
-# TestsuiteLevSpecSet = str_p("override_lev_spec_set") >> '=' >> Expression[bind(&SetTestsuiteLevSpecSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteLevSpecSet = str_p("override_lev_spec_set") >> '=' >> Expression[bind(&SetTestsuiteLevSpecSet)(arg1)] >> ';';
 TestsuiteLevSpecSet = pp.Group(pp.Keyword("override_lev_spec_set").suppress() + EQ + Expression + SEMI)("TestsuiteLevSpecSet")
 
-# TestsuiteTimSet = str_p("override_timset") >> '=' >> Expression[bind(&SetTestsuiteTimSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteTimSet = str_p("override_timset") >> '=' >> Expression[bind(&SetTestsuiteTimSet)(arg1)] >> ';';
 TestsuiteTimSet = pp.Group(pp.Keyword("override_timset").suppress() + EQ + Expression + SEMI)("TestsuiteTimSet")
 
-# TestsuiteLevSet = str_p("override_levset") >> '=' >> Expression[bind(&SetTestsuiteLevSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteLevSet = str_p("override_levset") >> '=' >> Expression[bind(&SetTestsuiteLevSet)(arg1)] >> ';';
 TestsuiteLevSet = pp.Group(pp.Keyword("override_levset").suppress() + EQ + Expression + SEMI)("TestsuiteLevSet")
 
-# TestsuiteSequencerLabel = str_p("override_seqlbl") >> '=' >> Expression[bind(&SetTestsuiteSequencerLabel)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteSequencerLabel = str_p("override_seqlbl") >> '=' >> Expression[bind(&SetTestsuiteSequencerLabel)(arg1)] >> ';';
 TestsuiteSequencerLabel = pp.Group(pp.Keyword("override_seqlbl").suppress() + EQ + Expression + SEMI)("TestsuiteSequencerLabel")
 
-# //Ignore this for now, because flag_ui handles the flags
-# TestsuiteFlags = str_p("local_flags") >> '=' >> list_p(Identifier[bind(&SetTestsuiteFlag)(construct_<string>(arg1, arg2))], ch_p(',')) >> ';';
+# FROM TestflowParser.cpp: //Ignore this for now, because flag_ui handles the flags
+# FROM TestflowParser.cpp: TestsuiteFlags = str_p("local_flags") >> '=' >> list_p(Identifier[bind(&SetTestsuiteFlag)(construct_<string>(arg1, arg2))], ch_p(',')) >> ';';
 TestsuiteFlags = pp.Group(pp.Keyword("local_flags").suppress() + EQ + pp.ZeroOrMore(Identifier + COMMA) + Identifier + SEMI)("TestsuiteFlags")
 
-# SiteControlExpression = (str_p("\"serial:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_SERIAL] |
-#                          str_p("\"parallel:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_PARALLEL] |
-#                         (str_p("\"semiparallel:")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_SEMIPARALLEL] >>
-#                          int_p[bind(&NewSiteControlArgument)(arg1)] >> ':' >> int_p[bind(&NewSiteControlArgument)(arg1)] >> !ch_p(':') >> '"')|
-#                         (str_p("\"other:")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_OTHER] >>
-#                          list_p.direct(int_p[bind(&NewSiteControlArgument)(arg1)], ch_p(':')) >> !ch_p(':') >> ch_p('"')))
-#                         [bind(&SetTestsuiteSiteControl)(SiteControlExpression.type)];
+# FROM TestflowParser.cpp: SiteControlExpression = (str_p("\"serial:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_SERIAL] |
+# FROM TestflowParser.cpp:                          str_p("\"parallel:\"")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_PARALLEL] |
+# FROM TestflowParser.cpp:                         (str_p("\"semiparallel:")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_SEMIPARALLEL] >>
+# FROM TestflowParser.cpp:                          int_p[bind(&NewSiteControlArgument)(arg1)] >> ':' >> int_p[bind(&NewSiteControlArgument)(arg1)] >> !ch_p(':') >> '"')|
+# FROM TestflowParser.cpp:                         (str_p("\"other:")[SiteControlExpression.type = ::xoc::tapi::ZSiteSequenceType_OTHER] >>
+# FROM TestflowParser.cpp:                          list_p.direct(int_p[bind(&NewSiteControlArgument)(arg1)], ch_p(':')) >> !ch_p(':') >> ch_p('"')))
+# FROM TestflowParser.cpp:                         [bind(&SetTestsuiteSiteControl)(SiteControlExpression.type)];
 SiteControlExpression = pp.Combine(pp.Keyword("\"serial:\"") | pp.Keyword("\"parallel:\"") |
                                    (pp.Keyword("\"semiparallel:") + integer + COLON + integer + pp.Optional(COLON) + pp.Literal('"')) |
                                    (pp.Keyword("\"other:") + pp.Optional(integer + COLON) + pp.Optional(COLON) + pp.Literal('"')))
 
-# TestsuiteSiteControl = str_p("site_control")[bind(&ClearSiteControlArguments)()] >> '=' >> SiteControlExpression >> ';';
+# FROM TestflowParser.cpp: TestsuiteSiteControl = str_p("site_control")[bind(&ClearSiteControlArguments)()] >> '=' >> SiteControlExpression >> ';';
 TestsuiteSiteControl = pp.Group(pp.Keyword("site_control").suppress() + EQ + SiteControlExpression + SEMI)("TestsuiteSiteControl")
 
-# TestsuiteFFCCount = str_p("ffc_on_fail") >> '=' >> int_p[bind(&SetTestsuiteFFCCount)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteFFCCount = str_p("ffc_on_fail") >> '=' >> int_p[bind(&SetTestsuiteFFCCount)(arg1)] >> ';';
 TestsuiteFFCCount = pp.Group(pp.Keyword("ffc_on_fail").suppress() + EQ + integer + SEMI)("TestsuiteFFCCount")
 
-# TestsuiteTestLevel = str_p("test_level") >> '=' >> int_p[bind(&SetTestsuiteTestLevel)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteTestLevel = str_p("test_level") >> '=' >> int_p[bind(&SetTestsuiteTestLevel)(arg1)] >> ';';
 TestsuiteTestLevel = pp.Group(pp.Keyword("test_level").suppress() + EQ + integer + SEMI)("TestsuiteTestLevel")
 
-# TestsuiteDPSSet = str_p("override_dpsset") >> '=' >> Expression[bind(&SetTestsuiteDPSSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteDPSSet = str_p("override_dpsset") >> '=' >> Expression[bind(&SetTestsuiteDPSSet)(arg1)] >> ';';
 TestsuiteDPSSet = pp.Group(pp.Keyword("override_dpsset").suppress() + EQ + Expression + SEMI)("TestsuiteDPSSet")
 
-# TestsuiteTestNumber = str_p("override_test_number") >> '=' >> Expression[bind(&SetTestsuiteTestNumber)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteTestNumber = str_p("override_test_number") >> '=' >> Expression[bind(&SetTestsuiteTestNumber)(arg1)] >> ';';
 TestsuiteTestNumber = pp.Group(pp.Keyword("override_test_number").suppress() + EQ + Expression + SEMI)("TestsuiteTestNumber")
 
-# TestsuiteAnalogSet = str_p("override_anaset") >> '=' >> Expression[bind(&SetTestsuiteAnalogSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteAnalogSet = str_p("override_anaset") >> '=' >> Expression[bind(&SetTestsuiteAnalogSet)(arg1)] >> ';';
 TestsuiteAnalogSet = pp.Group(pp.Keyword("override_anaset").suppress() + EQ + Expression + SEMI)("TestsuiteAnalogSet")
 
-# TestsuiteSiteMatch = str_p("site_match") >> '=' >> int_p[bind(&SetTestsuiteSiteMatch)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteSiteMatch = str_p("site_match") >> '=' >> int_p[bind(&SetTestsuiteSiteMatch)(arg1)] >> ';';
 TestsuiteSiteMatch = pp.Group(pp.Keyword("site_match").suppress() + EQ + integer + SEMI)("TestsuiteSiteMatch")
 
-# TestsuiteWaveformSet = str_p("override_wvfset") >> '=' >> Expression[bind(&SetTestsuiteWaveformSet)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteWaveformSet = str_p("override_wvfset") >> '=' >> Expression[bind(&SetTestsuiteWaveformSet)(arg1)] >> ';';
 TestsuiteWaveformSet = pp.Group(pp.Keyword("override_wvfset").suppress() + EQ + Expression + SEMI)("TestsuiteWaveformSet")
 
-# TestsuiteComment = str_p("comment") >> '=' >> QuotedString[bind(&SetTestsuiteComment)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestsuiteComment = str_p("comment") >> '=' >> QuotedString[bind(&SetTestsuiteComment)(arg1)] >> ';';
 TestsuiteComment = pp.Group(pp.Keyword("comment").suppress() + EQ + QuotedString + SEMI)("TestsuiteComment")
 
-# TestsuiteDefinition = (TestsuiteTest |
-#                        TestsuiteOverride |
-#                        TestsuiteTimEquSet |
-#                        TestsuiteLevEquSet |
-#                        TestsuiteTimSpecSet |
-#                        TestsuiteLevSpecSet |
-#                        TestsuiteTimSet |
-#                        TestsuiteLevSet |
-#                        TestsuiteSequencerLabel |
-#                        TestsuiteFlags |
-#                        TestsuiteSiteControl |
-#                        TestsuiteFFCCount |
-#                        TestsuiteTestLevel |
-#                        TestsuiteDPSSet |
-#                        TestsuiteTestNumber |
-#                        TestsuiteAnalogSet |
-#                        TestsuiteSiteMatch |
-#                        TestsuiteWaveformSet |
-#                        TestsuiteComment |
-#                        Error ) >> !TestsuiteDefinition;
+# FROM TestflowParser.cpp: TestsuiteDefinition = (TestsuiteTest |
+# FROM TestflowParser.cpp:                        TestsuiteOverride |
+# FROM TestflowParser.cpp:                        TestsuiteTimEquSet |
+# FROM TestflowParser.cpp:                        TestsuiteLevEquSet |
+# FROM TestflowParser.cpp:                        TestsuiteTimSpecSet |
+# FROM TestflowParser.cpp:                        TestsuiteLevSpecSet |
+# FROM TestflowParser.cpp:                        TestsuiteTimSet |
+# FROM TestflowParser.cpp:                        TestsuiteLevSet |
+# FROM TestflowParser.cpp:                        TestsuiteSequencerLabel |
+# FROM TestflowParser.cpp:                        TestsuiteFlags |
+# FROM TestflowParser.cpp:                        TestsuiteSiteControl |
+# FROM TestflowParser.cpp:                        TestsuiteFFCCount |
+# FROM TestflowParser.cpp:                        TestsuiteTestLevel |
+# FROM TestflowParser.cpp:                        TestsuiteDPSSet |
+# FROM TestflowParser.cpp:                        TestsuiteTestNumber |
+# FROM TestflowParser.cpp:                        TestsuiteAnalogSet |
+# FROM TestflowParser.cpp:                        TestsuiteSiteMatch |
+# FROM TestflowParser.cpp:                        TestsuiteWaveformSet |
+# FROM TestflowParser.cpp:                        TestsuiteComment |
+# FROM TestflowParser.cpp:                        Error ) >> !TestsuiteDefinition;
 TestsuiteDefinition = pp.Forward()
 TestsuiteDefinition << (TestsuiteTest |
                         TestsuiteOverride |
@@ -792,13 +792,13 @@ TestsuiteDefinition << (TestsuiteTest |
                         TestsuiteWaveformSet |
                         TestsuiteComment) + pp.Optional(TestsuiteDefinition)
 
-# Testsuite = (TestsuiteName [bind(&StartTestsuite)(construct_<string>(arg1, arg2-1))]) >> TestsuiteDefinition;
+# FROM TestflowParser.cpp: Testsuite = (TestsuiteName [bind(&StartTestsuite)(construct_<string>(arg1, arg2-1))]) >> TestsuiteDefinition;
 Testsuite = pp.Group(TestsuiteName("TestsuiteName") + TestsuiteDefinition("TestsuiteDefinition"))
 
-# Testsuites = *(Testsuite);
+# FROM TestflowParser.cpp: Testsuites = *(Testsuite);
 Testsuites = pp.ZeroOrMore(Testsuite)
 
-# TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
+# FROM TestflowParser.cpp: TestsuiteSection = str_p("test_suites") >> Testsuites  >> End;
 TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites + End)("TestsuiteSection")
 
 def parse_testsuite_def(ts_name,ts_def):
@@ -938,8 +938,8 @@ class Statement(object):
     def _nodes(self):
         return self.node_id
 
-# RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
-#                [bind(&CreateRunStatement)(RunStatement.testsuite)];
+# FROM TestflowParser.cpp: RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
+# FROM TestflowParser.cpp:                [bind(&CreateRunStatement)(RunStatement.testsuite)];
 RunStatement = (pp.Keyword("run").suppress() + LPAR + Identifier("testsuite") + RPAR + SEMI)
 
 def create_RunStatement(testsuite):
@@ -961,10 +961,10 @@ class ParseRunStatement(Statement):
 
 RunStatement.setParseAction(ParseRunStatement)
 
-# RunAndBranchStatement = (str_p("run_and_branch") >> ch_p('(') >> Identifier[RunAndBranchStatement.testsuite = construct_<string>(arg1, arg2)] >> ')'
-#                         >> str_p("then"))[bind(&CreateRunAndBranchStatement)(RunAndBranchStatement.testsuite)] >> str_p("{") [bind(&EnterSubBranch)(0)]
-#                         >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> !(str_p("else")
-#                         >> str_p("{") [bind(&EnterSubBranch)(1)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()]);
+# FROM TestflowParser.cpp: RunAndBranchStatement = (str_p("run_and_branch") >> ch_p('(') >> Identifier[RunAndBranchStatement.testsuite = construct_<string>(arg1, arg2)] >> ')'
+# FROM TestflowParser.cpp:                         >> str_p("then"))[bind(&CreateRunAndBranchStatement)(RunAndBranchStatement.testsuite)] >> str_p("{") [bind(&EnterSubBranch)(0)]
+# FROM TestflowParser.cpp:                         >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> !(str_p("else")
+# FROM TestflowParser.cpp:                         >> str_p("{") [bind(&EnterSubBranch)(1)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()]);
 RunAndBranchStatement = pp.Group(pp.Keyword("run_and_branch").suppress() + LPAR + Identifier("testsuite") + RPAR
                                  + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("RB_PASS") + RCURL
                                  + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("RB_FAIL") + RCURL))
@@ -1005,10 +1005,10 @@ class ParseRunAndBranchStatement(Statement):
 
 RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 
-# IfStatement = (str_p("if") >> Expression[IfStatement.condition = arg1] >> str_p("then") )
-#               [bind(&CreateIfStatement)(IfStatement.condition)]
-#               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
-#               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
+# FROM TestflowParser.cpp: IfStatement = (str_p("if") >> Expression[IfStatement.condition = arg1] >> str_p("then") )
+# FROM TestflowParser.cpp:               [bind(&CreateIfStatement)(IfStatement.condition)]
+# FROM TestflowParser.cpp:               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
+# FROM TestflowParser.cpp:               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
 IfStatement = pp.Group(pp.Keyword("if").suppress() + Expression("condition")
                        + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("IF_TRUE") + RCURL
                        + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("IF_FALSE") + RCURL))
@@ -1045,15 +1045,15 @@ class ParseIfStatement(Statement):
         return [self.node_id ,[x._nodes() for x in self.if_true],[x._nodes() for x in self.if_false]]
 IfStatement.setParseAction(ParseIfStatement)
 
-# GroupBypass = str_p("groupbypass") >> ',';
+# FROM TestflowParser.cpp: GroupBypass = str_p("groupbypass") >> ',';
 GroupBypass = pp.Keyword("groupbypass")("SetGroupBypass") + COMMA
 
-# GroupStatement = str_p("{") [bind(&CreateGroupStatement)(), bind(&EnterSubBranch)(0)]
-#                  >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> ','
-#                  >> (GroupBypass[bind(&SetGroupBypass)()] |
-#                 str_p("")[bind(&SetGroupNoBypass)()]) >> (str_p("open")[bind(&SetGroupOpen)()] |
-#                 str_p("closed")[bind(&SetGroupClosed)()]) >> ',' >> (QuotedString) [bind(&SetGroupLabel)(arg1)]
-#                 >> ',' >> (QuotedString) [bind(&SetGroupDescription)(arg1)];
+# FROM TestflowParser.cpp: GroupStatement = str_p("{") [bind(&CreateGroupStatement)(), bind(&EnterSubBranch)(0)]
+# FROM TestflowParser.cpp:                  >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> ','
+# FROM TestflowParser.cpp:                  >> (GroupBypass[bind(&SetGroupBypass)()] |
+# FROM TestflowParser.cpp:                 str_p("")[bind(&SetGroupNoBypass)()]) >> (str_p("open")[bind(&SetGroupOpen)()] |
+# FROM TestflowParser.cpp:                 str_p("closed")[bind(&SetGroupClosed)()]) >> ',' >> (QuotedString) [bind(&SetGroupLabel)(arg1)]
+# FROM TestflowParser.cpp:                 >> ',' >> (QuotedString) [bind(&SetGroupDescription)(arg1)];
 GroupStatement = pp.Group(LCURL + pp.Group(FlowStatements)("GR_SUB") + RCURL + COMMA + pp.Optional(GroupBypass)
                           + (pp.Keyword("open") | pp.Keyword("closed"))("SetGroupOpen") + COMMA
                           + QuotedString("SetGroupLabel") + COMMA + QuotedString("SetGroupDescription"))
@@ -1091,9 +1091,9 @@ class ParseGroupStatement(Statement):
         return [self.node_id , [x._nodes() for x in self.gr_sub]]
 GroupStatement.setParseAction(ParseGroupStatement)
 
-# AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
-#                       >> '=' >> (Expression[AssignmentStatement.value = arg1] | TestsuiteFlag[AssignmentStatement.value = arg1])
-#                       >> ';') [bind(&CreateAssignmentStatement)(AssignmentStatement.varName, AssignmentStatement.value)];
+# FROM TestflowParser.cpp: AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
+# FROM TestflowParser.cpp:                       >> '=' >> (Expression[AssignmentStatement.value = arg1] | TestsuiteFlag[AssignmentStatement.value = arg1])
+# FROM TestflowParser.cpp:                       >> ';') [bind(&CreateAssignmentStatement)(AssignmentStatement.varName, AssignmentStatement.value)];
 # AssignmentStatement = ((TestsuiteFlag | Variable) + EQ + (Expression | TestsuiteFlag) + SEMI)("AssignmentStatement")
 AssignmentStatement = pp.Group((TestsuiteFlag | Variable) + EQtok + (Expression | TestsuiteFlag) + SEMI)
 
@@ -1115,47 +1115,47 @@ class ParseAssignmentStatement(Statement):
 
 AssignmentStatement.setParseAction(ParseAssignmentStatement)
 
-# OOCRule = !(str_p("oocwarning") >> '=' >> int_p >> int_p >> int_p >> QuotedString) >> !(str_p("oocstop") >> '=' >> int_p >> int_p >> int_p >> QuotedString);
+# FROM TestflowParser.cpp: OOCRule = !(str_p("oocwarning") >> '=' >> int_p >> int_p >> int_p >> QuotedString) >> !(str_p("oocstop") >> '=' >> int_p >> int_p >> int_p >> QuotedString);
 OOCRule = (pp.Group(pp.Optional(pp.Keyword("oocwarning")("oocwarning") + EQ + integer + integer + integer + QuotedString))
            + pp.Group(pp.Optional(pp.Keyword("oocstop")("oocstop") + EQ + integer + integer + integer + QuotedString)))
 
-# Quality = str_p("good") [BinDefinition.quality = true] | str_p("bad")[BinDefinition.quality = false];
+# FROM TestflowParser.cpp: Quality = str_p("good") [BinDefinition.quality = true] | str_p("bad")[BinDefinition.quality = false];
 Quality = pp.Keyword("good") | pp.Keyword("bad")
 
-# Reprobe = str_p("reprobe") [BinDefinition.reprobe = true] | str_p("noreprobe") [BinDefinition.reprobe = false];
+# FROM TestflowParser.cpp: Reprobe = str_p("reprobe") [BinDefinition.reprobe = true] | str_p("noreprobe") [BinDefinition.reprobe = false];
 Reprobe = pp.Keyword("reprobe") | pp.Keyword("noreprobe")
 
-# Color = int_p [BinDefinition.color = static_cast_< ::xoc::tapi::ZBinColor >(arg1)]
-#     | str_p("black") [BinDefinition.color = ::xoc::tapi::ZBinColor_BLACK]
-#     | str_p("white") [BinDefinition.color = ::xoc::tapi::ZBinColor_WHITE]
-#     | str_p("red") [BinDefinition.color = ::xoc::tapi::ZBinColor_RED]
-#     | str_p("yellow") [BinDefinition.color = ::xoc::tapi::ZBinColor_YELLOW]
-#     | str_p("green") [BinDefinition.color = ::xoc::tapi::ZBinColor_GREEN]
-#     | str_p("cyan") [BinDefinition.color = ::xoc::tapi::ZBinColor_CYAN]
-#     | str_p("blue") [BinDefinition.color = ::xoc::tapi::ZBinColor_BLUE]
-#     | str_p("magenta") [BinDefinition.color = ::xoc::tapi::ZBinColor_MAGENTA];
+# FROM TestflowParser.cpp: Color = int_p [BinDefinition.color = static_cast_< ::xoc::tapi::ZBinColor >(arg1)]
+# FROM TestflowParser.cpp:     | str_p("black") [BinDefinition.color = ::xoc::tapi::ZBinColor_BLACK]
+# FROM TestflowParser.cpp:     | str_p("white") [BinDefinition.color = ::xoc::tapi::ZBinColor_WHITE]
+# FROM TestflowParser.cpp:     | str_p("red") [BinDefinition.color = ::xoc::tapi::ZBinColor_RED]
+# FROM TestflowParser.cpp:     | str_p("yellow") [BinDefinition.color = ::xoc::tapi::ZBinColor_YELLOW]
+# FROM TestflowParser.cpp:     | str_p("green") [BinDefinition.color = ::xoc::tapi::ZBinColor_GREEN]
+# FROM TestflowParser.cpp:     | str_p("cyan") [BinDefinition.color = ::xoc::tapi::ZBinColor_CYAN]
+# FROM TestflowParser.cpp:     | str_p("blue") [BinDefinition.color = ::xoc::tapi::ZBinColor_BLUE]
+# FROM TestflowParser.cpp:     | str_p("magenta") [BinDefinition.color = ::xoc::tapi::ZBinColor_MAGENTA];
 Color = (integer | pp.Keyword("black") | pp.Keyword("white") | pp.Keyword("red") | pp.Keyword("yellow") |
          pp.Keyword("green") | pp.Keyword("cyan") | pp.Keyword("blue") | pp.Keyword("magenta"))
 
-# BinNumber = int_p [BinDefinition.binNumber = arg1];
+# FROM TestflowParser.cpp: BinNumber = int_p [BinDefinition.binNumber = arg1];
 BinNumber = integer
 
-# Overon = str_p("over_on") [BinDefinition.overon = true] | str_p("not_over_on") [BinDefinition.overon = false];
+# FROM TestflowParser.cpp: Overon = str_p("over_on") [BinDefinition.overon = true] | str_p("not_over_on") [BinDefinition.overon = false];
 Overon = pp.Keyword("over_on") | pp.Keyword("not_over_on")
 
-# // the first alternate rule is an old definition format which accepts an OOCcrule
-# // as third parameter without using it;
-# // that way, syntax compability with older testflows is achieved
-#  BinDefinition = (QuotedString [BinDefinition.swBin = arg1, BinDefinition.binNumber = -1] >> ','
-#                   >> QuotedString [BinDefinition.swBinDescription = arg1] >> ',' >> !OOCRule >> ',' >> !Quality
-#                   >> ','  >> !Reprobe >> ',' >> Color >> ',' >> !BinNumber >> ',' >> !Overon)
-#                   [bind(&CreateBin)(BinDefinition.swBin, BinDefinition.swBinDescription, BinDefinition.quality,
-#                                     BinDefinition.reprobe, BinDefinition.color, BinDefinition.binNumber, BinDefinition.overon)] |
-#                   (QuotedString [BinDefinition.swBin = arg1, BinDefinition.binNumber = -1] >> ','
-#                   >> QuotedString [BinDefinition.swBinDescription = arg1] >> ',' >> !Quality >> ',' >> !Reprobe >> ',' >> Color
-#                   >> ',' >> !BinNumber >> ',' >> !Overon) [bind(&CreateBin)(BinDefinition.swBin, BinDefinition.swBinDescription,
-#                                                                             BinDefinition.quality, BinDefinition.reprobe, BinDefinition.color,
-#                                                                             BinDefinition.binNumber, BinDefinition.overon)];
+# FROM TestflowParser.cpp: // the first alternate rule is an old definition format which accepts an OOCcrule
+# FROM TestflowParser.cpp: // as third parameter without using it;
+# FROM TestflowParser.cpp: // that way, syntax compability with older testflows is achieved
+# FROM TestflowParser.cpp:  BinDefinition = (QuotedString [BinDefinition.swBin = arg1, BinDefinition.binNumber = -1] >> ','
+# FROM TestflowParser.cpp:                   >> QuotedString [BinDefinition.swBinDescription = arg1] >> ',' >> !OOCRule >> ',' >> !Quality
+# FROM TestflowParser.cpp:                   >> ','  >> !Reprobe >> ',' >> Color >> ',' >> !BinNumber >> ',' >> !Overon)
+# FROM TestflowParser.cpp:                   [bind(&CreateBin)(BinDefinition.swBin, BinDefinition.swBinDescription, BinDefinition.quality,
+# FROM TestflowParser.cpp:                                     BinDefinition.reprobe, BinDefinition.color, BinDefinition.binNumber, BinDefinition.overon)] |
+# FROM TestflowParser.cpp:                   (QuotedString [BinDefinition.swBin = arg1, BinDefinition.binNumber = -1] >> ','
+# FROM TestflowParser.cpp:                   >> QuotedString [BinDefinition.swBinDescription = arg1] >> ',' >> !Quality >> ',' >> !Reprobe >> ',' >> Color
+# FROM TestflowParser.cpp:                   >> ',' >> !BinNumber >> ',' >> !Overon) [bind(&CreateBin)(BinDefinition.swBin, BinDefinition.swBinDescription,
+# FROM TestflowParser.cpp:                                                                             BinDefinition.quality, BinDefinition.reprobe, BinDefinition.color,
+# FROM TestflowParser.cpp:                                                                             BinDefinition.binNumber, BinDefinition.overon)];
 BinDefinition = ((QuotedString("swBin") + COMMA + QuotedString("swBinDescription") + COMMA
                   + pp.Optional(OOCRule)("oocrule") + COMMA + pp.Optional(Quality)("quality") + COMMA
                   + pp.Optional(Reprobe)("reprobe") + COMMA + Color("color") + COMMA
@@ -1165,8 +1165,8 @@ BinDefinition = ((QuotedString("swBin") + COMMA + QuotedString("swBinDescription
                   + Color("color") + COMMA + pp.Optional(BinNumber)("binNumber") + COMMA
                   + pp.Optional(Overon)("overon")))
 
-# StopBinStatement = (str_p("stop_bin") >> (BinDefinition("", "", false, false, ::xoc::tapi::ZBinColor_BLACK, -1, false)) >> ';')
-#                    [bind(&CreateStopBinStatement)()];
+# FROM TestflowParser.cpp: StopBinStatement = (str_p("stop_bin") >> (BinDefinition("", "", false, false, ::xoc::tapi::ZBinColor_BLACK, -1, false)) >> ';')
+# FROM TestflowParser.cpp:                    [bind(&CreateStopBinStatement)()];
 StopBinStatement = pp.Group(pp.Keyword("stop_bin") + BinDefinition("CreateStopBinStatement") + SEMI)
 
 def create_StopBinStatement(swBin,swBinDescription,oocrule,quality,reprobe,color,binNumber,overon):
@@ -1203,8 +1203,8 @@ class ParseStopBinStatement(Statement):
 
 StopBinStatement.setParseAction(ParseStopBinStatement)
 
-# PrintStatement = (str_p("print") >> '(' >> Expression[PrintStatement.statement = arg1] >> ')' >> ';')
-#                  [bind(&CreatePrintStatement)(PrintStatement.statement)];
+# FROM TestflowParser.cpp: PrintStatement = (str_p("print") >> '(' >> Expression[PrintStatement.statement = arg1] >> ')' >> ';')
+# FROM TestflowParser.cpp:                  [bind(&CreatePrintStatement)(PrintStatement.statement)];
 PrintStatement = pp.Group(pp.Keyword("print") + LPAR + Expression("statement") + RPAR + SEMI)
 
 def create_PrintStatement(statement):
@@ -1224,8 +1224,8 @@ class ParsePrintStatement(Statement):
         return create_PrintStatement(self.statement)
 PrintStatement.setParseAction(ParsePrintStatement)
 
-# PrintDatalogStatement = (str_p("print_dl") >> '(' >> Expression[PrintDatalogStatement.statement = arg1] >> ')' >> ';')
-#                         [bind(&CreatePrintDatalogStatement)(PrintDatalogStatement.statement)];
+# FROM TestflowParser.cpp: PrintDatalogStatement = (str_p("print_dl") >> '(' >> Expression[PrintDatalogStatement.statement = arg1] >> ')' >> ';')
+# FROM TestflowParser.cpp:                         [bind(&CreatePrintDatalogStatement)(PrintDatalogStatement.statement)];
 PrintDatalogStatement = pp.Group(pp.Keyword("print_dl") + LPAR + Expression("statement") + RPAR + SEMI)
 
 def create_PrintDatalogStatement(statement):
@@ -1246,11 +1246,11 @@ class ParsePrintDatalogStatement(Statement):
 
 PrintDatalogStatement.setParseAction(ParsePrintDatalogStatement)
 
-# SVLRTimingStatement = (str_p("svlr_timing_command") >> '(' >> Expression[SVLRTimingStatement.equSet = arg1] >> ','
-#                       >> Expression[SVLRTimingStatement.specSet = arg1] >> ',' >> QuotedString[SVLRTimingStatement.variable = arg1]
-#                       >> ',' >> Expression[SVLRTimingStatement.value = arg1] >> ')' >> ';')
-#                       [bind(&CreateSVLRTimingStatement)(SVLRTimingStatement.equSet, SVLRTimingStatement.specSet,
-#                                                         SVLRTimingStatement.variable, SVLRTimingStatement.value)];
+# FROM TestflowParser.cpp: SVLRTimingStatement = (str_p("svlr_timing_command") >> '(' >> Expression[SVLRTimingStatement.equSet = arg1] >> ','
+# FROM TestflowParser.cpp:                       >> Expression[SVLRTimingStatement.specSet = arg1] >> ',' >> QuotedString[SVLRTimingStatement.variable = arg1]
+# FROM TestflowParser.cpp:                       >> ',' >> Expression[SVLRTimingStatement.value = arg1] >> ')' >> ';')
+# FROM TestflowParser.cpp:                       [bind(&CreateSVLRTimingStatement)(SVLRTimingStatement.equSet, SVLRTimingStatement.specSet,
+# FROM TestflowParser.cpp:                                                         SVLRTimingStatement.variable, SVLRTimingStatement.value)];
 SVLRTimingStatement = pp.Group(pp.Keyword("svlr_timing_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
                                + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 
@@ -1278,9 +1278,9 @@ class ParseSVLRTimingStatement(Statement):
 
 SVLRTimingStatement.setParseAction(ParseSVLRTimingStatement)
 
-# SVLRLevelStatement = (str_p("svlr_level_command") >> '(' >> Expression[SVLRLevelStatement.equSet = arg1] >> ',' >> Expression[SVLRLevelStatement.specSet = arg1]
-#                       >> ',' >> QuotedString[SVLRLevelStatement.variable = arg1] >> ',' >> Expression[SVLRLevelStatement.value = arg1] >> ')' >> ';')
-#                     [bind(&CreateSVLRLevelStatement)(SVLRLevelStatement.equSet, SVLRLevelStatement.specSet, SVLRLevelStatement.variable, SVLRLevelStatement.value)];
+# FROM TestflowParser.cpp: SVLRLevelStatement = (str_p("svlr_level_command") >> '(' >> Expression[SVLRLevelStatement.equSet = arg1] >> ',' >> Expression[SVLRLevelStatement.specSet = arg1]
+# FROM TestflowParser.cpp:                       >> ',' >> QuotedString[SVLRLevelStatement.variable = arg1] >> ',' >> Expression[SVLRLevelStatement.value = arg1] >> ')' >> ';')
+# FROM TestflowParser.cpp:                     [bind(&CreateSVLRLevelStatement)(SVLRLevelStatement.equSet, SVLRLevelStatement.specSet, SVLRLevelStatement.variable, SVLRLevelStatement.value)];
 SVLRLevelStatement = pp.Group(pp.Keyword("svlr_level_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
                               + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 
@@ -1308,12 +1308,12 @@ class ParseSVLRLevelStatement(Statement):
 
 SVLRLevelStatement.setParseAction(ParseSVLRLevelStatement)
 
-# TestNumLoopInc = str_p("test_number_loop_increment") >> '=' >> Expression[TestNumLoopInc.expression = arg1];
+# FROM TestflowParser.cpp: TestNumLoopInc = str_p("test_number_loop_increment") >> '=' >> Expression[TestNumLoopInc.expression = arg1];
 TestNumLoopInc = pp.Keyword("test_number_loop_increment") + EQtok + Expression
 
-# WhileStatement = (str_p("while") >> Expression [WhileStatement.condition = arg1, WhileStatement.testnum = construct_<string>("")] >> str_p("do")
-#                  >> !(TestNumLoopInc [WhileStatement.testnum = arg1])) [bind(&CreateWhileStatement)(WhileStatement.condition, WhileStatement.testnum)]
-#                  >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
+# FROM TestflowParser.cpp: WhileStatement = (str_p("while") >> Expression [WhileStatement.condition = arg1, WhileStatement.testnum = construct_<string>("")] >> str_p("do")
+# FROM TestflowParser.cpp:                  >> !(TestNumLoopInc [WhileStatement.testnum = arg1])) [bind(&CreateWhileStatement)(WhileStatement.condition, WhileStatement.testnum)]
+# FROM TestflowParser.cpp:                  >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
 WhileStatement = pp.Group((pp.Keyword("while").suppress() + Expression("condition") + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
                           + LCURL + pp.Group(FlowStatements)("W_TRUE") + RCURL)
 
@@ -1343,8 +1343,8 @@ class ParseWhileStatement(Statement):
 
 WhileStatement.setParseAction(ParseWhileStatement)
 
-# RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
-#                   >> Expression [bind(&SetRepeatCondition)(arg1)] >> !(TestNumLoopInc [bind(&SetRepeatTestnum)(arg1)]);
+# FROM TestflowParser.cpp: RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
+# FROM TestflowParser.cpp:                   >> Expression [bind(&SetRepeatCondition)(arg1)] >> !(TestNumLoopInc [bind(&SetRepeatTestnum)(arg1)]);
 RepeatStatement = pp.Group(pp.Keyword("repeat").suppress() + pp.Group(FlowStatements)("RPT_TRUE") + pp.Keyword("until").suppress()
                            + Expression("SetRepeatCondition") + pp.Optional(TestNumLoopInc)("SetRepeatTestnum"))
 
@@ -1372,13 +1372,13 @@ class ParseRepeatStatement(Statement):
         return [self.node_id ,[x._nodes() for x in self.rpt_true]]
 RepeatStatement.setParseAction(ParseRepeatStatement)
 
-# ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
-#                >> '=' >> Expression[ForStatement.assignValue = arg1] >> ';' >> Expression[ForStatement.condition = arg1]
-#                >> ';' >> QualifiedIdentifier[ForStatement.incrementVar = arg1] >> '=' >> Expression[ForStatement.incrementValue = arg1]
-#                >> ';' >> str_p("do") >> !(TestNumLoopInc [ForStatement.testnum = arg1]))
-#                [bind(&CreateForStatement)(ForStatement.assignVar, ForStatement.assignValue, ForStatement.condition, ForStatement.incrementVar,
-#                                           ForStatement.incrementValue, ForStatement.testnum)]
-#                >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
+# FROM TestflowParser.cpp: ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
+# FROM TestflowParser.cpp:                >> '=' >> Expression[ForStatement.assignValue = arg1] >> ';' >> Expression[ForStatement.condition = arg1]
+# FROM TestflowParser.cpp:                >> ';' >> QualifiedIdentifier[ForStatement.incrementVar = arg1] >> '=' >> Expression[ForStatement.incrementValue = arg1]
+# FROM TestflowParser.cpp:                >> ';' >> str_p("do") >> !(TestNumLoopInc [ForStatement.testnum = arg1]))
+# FROM TestflowParser.cpp:                [bind(&CreateForStatement)(ForStatement.assignVar, ForStatement.assignValue, ForStatement.condition, ForStatement.incrementVar,
+# FROM TestflowParser.cpp:                                           ForStatement.incrementValue, ForStatement.testnum)]
+# FROM TestflowParser.cpp:                >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
 ForStatement = pp.Group((pp.Keyword("for").suppress() + QualifiedIdentifier("assignVar") + EQ + Expression("assignValue") + SEMI
                          + Expression("condition") + SEMI + QualifiedIdentifier("incrementVar") + EQ + Expression("incrementValue")
                          + SEMI + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
@@ -1417,7 +1417,7 @@ class ParseForStatement(Statement):
         return [self.node_id ,[x._nodes() for x in self.for_true]]
 ForStatement.setParseAction(ParseForStatement)
 
-# MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
+# FROM TestflowParser.cpp: MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
 MultiBinStatement = (pp.Keyword("multi_bin") + SEMI)
 
 def create_MultiBinStatement():
@@ -1435,28 +1435,28 @@ class ParseMultiBinStatement(Statement):
 
 MultiBinStatement.setParseAction(ParseMultiBinStatement)
 
-# EmptyStatement = ch_p(';');
+# FROM TestflowParser.cpp: EmptyStatement = ch_p(';');
 EmptyStatement = ';'
 
-# TestflowSection = str_p("test_flow")[bind(&FlowSectionStart)()] >> FlowStatements >> End;
+# FROM TestflowParser.cpp: TestflowSection = str_p("test_flow")[bind(&FlowSectionStart)()] >> FlowStatements >> End;
 TestflowSection = (pp.Keyword("test_flow").suppress() + FlowStatements + End)("TestflowSection")
 
-# FlowStatement = RunStatement |
-#                 RunAndBranchStatement |
-#                 GroupStatement |
-#                 IfStatement |
-#                 AssignmentStatement |
-#                 StopBinStatement |
-#                 PrintStatement |
-#                 PrintDatalogStatement |
-#                 SVLRTimingStatement |
-#                 SVLRLevelStatement |
-#                 WhileStatement |
-#                 RepeatStatement |
-#                 ForStatement |
-#                 MultiBinStatement |
-#                 EmptyStatement |
-#                 Error;
+# FROM TestflowParser.cpp: FlowStatement = RunStatement |
+# FROM TestflowParser.cpp:                 RunAndBranchStatement |
+# FROM TestflowParser.cpp:                 GroupStatement |
+# FROM TestflowParser.cpp:                 IfStatement |
+# FROM TestflowParser.cpp:                 AssignmentStatement |
+# FROM TestflowParser.cpp:                 StopBinStatement |
+# FROM TestflowParser.cpp:                 PrintStatement |
+# FROM TestflowParser.cpp:                 PrintDatalogStatement |
+# FROM TestflowParser.cpp:                 SVLRTimingStatement |
+# FROM TestflowParser.cpp:                 SVLRLevelStatement |
+# FROM TestflowParser.cpp:                 WhileStatement |
+# FROM TestflowParser.cpp:                 RepeatStatement |
+# FROM TestflowParser.cpp:                 ForStatement |
+# FROM TestflowParser.cpp:                 MultiBinStatement |
+# FROM TestflowParser.cpp:                 EmptyStatement |
+# FROM TestflowParser.cpp:                 Error;
 FlowStatement = (RunStatement('RunStatement') |
                  RunAndBranchStatement('RunAndBranchStatement') |
                  GroupStatement('GroupStatement') |
@@ -1473,38 +1473,38 @@ FlowStatement = (RunStatement('RunStatement') |
                  MultiBinStatement('MultiBinStatement') |
                  EmptyStatement)
 
-# FlowStatements = *(FlowStatement);
+# FROM TestflowParser.cpp: FlowStatements = *(FlowStatement);
 FlowStatements << pp.ZeroOrMore(FlowStatement)
 
 # -------------------------------------------------------------------------------------------
 # BEGIN SpecialTestsuiteSection
 # -------------------------------------------------------------------------------------------
 
-# DownloadTestsuite = (str_p("download")[bind(&StartTestsuite)("download")] >> TestsuiteDefinition >> End) [bind(&SetDownloadSuite)()];
+# FROM TestflowParser.cpp: DownloadTestsuite = (str_p("download")[bind(&StartTestsuite)("download")] >> TestsuiteDefinition >> End) [bind(&SetDownloadSuite)()];
 DownloadTestsuite = pp.Group(pp.Keyword("download")("download") + TestsuiteDefinition + End)
 
-# InitTestsuite = (str_p("initialize")[bind(&StartTestsuite)("initialize")] >> TestsuiteDefinition >> End )[bind(&SetInitSuite)()];
+# FROM TestflowParser.cpp: InitTestsuite = (str_p("initialize")[bind(&StartTestsuite)("initialize")] >> TestsuiteDefinition >> End )[bind(&SetInitSuite)()];
 InitTestsuite = pp.Group(pp.Keyword("initialize")("initialize") + TestsuiteDefinition + End)
 
-# PauseTestsuite = (str_p("pause")[bind(&StartTestsuite)("pause")] >> TestsuiteDefinition >> End)[bind(&SetPauseSuite)()];
+# FROM TestflowParser.cpp: PauseTestsuite = (str_p("pause")[bind(&StartTestsuite)("pause")] >> TestsuiteDefinition >> End)[bind(&SetPauseSuite)()];
 PauseTestsuite = pp.Group(pp.Keyword("pause")("pause") + TestsuiteDefinition + End)
 
-# AbortTestsuite = (str_p("abort")[bind(&StartTestsuite)("abort")] >> TestsuiteDefinition >> End)[bind(&SetAbortSuite)()];
+# FROM TestflowParser.cpp: AbortTestsuite = (str_p("abort")[bind(&StartTestsuite)("abort")] >> TestsuiteDefinition >> End)[bind(&SetAbortSuite)()];
 AbortTestsuite = pp.Group(pp.Keyword("abort")("abort") + TestsuiteDefinition + End)
 
-# ResetTestsuite = (str_p("reset")[bind(&StartTestsuite)("reset")] >> TestsuiteDefinition >> End)[bind(&SetResetSuite)()];
+# FROM TestflowParser.cpp: ResetTestsuite = (str_p("reset")[bind(&StartTestsuite)("reset")] >> TestsuiteDefinition >> End)[bind(&SetResetSuite)()];
 ResetTestsuite = pp.Group(pp.Keyword("reset")("reset") + TestsuiteDefinition + End)
 
-# ExitTestsuite = (str_p("exit")[bind(&StartTestsuite)("exit")] >> TestsuiteDefinition >> End)[bind(&SetExitSuite)()];
+# FROM TestflowParser.cpp: ExitTestsuite = (str_p("exit")[bind(&StartTestsuite)("exit")] >> TestsuiteDefinition >> End)[bind(&SetExitSuite)()];
 ExitTestsuite = pp.Group(pp.Keyword("exit")("exit") + TestsuiteDefinition + End)
 
-# DisconnectTestsuite = (str_p("bin_disconnect")[bind(&StartTestsuite)("bin_disconnect")] >> TestsuiteDefinition >> End)[bind(&SetDisconnectSuite)()];
+# FROM TestflowParser.cpp: DisconnectTestsuite = (str_p("bin_disconnect")[bind(&StartTestsuite)("bin_disconnect")] >> TestsuiteDefinition >> End)[bind(&SetDisconnectSuite)()];
 DisconnectTestsuite = pp.Group(pp.Keyword("bin_disconnect")("bin_disconnect") + TestsuiteDefinition + End)
 
-# MultiBinDecisionTestsuite = (str_p("multi_bin_decision")[bind(&StartTestsuite)("multi_bin_decision")] >> TestsuiteDefinition >> End)[bind(&SetMultiBinDecisionSuite)()];
+# FROM TestflowParser.cpp: MultiBinDecisionTestsuite = (str_p("multi_bin_decision")[bind(&StartTestsuite)("multi_bin_decision")] >> TestsuiteDefinition >> End)[bind(&SetMultiBinDecisionSuite)()];
 MultiBinDecisionTestsuite = pp.Group(pp.Keyword("multi_bin_decision")("multi_bin_decision") + TestsuiteDefinition + End)
 
-# SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
+# FROM TestflowParser.cpp: SpecialTestsuiteSection = DownloadTestsuite| InitTestsuite| PauseTestsuite| AbortTestsuite| ResetTestsuite| ExitTestsuite| DisconnectTestsuite| MultiBinDecisionTestsuite;
 # Made this section recursive because TestsuiteDefinition is recursive (otherwise, pyparsing stops after the first element in the OR list)
 SpecialTestsuiteSection = pp.Forward()
 SpecialTestsuiteSection << (DownloadTestsuite | InitTestsuite | PauseTestsuite | AbortTestsuite |
@@ -1535,10 +1535,10 @@ SpecialTestsuiteSection.setParseAction(ParseSpecialTestsuiteSection)
 # BEGIN BinningSection
 # -------------------------------------------------------------------------------------------
 
-# OtherwiseBin = (str_p("otherwise bin") >> '= ' >> BinDefinition >> ';')[bind(&CreateOtherwiseBin)()];
+# FROM TestflowParser.cpp: OtherwiseBin = (str_p("otherwise bin") >> '= ' >> BinDefinition >> ';')[bind(&CreateOtherwiseBin)()];
 OtherwiseBin = (pp.Keyword("otherwise bin")("otherwise") + EQ + BinDefinition + SEMI)
 
-# BinningSection = str_p("binning") >> *(OtherwiseBin| (BinDefinition >> ';')) >> End;
+# FROM TestflowParser.cpp: BinningSection = str_p("binning") >> *(OtherwiseBin| (BinDefinition >> ';')) >> End;
 BinningSection = (pp.Keyword("binning").suppress() + pp.ZeroOrMore(pp.Group(OtherwiseBin | (BinDefinition + SEMI))) + End)("BinningSection")
 
 def create_BinningSection(binning):
@@ -1604,47 +1604,47 @@ BinningSection.setParseAction(ParseBinningSection)
 # BEGIN SetupSection
 # -------------------------------------------------------------------------------------------
 
-# ConfigFile = str_p("context_config_file") >> '= ' >> QuotedString [bind(&SetConfigFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: ConfigFile = str_p("context_config_file") >> '= ' >> QuotedString [bind(&SetConfigFile)(arg1)] >> ';';
 ConfigFile = (pp.Keyword("context_config_file") + EQ + QuotedString + SEMI)
 
-# LevelsFile = str_p("context_levels_file") >> '= ' >> QuotedString [bind(&SetLevelsFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: LevelsFile = str_p("context_levels_file") >> '= ' >> QuotedString [bind(&SetLevelsFile)(arg1)] >> ';';
 LevelsFile = (pp.Keyword("context_levels_file") + EQ + QuotedString + SEMI)
 
-# TimingFile = str_p("context_timing_file") >> '= ' >> QuotedString [bind(&SetTimingFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TimingFile = str_p("context_timing_file") >> '= ' >> QuotedString [bind(&SetTimingFile)(arg1)] >> ';';
 TimingFile = (pp.Keyword("context_timing_file") + EQ + QuotedString + SEMI)
 
-# VectorFile = str_p("context_vector_file") >> '= ' >> QuotedString [bind(&SetVectorFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: VectorFile = str_p("context_vector_file") >> '= ' >> QuotedString [bind(&SetVectorFile)(arg1)] >> ';';
 VectorFile = (pp.Keyword("context_vector_file") + EQ + QuotedString + SEMI)
 
-# AttribFile = str_p("context_attrib_file") >> '= ' >> QuotedString [bind(&SetAttribFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: AttribFile = str_p("context_attrib_file") >> '= ' >> QuotedString [bind(&SetAttribFile)(arg1)] >> ';';
 AttribFile = (pp.Keyword("context_attrib_file") + EQ + QuotedString + SEMI)
 
-# ChannelAttribFile = str_p("context_channel_attrib_file") >> '= ' >> QuotedString [bind(&SetChannelAttribFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: ChannelAttribFile = str_p("context_channel_attrib_file") >> '= ' >> QuotedString [bind(&SetChannelAttribFile)(arg1)] >> ';';
 ChannelAttribFile = (pp.Keyword("context_channel_attrib_file") + EQ + QuotedString + SEMI)
 
-# MixedSignalFile = str_p("context_mixsgl_file") >> '= ' >> QuotedString [bind(&SetMixedSignalFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: MixedSignalFile = str_p("context_mixsgl_file") >> '= ' >> QuotedString [bind(&SetMixedSignalFile)(arg1)] >> ';';
 MixedSignalFile = (pp.Keyword("context_mixsgl_file") + EQ + QuotedString + SEMI)
 
-# AnalogControlFile = str_p("context_analog_control_file") >> '= ' >> QuotedString [bind(&SetAnalogControlFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: AnalogControlFile = str_p("context_analog_control_file") >> '= ' >> QuotedString [bind(&SetAnalogControlFile)(arg1)] >> ';';
 AnalogControlFile = (pp.Keyword("context_analog_control_file") + EQ + QuotedString + SEMI)
 
-# WaveformFile = str_p("context_waveform_file") >> '= ' >> QuotedString [bind(&SetWaveformFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: WaveformFile = str_p("context_waveform_file") >> '= ' >> QuotedString [bind(&SetWaveformFile)(arg1)] >> ';';
 WaveformFile = (pp.Keyword("context_waveform_file") + EQ + QuotedString + SEMI)
 
-# RoutingFile = str_p("context_routing_file") >> '= ' >> QuotedString [bind(&SetRoutingFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: RoutingFile = str_p("context_routing_file") >> '= ' >> QuotedString [bind(&SetRoutingFile)(arg1)] >> ';';
 RoutingFile = (pp.Keyword("context_routing_file") + EQ + QuotedString + SEMI)
 
-# TestTableFile = str_p("context_testtable_file") >> '= ' >> QuotedString[bind(&SetTestTableFile)(arg1)] >> ';';
+# FROM TestflowParser.cpp: TestTableFile = str_p("context_testtable_file") >> '= ' >> QuotedString[bind(&SetTestTableFile)(arg1)] >> ';';
 TestTableFile = (pp.Keyword("context_testtable_file") + EQ + QuotedString + SEMI)
 
-# Protocols = str_p("context_protocols") >> '= ' >> QuotedString[bind(&SetProtocols)(arg1)] >> ';';
+# FROM TestflowParser.cpp: Protocols = str_p("context_protocols") >> '= ' >> QuotedString[bind(&SetProtocols)(arg1)] >> ';';
 Protocols = (pp.Keyword("context_protocols") + EQ + QuotedString + SEMI)
 
-# SetupFiles = ConfigFile| LevelsFile| TimingFile| VectorFile| AttribFile| ChannelAttribFile| MixedSignalFile| AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols;
+# FROM TestflowParser.cpp: SetupFiles = ConfigFile| LevelsFile| TimingFile| VectorFile| AttribFile| ChannelAttribFile| MixedSignalFile| AnalogControlFile| WaveformFile| RoutingFile| TestTableFile| Protocols;
 SetupFiles = pp.Group(ConfigFile | LevelsFile | TimingFile | VectorFile | AttribFile | ChannelAttribFile |
                       MixedSignalFile | AnalogControlFile | WaveformFile | RoutingFile | TestTableFile | Protocols)
 
-# SetupSection = str_p("context") >> *(SetupFiles) >> End;
+# FROM TestflowParser.cpp: SetupSection = str_p("context") >> *(SetupFiles) >> End;
 SetupSection = (pp.Keyword("context").suppress() + pp.ZeroOrMore(SetupFiles) + End)("SetupSection")
 
 def create_SetupSection(setup_files):
@@ -1669,7 +1669,7 @@ SetupSection.setParseAction(ParseSetupSection)
 # BEGIN OOCSection
 # -------------------------------------------------------------------------------------------
 
-# OOCSection = str_p("oocrule") >> OOCRule >> End;
+# FROM TestflowParser.cpp: OOCSection = str_p("oocrule") >> OOCRule >> End;
 OOCSection = (pp.Keyword("oocrule").suppress() + OOCRule + End)("OOCSection")
 
 def create_OOCSection(ooc_rules):
@@ -1695,10 +1695,10 @@ OOCSection.setParseAction(ParseOOCSection)
 # BEGIN HardwareBinSection
 # -------------------------------------------------------------------------------------------
 
-# HardBinDescription = (int_p[HardBinDescription.hwBin =  arg1] >> '= ' >> QuotedString[HardBinDescription.description =  arg1] >> ';')[bind(&SetHardBinDescription)(HardBinDescription.hwBin, HardBinDescription.description)];
+# FROM TestflowParser.cpp: HardBinDescription = (int_p[HardBinDescription.hwBin =  arg1] >> '= ' >> QuotedString[HardBinDescription.description =  arg1] >> ';')[bind(&SetHardBinDescription)(HardBinDescription.hwBin, HardBinDescription.description)];
 HardBinDescription = pp.Group(integer + EQ + QuotedString + SEMI)
 
-# HardwareBinSection = str_p("hardware_bin_descriptions") >> *(HardBinDescription) >> End;
+# FROM TestflowParser.cpp: HardwareBinSection = str_p("hardware_bin_descriptions") >> *(HardBinDescription) >> End;
 HardwareBinSection = (pp.Keyword("hardware_bin_descriptions").suppress() + pp.ZeroOrMore(HardBinDescription) + End)("HardwareBinSection")
 
 def create_HardwareBinSection(hbin_descriptions):
@@ -1723,28 +1723,28 @@ HardwareBinSection.setParseAction(ParseHardwareBinSection)
 # BEGIN ALL Sections collection
 # -------------------------------------------------------------------------------------------
 
-#   Sections =
-# (
-#  EmptySection
-#  | InformationSection
-#  | ImplicitDeclarationSection
-#  | DeclarationSection
-#  | FlagSection
-#  | TestfunctionSection
-#  | TestmethodParameterSection
-#  | TestmethodLimitSection
-#  | TestmethodSection
-#  | UserprocedureSection
-#  | TestsuiteSection
-#  | TestflowSection
-#  | SpecialTestsuiteSection
-#  | BinningSection
-#  | SetupSection
-#  | OOCSection
-#  | HardwareBinSection
-#  )
-#    >> !Sections
-# ;
+# FROM TestflowParser.cpp:   Sections =
+# FROM TestflowParser.cpp: (
+# FROM TestflowParser.cpp:  EmptySection
+# FROM TestflowParser.cpp:  | InformationSection
+# FROM TestflowParser.cpp:  | ImplicitDeclarationSection
+# FROM TestflowParser.cpp:  | DeclarationSection
+# FROM TestflowParser.cpp:  | FlagSection
+# FROM TestflowParser.cpp:  | TestfunctionSection
+# FROM TestflowParser.cpp:  | TestmethodParameterSection
+# FROM TestflowParser.cpp:  | TestmethodLimitSection
+# FROM TestflowParser.cpp:  | TestmethodSection
+# FROM TestflowParser.cpp:  | UserprocedureSection
+# FROM TestflowParser.cpp:  | TestsuiteSection
+# FROM TestflowParser.cpp:  | TestflowSection
+# FROM TestflowParser.cpp:  | SpecialTestsuiteSection
+# FROM TestflowParser.cpp:  | BinningSection
+# FROM TestflowParser.cpp:  | SetupSection
+# FROM TestflowParser.cpp:  | OOCSection
+# FROM TestflowParser.cpp:  | HardwareBinSection
+# FROM TestflowParser.cpp:  )
+# FROM TestflowParser.cpp:    >> !Sections
+# FROM TestflowParser.cpp: ;
 Sections = pp.Forward()
 Sections << pp.ZeroOrMore(EmptySection |
                           InformationSection |
@@ -1764,7 +1764,7 @@ Sections << pp.ZeroOrMore(EmptySection |
                           OOCSection |
                           HardwareBinSection + pp.Optional(Sections))
 
-# Start = OptFileHeader[Start.isUTMBased=false] >> OptRevision >> Sections;
+# FROM TestflowParser.cpp: Start = OptFileHeader[Start.isUTMBased=false] >> OptRevision >> Sections;
 Start = pp.Group(OptFileHeader + OptRevision + Sections)
 class ParseStart(object):
     def __init__(self,toks):
@@ -1792,6 +1792,20 @@ class ParseStart(object):
         return '\n'.join([str(x) for x in self.toks])
 Start.setParseAction(ParseStart)
 
+def format_tf(tf_str):
+    indent_lev = 0
+    indent = '  '
+    rstr = ''
+    for line in tf_str.split('\n'):
+        line = line.strip()
+        if not len(line):
+            continue
+        if line[0] == '}':
+            indent_lev -= 1
+        rstr += indent*indent_lev + line + '\n'
+        if line[0] == '{':
+            indent_lev += 1
+    return rstr
 
 class ParseTestflowSection(Statement):
     def __init__(self,toks):
@@ -1801,7 +1815,7 @@ class ParseTestflowSection(Statement):
         rstr = self.section_name + '\n'
         rstr += ''.join([str(x) for x in self.data]) + '\n'
         rstr += EndStr
-        return rstr
+        return format_tf(rstr)
     def _nodes(self):
         return [x._nodes() for x in self.data]
 
@@ -1853,6 +1867,5 @@ if __name__ == '__main__':
     # print '===================================================================================================\n'*4
     # pprint(tf.testsuites)
 
-# TODO : push all code in __str__ for each class into functions so that we can create a testflow file from modified data
 # TODO : gather all testsuite meta data
 # TODO : get all parent ids/conditions so that we can add that to testsuite information

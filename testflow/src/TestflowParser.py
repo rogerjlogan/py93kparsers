@@ -1,4 +1,32 @@
-__author__ = 'Roger'
+#!/usr/bin/env python
+"""
+    This script was converted from TestflowParser.cpp provided by Advantest R&D (date provided: 9/28/2015).
+    The original script was written in c++ using Boost/Spirit but this python script uses pyparsing.
+    Both are very similar in that they mimic BNF, with the difference being that Boost/Spirit is
+    a bottom up parser and pyparsing is top down.
+
+    At the time this script was provided from R&D, the latest SmarTest release was 7.3.2.4
+
+    Since none of the dependencies were provided, certain liberties were taken to figure out post parsing.
+    Most of the Boost/Spirit code is preserved in various places in comments, always
+    beginning with "FROM TestflowParser.cpp: ".
+
+    REVISION NOTES:
+
+    v1.0:
+        - Reads/Parses testflow file
+        - Does NOT evaluate assignments or expressions (just passes them along as strings)
+        - Can print(or write to file) copy of input testflow file for debugging:
+            tf = Testflow(<testflow.tf>)
+            print tf
+        - Print node map to show the Tree and meta data for each node:
+            print tf.showNodeMap()
+        - Print testsuites and their node id which can be used for map location and retrieving meta data:
+            print tf.testsuites
+"""
+
+__author__ = 'Roger Logan'
+__version__ = '1.0'
 
 # modified to True if certain sections are found
 isUTMBased = False
@@ -7,8 +35,6 @@ import pyparsing as pp
 import sys
 from pprint import *
 import re
-
-debug = True
 
 SEMI = pp.Literal(';').suppress()
 AT = pp.Literal('@').suppress()
@@ -148,10 +174,20 @@ Type = pp.Keyword("double") | pp.Keyword("string")
 # FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))("OptFileHeader")
 
+
 class ParseOptFileHeader(object):
+    """
+    Receives tokens passed from OptFileHeader.setParseAction()
+    """
+
     def __init__(self,toks):
+
         self.section_name = "OptFileHeader"
+        """str name of section"""
+
         self.header = toks[0]
+        """header string"""
+
     def __str__(self):
         return self.header
 
@@ -161,12 +197,32 @@ OptFileHeader.setParseAction(ParseOptFileHeader)
 OptRevision = (pp.Optional(pp.Keyword("language_revision")).suppress() + EQ + pp.Word(pp.nums) + SEMI)("OptRevision")
 
 def create_OptRevision(lang):
-    return "language_revision" + ' = ' + lang + ';\n'
+    """
+    :param lang: int most likely '1'
+    :return: str representation of language revision
+    Example:
+        language_revision = 1;
+    """
+    return "language_revision" + ' = ' + str(lang) + ';\n'
+
 
 class ParseOptRevision(object):
+    """
+    Receives tokens passed from OptRevision.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "OptRevision"
+        """str name of section"""
+
         self.language_revision = toks[0]
+        """int which is most likely '1'"""
+
     def __str__(self):
         return create_OptRevision(self.language_revision)
 
@@ -175,10 +231,24 @@ OptRevision.setParseAction(ParseOptRevision)
 # FROM TestflowParser.cpp: EmptySection = ch_p(';');
 EmptySection = pp.Group(pp.Literal(';'))("EmptySection")
 
+
 class ParseEmptySection(object):
+    """
+    Receives tokens passed from EmptySection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = ""
+        """str name of section"""
+
         self.empty_section = toks
+        """should be nothing but ';'"""
+
     def __str__(self):
         return ';'
 
@@ -213,6 +283,15 @@ InformationElements = pp.Group(pp.ZeroOrMore(DeviceName | DeviceRevision | TestR
 InformationSection = (pp.Keyword("information").suppress() + InformationElements + End)("InformationSection")
 
 def create_InformationSection(dev_name='',dev_rev='',test_rev='',descr='',app='',temp=''):
+    """
+    :param dev_name: device name
+    :param dev_rev: device revision
+    :param test_rev: test revision
+    :param descr: description
+    :param app: application
+    :param temp: temperature
+    :return: formatted str for output
+    """
     rstr = 'information\n'
     if len(dev_name):
         rstr += 'device_name = ' + dev_name + ';\n'
@@ -229,15 +308,33 @@ def create_InformationSection(dev_name='',dev_rev='',test_rev='',descr='',app=''
     rstr += EndStr
     return rstr
 
+
 class ParseInformationSection(object):
+    """
+    Receives tokens passed from InformationSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "information"
+        """str name of section"""
+
         self.SetDeviceName = toks[0].SetDeviceName
+
         self.SetDeviceRevision = toks[0].SetDeviceRevision
+
         self.SetTestRevision = toks[0].SetTestRevision
+
         self.SetDescription = toks[0].SetDescription
+
         self.SetApplication = toks[0].SetApplication
+
         self.SetTemperature = toks[0].SetTemperature
+
     def __str__(self):
         return create_InformationSection(self.SetDeviceName,self.SetDeviceRevision,self.SetTestRevision,
                                          self.SetDescription,self.SetApplication,self.SetTemperature)
@@ -259,18 +356,33 @@ ImplicitDeclarations = pp.ZeroOrMore(Declaration)
 ImplicitDeclarationSection = (pp.Keyword("implicit_declarations").suppress() + ImplicitDeclarations + End)("ImplicitDeclarationSection")
 
 def create_ImplicitDeclarationSection(declarations):
+    """
+    :param declarations: dict of variables(key) and their types(value)
+    :return: formatted str for output
+    """
     rstr = 'implicit_declarations\n'
     for varName,varType in declarations.iteritems():
         rstr += varName + ' : ' + varType + ';\n'
     rstr += EndStr
     return rstr
 
+
 class ParseImplicitDeclarationSection(object):
+    """
+    Receives tokens passed from ImplicitDeclarationSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
         self.section_name = "implicit_declarations"
+        """str name of section"""
         self.Declarations = {}
         for tok in toks:
             self.Declarations[tok[0]] = tok[1]
+
     def __str__(self):
         return create_ImplicitDeclarationSection(self.Declarations)
 
@@ -292,18 +404,37 @@ Declarations = pp.ZeroOrMore(Definition)
 DeclarationSection = (pp.Keyword("declarations").suppress() + Declarations + End)("DeclarationSection")
 
 def create_DeclarationSection(variables):
+    """
+    :param variables: dict of variables(key) and their values(value)
+    :return:
+    """
     rstr = 'declarations\n'
     for varName,value in variables.iteritems():
         rstr += varName + ' = ' + value + ';\n'
     rstr += EndStr
     return rstr
 
+
 class ParseDeclarationSection(object):
+    """
+    Receives tokens passed from DeclarationSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "declarations"
+        """str name of section"""
+
         self.variables = {}
+        """dict of variables(key) and their values(value)"""
+
         for tok in toks:
             self.variables[tok[0]] = tok[1]
+
     def __str__(self):
         return create_DeclarationSection(self.variables)
 
@@ -329,6 +460,11 @@ Flags = pp.ZeroOrMore(UserFlag | SystemFlag)
 FlagSection = (pp.Keyword("flags").suppress() + Flags + End)("FlagSection")
 
 def create_FlagSection(user_flags,sys_flags):
+    """
+    :param user_flags: dict of user variables(key) and their values(value)
+    :param sys_flags: dict of system variables(key) and their values(value)
+    :return: formatted str for output
+    """
     rstr = 'flags\n'
     for varName,value in sys_flags.iteritems():
         rstr += varName + ' = ' + value + ';\n'
@@ -337,11 +473,27 @@ def create_FlagSection(user_flags,sys_flags):
     rstr += EndStr
     return rstr
 
+
 class ParseFlagSection(object):
+    """
+    Receives tokens passed from FlagSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "flags"
+        """str name of section"""
+
         self.UserFlags = {}
+        """dict of user variables(key) and their values(value)"""
+
         self.SystemFlags = {}
+        """dict of system variables(key) and their values(value)"""
+
         for tok in toks:
             if len(tok) == 3:
                 self.UserFlags[tok[1]] = tok[2]
@@ -349,6 +501,7 @@ class ParseFlagSection(object):
                 self.SystemFlags[tok[0]] = tok[1]
             else:
                 sys.exit("ERROR!!! Unknown element in 'flags' section! Exiting ...")
+
     def __str__(self):
         return create_FlagSection(self.UserFlags,self.SystemFlags)
 
@@ -378,6 +531,11 @@ Testfunctions = pp.ZeroOrMore(Testfunction) + End
 TestfunctionSection = (pp.Keyword("testfunctions").suppress() + Testfunctions)("TestfunctionSection")
 
 def create_TestfunctionSection(test_funcs):
+    """
+    :param test_funcs: 2-D dict of testmethod ids(primary key), their fields(secondary key) and their data(values);
+                       valid fields: testfunction_description, testfunction_parameters
+    :return: formatted str for output
+    """
     rstr = 'testfunctions\n'
     for tm_id in test_funcs:
         rstr += tm_id + ':\n'
@@ -386,10 +544,24 @@ def create_TestfunctionSection(test_funcs):
     rstr += EndStr
     return rstr
 
+
 class ParseTestfunctionSection(object):
+    """
+    Receives tokens passed from TestfunctionSection.setParseAction()
+    """
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "testfunctions"
+        """str name of section"""
+
         self.Testfunctions = {}
+        """2-D dict of testmethod ids(primary key), their fields(secondary key) and their data(values);
+           valid fields: testfunction_description, testfunction_parameters"""
+
         for tok in toks:
             tm_id = tok.pop(0)
             self.Testfunctions[tm_id] = {}
@@ -399,6 +571,7 @@ class ParseTestfunctionSection(object):
             elif "testfunction_description" in tok[1] and "testfunction_parameters" in tok[0]:
                 self.Testfunctions[tm_id]["testfunction_description"] = tok[1][1]
                 self.Testfunctions[tm_id]["testfunction_parameters"] = tok[0][1]
+
     def __str__(self):
         return create_TestfunctionSection(self.Testfunctions)
 
@@ -428,6 +601,10 @@ UTMTestmethodParameters = pp.ZeroOrMore(TestmethodParameter)
 TestmethodParameterSection = (pp.Keyword("testmethodparameters").suppress() + UTMTestmethodParameters + End)("TestmethodParameterSection")
 
 def create_TestmethodParameterSection(utm_tm_params):
+    """
+    :param utm_tm_params:
+    :return: formatted str for output
+    """
     rstr = 'testmethodparameters\n'
     for tm_id in utm_tm_params:
         rstr += tm_id + ':\n'
@@ -436,16 +613,30 @@ def create_TestmethodParameterSection(utm_tm_params):
     rstr += EndStr
     return rstr
 
+
 class ParseTestmethodParameterSection(object):
+    """
+    Receives tokens passed from TestmethodParameterSection.setParseAction()
+    """
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         global isUTMBased
         isUTMBased = True
+
         self.section_name = "testmethodparameters"
+        """str name of section"""
+
         self.UTMTestmethodParameters = {}
+
         for tok in toks:
             self.UTMTestmethodParameters[tok[0]] = {}
             for t in tok[1:]:
                 self.UTMTestmethodParameters[tok[0]][t[0]] = t[1]
+
     def __str__(self):
         return create_TestmethodParameterSection(self.UTMTestmethodParameters)
 
@@ -528,12 +719,26 @@ def create_TestmethodLimitSection(utm_tm_limits):
         rstr += EndStr
         return rstr
 
+
 class ParseTestmethodLimitSection(object):
+    """
+    Receives tokens passed from TestmethodLimitSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         global isUTMBased
         isUTMBased = True
+
         self.section_name = "testmethodlimits"
+        """str name of section"""
+
         self.UTMTestmethodLimits = {}
+
         for tok in toks:
             tm_id = tok["StartTestmethod"]
             if tm_id not in self.UTMTestmethodLimits:
@@ -546,6 +751,7 @@ class ParseTestmethodLimitSection(object):
             self.UTMTestmethodLimits[tm_id]["unit"] = tok["unit"]
             self.UTMTestmethodLimits[tm_id]["numOffset"] = tok["numOffset"]
             self.UTMTestmethodLimits[tm_id]["numInc"] = tok["numInc"]
+
     def __str__(self):
         return create_TestmethodLimitSection(self.UTMTestmethodLimits)
         
@@ -607,6 +813,11 @@ Testmethods = pp.ZeroOrMore(Testmethod) + End
 TestmethodSection = (pp.Keyword("testmethods").suppress() + Testmethods)("TestmethodSection")
 
 def create_TestmethodSection(test_methods,utm_based=True):
+    """
+    :param test_methods:
+    :param utm_based:
+    :return: formatted str for output
+    """
     rstr = "testmethods\n"
     for tm_id in test_methods:
         rstr += tm_id + ':\n  '
@@ -619,11 +830,25 @@ def create_TestmethodSection(test_methods,utm_based=True):
     rstr += EndStr
     return rstr
 
+
 class ParseTestmethodSection(object):
+    """
+    Receives tokens passed from TestmethodSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "testmethods"
+        """str name of section"""
+
         self.isUTMBased = isUTMBased
+
         self.Testmethods = {}
+
         for tok in toks:
             tm_id = tok["tm_id"]
             if tm_id not in self.Testmethods:
@@ -634,6 +859,7 @@ class ParseTestmethodSection(object):
                     self.Testmethods[tm_id]["parameter"] = tok["parameter"]
                     self.Testmethods[tm_id]["limits"] = tok["limits"]
                     self.Testmethods[tm_id]["name"] = tok["name"]
+
     def __str__(self):
         return create_TestmethodSection(self.Testmethods)
         
@@ -655,6 +881,10 @@ Userprocedures = pp.ZeroOrMore(Userprocedure) + End
 UserprocedureSection = (pp.Keyword("tests").suppress() + Userprocedures)("UserprocedureSection")
 
 def create_UserprocedureSection(user_procs):
+    """
+    :param user_procs:
+    :return: formatted str for output
+    """
     rstr = 'tests\n'
     for tm_id in user_procs:
         rstr += tm_id + ':\n  '
@@ -663,12 +893,26 @@ def create_UserprocedureSection(user_procs):
     return rstr
     
 
+
 class ParseUserprocedureSection(object):
+    """
+    Receives tokens passed from UserprocedureSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "tests"
+        """str name of section"""
+
         self.Userprocedures = {}
+
         for tok in toks:
             self.Userprocedures[tok[0]] = tok[1]
+
     def __str__(self):
         return create_UserprocedureSection(self.Userprocedures)
 
@@ -803,54 +1047,105 @@ TestsuiteSection = (pp.Keyword("test_suites").suppress() + Testsuites + End)("Te
 
 def parse_testsuite_def(ts_name,ts_def):
     """
-        Used by ParseTestsuiteSection and also ParseSpecialTestsuiteSection
+    Used by both ParseTestsuiteSection and ParseSpecialTestsuiteSection
+
+    :param ts_name: testsuite name used for dictionary key of testsuites{}
+        :type ts_name: str
+    :param ts_def: tokens found within testsuite definitions
+        :type ts_def: object (pyparsing.ParseResults)
+    :return: testsuites: container for all of the testsuite data
+        :rtype: dict
+
+        Example:
+            testsuites =
+                {'PB_PLL_VSKEW_MM1_2_AtSpeedSRVminOD_st': {'TestsuiteFlags': ['output_on_pass',
+                                                                              'output_on_fail',
+                                                                              'value_on_pass',
+                                                                              'value_on_fail',
+                                                                              'per_pin_on_pass',
+                                                                              'per_pin_on_fail'],
+                                                           'TestsuiteLevEquSet': '1',
+                                                           'TestsuiteLevSet': '2',
+                                                           'TestsuiteLevSpecSet': '2',
+                                                           'TestsuiteOverride': '1',
+                                                           'TestsuiteSequencerLabel': '"PB_PLL_VSKEW_MM1_2_MPB"',
+                                                           'TestsuiteSiteControl': '"parallel:"',
+                                                           'TestsuiteSiteMatch': '2',
+                                                           'TestsuiteTest': {'override_testf': 'tm_64'},
+                                                           'TestsuiteTimSet': '1',
+                                                           'TestsuiteTimSpecSet': '"pASYNC1_pASYNC2_pNONASYNC1_WFT8X4_MPT"'}}
+                {'PB_PLL_VSKEW_MM1_2_AtSpeedVmaxOK_st': {'TestsuiteFlags': ['output_on_pass',
+                                                                            'output_on_fail',
+                                                                            'value_on_pass',
+                                                                            'value_on_fail',
+                                                                            'per_pin_on_pass',
+                                                                            'per_pin_on_fail'],
+                                                         'TestsuiteLevEquSet': '1',
+                                                         'TestsuiteLevSet': '2',
+                                                         'TestsuiteLevSpecSet': '8',
+                                                         'TestsuiteOverride': '1',
+                                                         'TestsuiteSequencerLabel': '"PB_PLL_VSKEW_MM1_2_MPB"',
+                                                         'TestsuiteSiteControl': '"parallel:"',
+                                                         'TestsuiteSiteMatch': '2',
+                                                         'TestsuiteTest': {'override_testf': 'tm_117'},
+                                                         'TestsuiteTimSet': '1',
+                                                         'TestsuiteTimSpecSet': '"pASYNC1_pASYNC2_pNONASYNC1_WFT8X4_MPT"'}}
     """
     testsuites = {}
     if ts_name not in testsuites:
         testsuites[ts_name] = {}
     if "TestsuiteTest" in ts_def:
         testsuites[ts_name]["TestsuiteTest"] = {}
-        testsuites[ts_name]["TestsuiteTest"][ts_def["TestsuiteTest"][0]] = ts_def["TestsuiteTest"][1]
-        testsuites[ts_name]["TestsuiteOverride"] = ts_def["TestsuiteOverride"][0]
+        testsuites[ts_name]["TestsuiteTest"][ts_def.TestsuiteTest[0]] = ts_def.TestsuiteTest[1]
+        testsuites[ts_name]["TestsuiteOverride"] = ts_def.TestsuiteOverride[0]
     if "TestsuiteTimEquSet" in ts_def:
-        testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def["TestsuiteTimEquSet"][0]
+        testsuites[ts_name]["TestsuiteTimEquSet"] = ts_def.TestsuiteTimEquSet[0]
     if "TestsuiteLevEquSet" in ts_def:
-        testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def["TestsuiteLevEquSet"][0]
+        testsuites[ts_name]["TestsuiteLevEquSet"] = ts_def.TestsuiteLevEquSet[0]
     if "TestsuiteTimSpecSet" in ts_def:
-        testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def["TestsuiteTimSpecSet"][0]
+        testsuites[ts_name]["TestsuiteTimSpecSet"] = ts_def.TestsuiteTimSpecSet[0]
     if "TestsuiteLevSpecSet" in ts_def:
-        testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def["TestsuiteLevSpecSet"][0]
+        testsuites[ts_name]["TestsuiteLevSpecSet"] = ts_def.TestsuiteLevSpecSet[0]
     if "TestsuiteTimSet" in ts_def:
-        testsuites[ts_name]["TestsuiteTimSet"] = ts_def["TestsuiteTimSet"][0]
+        testsuites[ts_name]["TestsuiteTimSet"] = ts_def.TestsuiteTimSet[0]
     if "TestsuiteLevSet" in ts_def:
-        testsuites[ts_name]["TestsuiteLevSet"] = ts_def["TestsuiteLevSet"][0]
+        testsuites[ts_name]["TestsuiteLevSet"] = ts_def.TestsuiteLevSet[0]
     if "TestsuiteSequencerLabel" in ts_def:
-        testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def["TestsuiteSequencerLabel"][0]
+        testsuites[ts_name]["TestsuiteSequencerLabel"] = ts_def.TestsuiteSequencerLabel[0]
     if "TestsuiteFlags" in ts_def:
         testsuites[ts_name]["TestsuiteFlags"] = []
-        for flag in ts_def["TestsuiteFlags"]:
+        for flag in ts_def.TestsuiteFlags:
             testsuites[ts_name]["TestsuiteFlags"].append(flag)
     if "TestsuiteSiteControl" in ts_def:
-        testsuites[ts_name]["TestsuiteSiteControl"] = ts_def["TestsuiteSiteControl"][0]
+        testsuites[ts_name]["TestsuiteSiteControl"] = ts_def.TestsuiteSiteControl[0]
     if "TestsuiteFFCCount" in ts_def:
-        testsuites[ts_name]["TestsuiteFFCCount"] = ts_def["TestsuiteFFCCount"][0]
+        testsuites[ts_name]["TestsuiteFFCCount"] = ts_def.TestsuiteFFCCount[0]
     if "TestsuiteTestLevel" in ts_def:
-        testsuites[ts_name]["TestsuiteTestLevel"] = ts_def["TestsuiteTestLevel"][0]
+        testsuites[ts_name]["TestsuiteTestLevel"] = ts_def.TestsuiteTestLevel[0]
     if "TestsuiteDPSSet" in ts_def:
-        testsuites[ts_name]["TestsuiteDPSSet"] = ts_def["TestsuiteDPSSet"][0]
+        testsuites[ts_name]["TestsuiteDPSSet"] = ts_def.TestsuiteDPSSet[0]
     if "TestsuiteTestNumber" in ts_def:
-        testsuites[ts_name]["TestsuiteTestNumber"] = ts_def["TestsuiteTestNumber"][0]
+        testsuites[ts_name]["TestsuiteTestNumber"] = ts_def.TestsuiteTestNumber[0]
     if "TestsuiteAnalogSet" in ts_def:
-        testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def["TestsuiteAnalogSet"][0]
+        testsuites[ts_name]["TestsuiteAnalogSet"] = ts_def.TestsuiteAnalogSet[0]
     if "TestsuiteSiteMatch" in ts_def:
-        testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def["TestsuiteSiteMatch"][0]
+        testsuites[ts_name]["TestsuiteSiteMatch"] = ts_def.TestsuiteSiteMatch[0]
     if "TestsuiteWaveformSet" in ts_def:
-        testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def["TestsuiteWaveformSet"][0]
+        testsuites[ts_name]["TestsuiteWaveformSet"] = ts_def.TestsuiteWaveformSet[0]
     if "TestsuiteComment" in ts_def:
-        testsuites[ts_name]["TestsuiteComment"] = ts_def["TestsuiteComment"][0]
+        testsuites[ts_name]["TestsuiteComment"] = ts_def.TestsuiteComment[0]
     return testsuites
 
 def format_testsuite_def(ts_name,testsuites):
+    """
+    Used by both ParseTestsuiteSection and ParseSpecialTestsuiteSection
+
+    :param ts_name: testsuite name used for dictionary key of testsuites{}
+    :type ts_name: str
+    :param testsuites: container for all of the testsuite data
+    :type testsuites: dict
+    :return: formatted str for output
+    """
     rstr = ''
     if "TestsuiteTest" in testsuites[ts_name]:
         for k,v in testsuites[ts_name]["TestsuiteTest"].iteritems():
@@ -894,6 +1189,10 @@ def format_testsuite_def(ts_name,testsuites):
     return rstr
 
 def create_TestsuiteSection(testsuites):
+    """
+    :param testsuites:
+    :return: formatted str for output
+    """
     rstr = "test_suites\n"
     for ts_name in testsuites:
         rstr += ts_name + ":\n"
@@ -901,14 +1200,28 @@ def create_TestsuiteSection(testsuites):
     rstr += EndStr
     return rstr
 
+
 class ParseTestsuiteSection(object):
+    """
+    Receives tokens passed from TestsuiteSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "test_suites"
+        """str name of section"""
+
         self.Testsuites = {}
+
         for tok in toks:
             ts_name = tok["TestsuiteName"][0]
             ts_def = tok["TestsuiteDefinition"]
             self.Testsuites.update(parse_testsuite_def(ts_name,ts_def))
+
     def __str__(self):
         return create_TestsuiteSection(self.Testsuites)
 
@@ -920,10 +1233,12 @@ TestsuiteSection.setParseAction(ParseTestsuiteSection)
 
 FlowStatements = pp.Forward()
 
+
 class Statement(object):
     """
         Super class to contain common methods/data for XXXXStatement classes (children)
     """
+
     __id = -1 # unique node_id for each instance of child class
     node_id = -1
     _nodeData = {}
@@ -943,19 +1258,39 @@ class Statement(object):
 RunStatement = (pp.Keyword("run").suppress() + LPAR + Identifier("testsuite") + RPAR + SEMI)
 
 def create_RunStatement(testsuite):
+    """
+    :param testsuite: str testsuite name
+    :return: formatted str for output
+    """
     return 'run(' + testsuite + ');\n'
 
+
 class ParseRunStatement(Statement):
+    """
+    Receives tokens passed from RunStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'RunStatement'
+
         self.testsuite = toks.testsuite
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'testsuite' : self.testsuite
         }
+
         self.testsuites[self.testsuite] = self.node_id
+
     def __repr__(self):
         return create_RunStatement(self.testsuite)
 
@@ -965,11 +1300,17 @@ RunStatement.setParseAction(ParseRunStatement)
 # FROM TestflowParser.cpp:                         >> str_p("then"))[bind(&CreateRunAndBranchStatement)(RunAndBranchStatement.testsuite)] >> str_p("{") [bind(&EnterSubBranch)(0)]
 # FROM TestflowParser.cpp:                         >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()] >> !(str_p("else")
 # FROM TestflowParser.cpp:                         >> str_p("{") [bind(&EnterSubBranch)(1)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()]);
-RunAndBranchStatement = pp.Group(pp.Keyword("run_and_branch").suppress() + LPAR + Identifier("testsuite") + RPAR
-                                 + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("RB_PASS") + RCURL
-                                 + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("RB_FAIL") + RCURL))
+RunAndBranchStatement = (pp.Keyword("run_and_branch").suppress() + LPAR + Identifier("testsuite") + RPAR
+                         + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("RB_PASS") + RCURL
+                         + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("RB_FAIL") + RCURL))
 
 def create_RunAndBranchStatement(testsuite,rb_pass,rb_fail):
+    """
+    :param testsuite:
+    :param rb_pass:
+    :param rb_fail:
+    :return: formatted str for output
+    """
     rb_pass_str = '\n'.join([str(x) for x in rb_pass])
     rb_fail_str = '\n'.join([str(x) for x in rb_fail])
     rstr = 'run_and_branch(' + testsuite + ')\n'
@@ -985,19 +1326,37 @@ def create_RunAndBranchStatement(testsuite,rb_pass,rb_fail):
     rstr += '}\n'
     return rstr
 
+
 class ParseRunAndBranchStatement(Statement):
+    """
+    Receives tokens passed from RunAndBranchStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'RunAndBranchStatement'
-        self.testsuite = toks[0].testsuite
-        self.rb_pass = toks[0].RB_PASS[:]
-        self.rb_fail = toks[0].RB_FAIL[:]
+
+        self.testsuite = toks.testsuite
+
+        self.rb_pass = toks.RB_PASS[:]
+
+        self.rb_fail = toks.RB_FAIL[:]
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'testsuite' : self.testsuite
         }
+
         self.testsuites[self.testsuite] = self.node_id
+
     def __repr__(self):
         return create_RunAndBranchStatement(self.testsuite,self.rb_pass,self.rb_fail)
     def _nodes(self):
@@ -1009,11 +1368,17 @@ RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 # FROM TestflowParser.cpp:               [bind(&CreateIfStatement)(IfStatement.condition)]
 # FROM TestflowParser.cpp:               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
 # FROM TestflowParser.cpp:               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
-IfStatement = pp.Group(pp.Keyword("if").suppress() + Expression("condition")
+IfStatement = (pp.Keyword("if").suppress() + Expression("condition")
                        + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("IF_TRUE") + RCURL
                        + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("IF_FALSE") + RCURL))
 
 def create_IfStatement(condition,if_true,if_false):
+    """
+    :param condition:
+    :param if_true:
+    :param if_false:
+    :return: formatted str for output
+    """
     if_true_str = '\n'.join([str(x) for x in if_true]).strip()
     if_false_str = '\n'.join([str(x) for x in if_false]).strip()
     rstr = 'if ' + condition + ' then\n'
@@ -1027,22 +1392,41 @@ def create_IfStatement(condition,if_true,if_false):
         rstr += '}\n'
     return rstr
 
+
 class ParseIfStatement(Statement):
+    """
+    Receives tokens passed from IfStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'IfStatement'
-        self.condition = toks[0].condition
-        self.if_true = toks[0].IF_TRUE[:]
-        self.if_false = toks[0].IF_FALSE[:]
+
+        self.condition = toks.condition
+
+        self.if_true = toks.IF_TRUE[:]
+
+        self.if_false = toks.IF_FALSE[:]
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'condition' : self.condition
         }
+
     def __repr__(self):
         return create_IfStatement(self.condition,self.if_true,self.if_false)
+
     def _nodes(self):
         return [self.node_id ,[x._nodes() for x in self.if_true],[x._nodes() for x in self.if_false]]
+
 IfStatement.setParseAction(ParseIfStatement)
 
 # FROM TestflowParser.cpp: GroupBypass = str_p("groupbypass") >> ',';
@@ -1054,30 +1438,56 @@ GroupBypass = pp.Keyword("groupbypass")("SetGroupBypass") + COMMA
 # FROM TestflowParser.cpp:                 str_p("")[bind(&SetGroupNoBypass)()]) >> (str_p("open")[bind(&SetGroupOpen)()] |
 # FROM TestflowParser.cpp:                 str_p("closed")[bind(&SetGroupClosed)()]) >> ',' >> (QuotedString) [bind(&SetGroupLabel)(arg1)]
 # FROM TestflowParser.cpp:                 >> ',' >> (QuotedString) [bind(&SetGroupDescription)(arg1)];
-GroupStatement = pp.Group(LCURL + pp.Group(FlowStatements)("GR_SUB") + RCURL + COMMA + pp.Optional(GroupBypass)
-                          + (pp.Keyword("open") | pp.Keyword("closed"))("SetGroupOpen") + COMMA
-                          + QuotedString("SetGroupLabel") + COMMA + QuotedString("SetGroupDescription"))
+GroupStatement = (LCURL + pp.Group(FlowStatements)("GR_SUB") + RCURL + COMMA + pp.Optional(GroupBypass)
+                  + (pp.Keyword("open") | pp.Keyword("closed"))("SetGroupOpen") + COMMA
+                  + QuotedString("SetGroupLabel") + COMMA + QuotedString("SetGroupDescription"))
 
 def create_GroupStatement(gr_sub,gr_open,gr_label,gr_desc,gr_bypass_cond=''):
-        gr_sub_str = '\n'.join([str(x) for x in gr_sub]).strip()
-        rstr = '{\n'
-        rstr += gr_sub_str + '\n'
-        rstr += '},'
-        if len(gr_bypass_cond):
-            rstr += gr_bypass_cond + ','
-        rstr += gr_open + ',' + gr_label + ',' + gr_desc + '\n'
-        return rstr
+    """
+    :param gr_sub:
+    :param gr_open:
+    :param gr_label:
+    :param gr_desc:
+    :param gr_bypass_cond:
+    :return: formatted str for output
+    """
+    gr_sub_str = '\n'.join([str(x) for x in gr_sub]).strip()
+    rstr = '{\n'
+    rstr += gr_sub_str + '\n'
+    rstr += '},'
+    if len(gr_bypass_cond):
+        rstr += gr_bypass_cond + ','
+    rstr += gr_open + ',' + gr_label + ',' + gr_desc + '\n'
+    return rstr
+
 
 class ParseGroupStatement(Statement):
+    """
+    Receives tokens passed from GroupStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'GroupStatement'
-        self.gr_bypass_cond = toks[0].SetGroupBypass
-        self.gr_sub = toks[0].GR_SUB[:]
-        self.gr_open = toks[0].SetGroupOpen
-        self.gr_label = toks[0].SetGroupLabel
-        self.gr_desc = toks[0].SetGroupDescription
+
+        self.gr_bypass_cond = toks.SetGroupBypass
+
+        self.gr_sub = toks.GR_SUB[:]
+
+        self.gr_open = toks.SetGroupOpen
+
+        self.gr_label = toks.SetGroupLabel
+
+        self.gr_desc = toks.SetGroupDescription
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'gr_bypass_cond' : self.gr_bypass_cond,
@@ -1085,31 +1495,53 @@ class ParseGroupStatement(Statement):
             'gr_label' : self.gr_label,
             'gr_desc' : self.gr_desc
         }
+
     def __repr__(self):
         return create_GroupStatement(self.gr_sub,self.gr_open,self.gr_label,self.gr_desc,self.gr_bypass_cond)
+
     def _nodes(self):
         return [self.node_id , [x._nodes() for x in self.gr_sub]]
+
 GroupStatement.setParseAction(ParseGroupStatement)
 
 # FROM TestflowParser.cpp: AssignmentStatement = (( TestsuiteFlag[AssignmentStatement.varName = arg1] |  Variable[AssignmentStatement.varName = arg1])
 # FROM TestflowParser.cpp:                       >> '=' >> (Expression[AssignmentStatement.value = arg1] | TestsuiteFlag[AssignmentStatement.value = arg1])
 # FROM TestflowParser.cpp:                       >> ';') [bind(&CreateAssignmentStatement)(AssignmentStatement.varName, AssignmentStatement.value)];
 # AssignmentStatement = ((TestsuiteFlag | Variable) + EQ + (Expression | TestsuiteFlag) + SEMI)("AssignmentStatement")
-AssignmentStatement = pp.Group((TestsuiteFlag | Variable) + EQtok + (Expression | TestsuiteFlag) + SEMI)
+AssignmentStatement = ((TestsuiteFlag | Variable) + EQtok + (Expression | TestsuiteFlag) + SEMI)
 
 def create_AssignmentStatement(assignment):
+    """
+    :param assignment: str of un-evaluated assignment
+    :return: formatted str for output
+    """
     return assignment + '\n'
 
+
 class ParseAssignmentStatement(Statement):
+    """
+    Receives tokens passed from AssignmentStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'AssignmentStatement'
-        self.assignment = ' '.join(toks[0]) + ';'
+
+        self.assignment = ' '.join(toks[:]) + ';'
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'assignment' : self.assignment
         }
+
     def __repr__(self):
         return create_AssignmentStatement(self.assignment)
 
@@ -1167,26 +1599,58 @@ BinDefinition = ((QuotedString("swBin") + COMMA + QuotedString("swBinDescription
 
 # FROM TestflowParser.cpp: StopBinStatement = (str_p("stop_bin") >> (BinDefinition("", "", false, false, ::xoc::tapi::ZBinColor_BLACK, -1, false)) >> ';')
 # FROM TestflowParser.cpp:                    [bind(&CreateStopBinStatement)()];
-StopBinStatement = pp.Group(pp.Keyword("stop_bin") + BinDefinition("CreateStopBinStatement") + SEMI)
+StopBinStatement = (pp.Keyword("stop_bin") + BinDefinition("CreateStopBinStatement") + SEMI)
 
 def create_StopBinStatement(swBin,swBinDescription,oocrule,quality,reprobe,color,binNumber,overon):
-    rstr = 'stop_bin ' +  swBin + ',' + swBinDescription + ',' + oocrule + ','
+    """
+    :param swBin:
+    :param swBinDescription:
+    :param oocrule:
+    :param quality:
+    :param reprobe:
+    :param color:
+    :param binNumber:
+    :param overon:
+    :return: formatted str for output
+    """
+    rstr = 'stop_bin ' + swBin + ',' + swBinDescription + ',' + oocrule + ','
     rstr += quality + ',' + reprobe + ',' + color + ',' + binNumber + ',' + overon + ';'
     return rstr
 
+
 class ParseStopBinStatement(Statement):
+    """
+    Receives tokens passed from StopBinStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'StopBinStatement'
-        self.swBin = toks[0].swBin
-        self.swBinDescription = toks[0].swBinDescription
-        self.oocrule = toks[0].oocrule.oocwarning + ' ' + toks[0].oocrule.oocstop
-        self.quality = toks[0].quality
-        self.reprobe = toks[0].reprobe
-        self.color = toks[0].color
-        self.binNumber = toks[0].binNumber
-        self.overon = toks[0].overon
+
+        self.swBin = toks.swBin
+
+        self.swBinDescription = toks.swBinDescription
+
+        self.oocrule = toks.oocrule.oocwarning + ' ' + toks.oocrule.oocstop
+
+        self.quality = toks.quality
+
+        self.reprobe = toks.reprobe
+
+        self.color = toks.color
+
+        self.binNumber = toks.binNumber
+
+        self.overon = toks.overon
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'swBin' : self.swBin,
@@ -1197,6 +1661,7 @@ class ParseStopBinStatement(Statement):
             'binNumber' : self.binNumber,
             'overon' : self.overon
         }
+
     def __repr__(self):
         return create_StopBinStatement(self.swBin,self.swBinDescription,self.oocrule,self.quality,
                                        self.reprobe,self.color,self.binNumber,self.overon)
@@ -1205,42 +1670,80 @@ StopBinStatement.setParseAction(ParseStopBinStatement)
 
 # FROM TestflowParser.cpp: PrintStatement = (str_p("print") >> '(' >> Expression[PrintStatement.statement = arg1] >> ')' >> ';')
 # FROM TestflowParser.cpp:                  [bind(&CreatePrintStatement)(PrintStatement.statement)];
-PrintStatement = pp.Group(pp.Keyword("print") + LPAR + Expression("statement") + RPAR + SEMI)
+PrintStatement = (pp.Keyword("print") + LPAR + Expression("statement") + RPAR + SEMI)
 
 def create_PrintStatement(statement):
+    """
+    :param statement: str of un-evaluated expression
+    :return: formatted str for output
+    """
     return 'print(' + statement + ');\n'
 
+
 class ParsePrintStatement(Statement):
+    """
+    Receives tokens passed from PrintStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'PrintStatement'
-        self.statement = toks[0].statement
+
+        self.statement = toks.statement
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'statement' : self.statement
         }
+
     def __repr__(self):
         return create_PrintStatement(self.statement)
 PrintStatement.setParseAction(ParsePrintStatement)
 
 # FROM TestflowParser.cpp: PrintDatalogStatement = (str_p("print_dl") >> '(' >> Expression[PrintDatalogStatement.statement = arg1] >> ')' >> ';')
 # FROM TestflowParser.cpp:                         [bind(&CreatePrintDatalogStatement)(PrintDatalogStatement.statement)];
-PrintDatalogStatement = pp.Group(pp.Keyword("print_dl") + LPAR + Expression("statement") + RPAR + SEMI)
+PrintDatalogStatement = (pp.Keyword("print_dl") + LPAR + Expression("statement") + RPAR + SEMI)
 
 def create_PrintDatalogStatement(statement):
+    """
+    :param statement: str of un-evaluated expression
+    :return: formatted str for output
+    """
     return 'print_dl(' + statement + ');\n'
 
+
 class ParsePrintDatalogStatement(Statement):
+    """
+    Receives tokens passed from PrintDatalogStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'PrintDatalogStatement'
-        self.statement = toks[0].statement
+
+        self.statement = toks.statement
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'statement' : self.statement
         }
+
     def __repr__(self):
         return create_PrintDatalogStatement(self.statement)
 
@@ -1251,21 +1754,45 @@ PrintDatalogStatement.setParseAction(ParsePrintDatalogStatement)
 # FROM TestflowParser.cpp:                       >> ',' >> Expression[SVLRTimingStatement.value = arg1] >> ')' >> ';')
 # FROM TestflowParser.cpp:                       [bind(&CreateSVLRTimingStatement)(SVLRTimingStatement.equSet, SVLRTimingStatement.specSet,
 # FROM TestflowParser.cpp:                                                         SVLRTimingStatement.variable, SVLRTimingStatement.value)];
-SVLRTimingStatement = pp.Group(pp.Keyword("svlr_timing_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
-                               + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
+SVLRTimingStatement = (pp.Keyword("svlr_timing_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
+                       + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 
 def create_SVLRTimingStatement(equSet,specSet,variable,value):
-        return 'svlr_timing_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
+    """
+    :param equSet:
+    :param specSet:
+    :param variable:
+    :param value:
+    :return: formatted str for output
+    """
+    return 'svlr_timing_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
+
 
 class ParseSVLRTimingStatement(Statement):
+    """
+    Receives tokens passed from SVLRTimingStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'SVLRTimingStatement'
-        self.equSet = toks[0].equSet
-        self.specSet = toks[0].specSet
-        self.variable = toks[0].variable
-        self.value = toks[0].value
+
+        self.equSet = toks.equSet
+
+        self.specSet = toks.specSet
+
+        self.variable = toks.variable
+
+        self.value = toks.value
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'equSet' : self.equSet,
@@ -1273,6 +1800,7 @@ class ParseSVLRTimingStatement(Statement):
             'variable' : self.variable,
             'value' : self.value
         }
+
     def __repr__(self):
         return create_SVLRTimingStatement(self.equSet,self.specSet,self.variable,self.value)
 
@@ -1281,21 +1809,45 @@ SVLRTimingStatement.setParseAction(ParseSVLRTimingStatement)
 # FROM TestflowParser.cpp: SVLRLevelStatement = (str_p("svlr_level_command") >> '(' >> Expression[SVLRLevelStatement.equSet = arg1] >> ',' >> Expression[SVLRLevelStatement.specSet = arg1]
 # FROM TestflowParser.cpp:                       >> ',' >> QuotedString[SVLRLevelStatement.variable = arg1] >> ',' >> Expression[SVLRLevelStatement.value = arg1] >> ')' >> ';')
 # FROM TestflowParser.cpp:                     [bind(&CreateSVLRLevelStatement)(SVLRLevelStatement.equSet, SVLRLevelStatement.specSet, SVLRLevelStatement.variable, SVLRLevelStatement.value)];
-SVLRLevelStatement = pp.Group(pp.Keyword("svlr_level_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
-                              + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
+SVLRLevelStatement = (pp.Keyword("svlr_level_command") + LPAR + Expression("equSet") + COMMA + Expression("specSet") + COMMA
+                      + QuotedString("variable") + COMMA + Expression("value") + RPAR + SEMI)
 
 def create_SVLRLevelStatement(equSet,specSet,variable,value):
-        return 'svlr_level_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
+    """
+    :param equSet:
+    :param specSet:
+    :param variable:
+    :param value:
+    :return: formatted str for output
+    """
+    return 'svlr_level_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
+
 
 class ParseSVLRLevelStatement(Statement):
+    """
+    Receives tokens passed from SVLRLevelStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'SVLRLevelStatement'
-        self.equSet = toks[0].equSet
-        self.specSet = toks[0].specSet
-        self.variable = toks[0].variable
-        self.value = toks[0].value
+
+        self.equSet = toks.equSet
+
+        self.specSet = toks.specSet
+
+        self.variable = toks.variable
+
+        self.value = toks.value
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'equSet' : self.equSet,
@@ -1303,6 +1855,7 @@ class ParseSVLRLevelStatement(Statement):
             'variable' : self.variable,
             'value' : self.value
         }
+
     def __repr__(self):
         return create_SVLRLevelStatement(self.equSet,self.specSet,self.variable,self.value)
 
@@ -1314,30 +1867,54 @@ TestNumLoopInc = pp.Keyword("test_number_loop_increment") + EQtok + Expression
 # FROM TestflowParser.cpp: WhileStatement = (str_p("while") >> Expression [WhileStatement.condition = arg1, WhileStatement.testnum = construct_<string>("")] >> str_p("do")
 # FROM TestflowParser.cpp:                  >> !(TestNumLoopInc [WhileStatement.testnum = arg1])) [bind(&CreateWhileStatement)(WhileStatement.condition, WhileStatement.testnum)]
 # FROM TestflowParser.cpp:                  >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
-WhileStatement = pp.Group((pp.Keyword("while").suppress() + Expression("condition") + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
-                          + LCURL + pp.Group(FlowStatements)("W_TRUE") + RCURL)
+WhileStatement = ((pp.Keyword("while").suppress() + Expression("condition") + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
+                  + LCURL + pp.Group(FlowStatements)("W_TRUE") + RCURL)
 
 def create_WhileStatement(condition,testnum,w_true):
+    """
+    :param condition:
+    :param testnum:
+    :param w_true:
+    :return: formatted str for output
+    """
     w_true_str = '\n'.join([str(x) for x in w_true]).strip()
     rstr = 'while ' + condition + ' do\n' + testnum + '\n{\n'
     rstr += w_true_str + '\n}'
     return rstr
 
+
 class ParseWhileStatement(Statement):
+    """
+    Receives tokens passed from WhileStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'WhileStatement'
-        self.condition = toks[0].condition
-        self.testnum = ' '.join(toks[0].testnum)
-        self.w_true = toks[0].W_TRUE[:]
+
+        self.condition = toks.condition
+
+        self.testnum = ' '.join(toks.testnum)
+
+        self.w_true = toks.W_TRUE[:]
+
         self.toks = toks
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'condition' : self.condition,
             'testnum' : self.testnum
         }
+
     def __repr__(self):
         return create_WhileStatement(self.condition,self.testnum,self.w_true)
+
     def _nodes(self):
         return [self.node_id ,[x._nodes() for x in self.w_true]]
 
@@ -1345,31 +1922,55 @@ WhileStatement.setParseAction(ParseWhileStatement)
 
 # FROM TestflowParser.cpp: RepeatStatement = str_p("repeat") [bind(&CreateRepeatStatement)(), bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("until") [bind(&LeaveSubBranch)()]
 # FROM TestflowParser.cpp:                   >> Expression [bind(&SetRepeatCondition)(arg1)] >> !(TestNumLoopInc [bind(&SetRepeatTestnum)(arg1)]);
-RepeatStatement = pp.Group(pp.Keyword("repeat").suppress() + pp.Group(FlowStatements)("RPT_TRUE") + pp.Keyword("until").suppress()
-                           + Expression("SetRepeatCondition") + pp.Optional(TestNumLoopInc)("SetRepeatTestnum"))
+RepeatStatement = (pp.Keyword("repeat").suppress() + pp.Group(FlowStatements)("RPT_TRUE") + pp.Keyword("until").suppress()
+                   + Expression("SetRepeatCondition") + pp.Optional(TestNumLoopInc)("SetRepeatTestnum"))
 
 def create_RepeatStatement(condition,testnum,rpt_true):
+    """
+    :param condition:
+    :param testnum:
+    :param rpt_true:
+    :return: formatted str for output
+    """
     rpt_true_str = '\n'.join([str(x) for x in rpt_true]).strip() + '\n'
     rstr = 'repeat\n'
     rstr += rpt_true_str + 'until ' + condition + '\n' + testnum
     return rstr
 
+
 class ParseRepeatStatement(Statement):
+    """
+    Receives tokens passed from RepeatStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'RepeatStatement'
-        self.rpt_true = toks[0].RPT_TRUE[:]
-        self.condition = toks[0].SetRepeatCondition
-        self.testnum = ' '.join(toks[0].SetRepeatTestnum)
+
+        self.rpt_true = toks.RPT_TRUE[:]
+
+        self.condition = toks.SetRepeatCondition
+
+        self.testnum = ' '.join(toks.SetRepeatTestnum)
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'condition' : self.condition,
             'testnum' : self.testnum
         }
+
     def __repr__(self):
         return create_RepeatStatement(self.condition,self.testnum,self.rpt_true)
+
     def _nodes(self):
         return [self.node_id ,[x._nodes() for x in self.rpt_true]]
+
 RepeatStatement.setParseAction(ParseRepeatStatement)
 
 # FROM TestflowParser.cpp: ForStatement = (str_p("for")[ForStatement.testnum = construct_<string>("")] >> QualifiedIdentifier[ForStatement.assignVar = arg1]
@@ -1379,29 +1980,58 @@ RepeatStatement.setParseAction(ParseRepeatStatement)
 # FROM TestflowParser.cpp:                [bind(&CreateForStatement)(ForStatement.assignVar, ForStatement.assignValue, ForStatement.condition, ForStatement.incrementVar,
 # FROM TestflowParser.cpp:                                           ForStatement.incrementValue, ForStatement.testnum)]
 # FROM TestflowParser.cpp:                >> str_p("{") [bind(&EnterSubBranch)(0)] >> FlowStatements >> str_p("}") [bind(&LeaveSubBranch)()];
-ForStatement = pp.Group((pp.Keyword("for").suppress() + QualifiedIdentifier("assignVar") + EQ + Expression("assignValue") + SEMI
-                         + Expression("condition") + SEMI + QualifiedIdentifier("incrementVar") + EQ + Expression("incrementValue")
-                         + SEMI + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
-                        + LCURL + pp.Group(FlowStatements)("FOR_TRUE") + RCURL)
+ForStatement = ((pp.Keyword("for").suppress() + QualifiedIdentifier("assignVar") + EQ + Expression("assignValue") + SEMI
+                 + Expression("condition") + SEMI + QualifiedIdentifier("incrementVar") + EQ + Expression("incrementValue")
+                 + SEMI + pp.Keyword("do").suppress() + pp.Optional(TestNumLoopInc)("testnum"))
+                + LCURL + pp.Group(FlowStatements)("FOR_TRUE") + RCURL)
 
 def create_ForStatement(assignVar,assignValue,condition,incrementVar,incrementValue,testnum,for_true):
+    """
+    :param assignVar:
+    :param assignValue:
+    :param condition:
+    :param incrementVar:
+    :param incrementValue:
+    :param testnum:
+    :param for_true:
+    :return: formatted str for output
+    """
     for_true_str = '\n'.join([str(x) for x in for_true]).strip()
     rstr = 'for ' + assignVar + ' = ' + assignValue + ';'
     rstr += condition + ';' + incrementVar + ' = ' + incrementValue + '; do\n'
     rstr += testnum + '\n{\n' + for_true_str + '\n}'
     return rstr
 
+
 class ParseForStatement(Statement):
+    """
+    Receives tokens passed from ForStatement.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.node_id = self.getNodeId()
+
         self.type = 'ForStatement'
-        self.assignVar = toks[0].assignVar
-        self.assignValue = toks[0].assignValue
-        self.condition = toks[0].condition
-        self.incrementVar = toks[0].incrementVar
-        self.incrementValue = toks[0].incrementValue
-        self.testnum = ' '.join(toks[0].testnum)
-        self.for_true = toks[0].FOR_TRUE[:]
+
+        self.assignVar = toks.assignVar
+
+        self.assignValue = toks.assignValue
+
+        self.condition = toks.condition
+
+        self.incrementVar = toks.incrementVar
+
+        self.incrementValue = toks.incrementValue
+
+        self.testnum = ' '.join(toks.testnum)
+
+        self.for_true = toks.FOR_TRUE[:]
+
         self._nodeData[self.node_id] = {
             'type' : self.type,
             'assignVar' : self.assignVar,
@@ -1410,26 +2040,37 @@ class ParseForStatement(Statement):
             'incrementValue' : self.incrementValue,
             'testnum' : self.testnum
         }
+
     def __repr__(self):
         return create_ForStatement(self.assignVar,self.assignValue,self.condition,self.incrementVar,
                                    self.incrementValue,self.testnum,self.for_true)
     def _nodes(self):
         return [self.node_id ,[x._nodes() for x in self.for_true]]
+
 ForStatement.setParseAction(ParseForStatement)
 
 # FROM TestflowParser.cpp: MultiBinStatement = str_p("multi_bin")[bind(&CreateMultiBinStatement)()] >> ';';
 MultiBinStatement = (pp.Keyword("multi_bin") + SEMI)
 
 def create_MultiBinStatement():
+    """
+    :return: formatted str for output
+    """
     return 'multi_bin;\n'
 
+
 class ParseMultiBinStatement(Statement):
-    def __init__(self,toks):
+    """
+    Receives tokens passed from MultiBinStatement.setParseAction()
+    """
+
+    def __init__(self):
         self.node_id = self.getNodeId()
         self.type = 'MultiBinStatement'
         self._nodeData[self.node_id] = {
             'type' : self.type,
         }
+
     def __repr__(self):
         return create_MultiBinStatement()
 
@@ -1511,6 +2152,10 @@ SpecialTestsuiteSection << (DownloadTestsuite | InitTestsuite | PauseTestsuite |
                             ResetTestsuite | ExitTestsuite | DisconnectTestsuite | MultiBinDecisionTestsuite)("SpecialTestsuiteSection")
 
 def create_SpecialTestsuiteSection(special_testsuites):
+    """
+    :param special_testsuites:
+    :return: formatted str for output
+    """
     rstr = ""
     for ts_name in special_testsuites:
         rstr += ts_name + '\n'
@@ -1518,14 +2163,28 @@ def create_SpecialTestsuiteSection(special_testsuites):
         rstr += EndStr
     return rstr
 
+
 class ParseSpecialTestsuiteSection(object):
+    """
+    Receives tokens passed from SpecialTestsuiteSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = ""
+        """str name of section"""
+
         self.SpecialTestsuites = {}
+
         for tok in toks:
             ts_name = tok.pop(0)
             ts_def = tok
             self.SpecialTestsuites.update(parse_testsuite_def(ts_name,ts_def))
+
     def __str__(self):
         return create_SpecialTestsuiteSection(self.SpecialTestsuites)
 
@@ -1542,6 +2201,10 @@ OtherwiseBin = (pp.Keyword("otherwise bin")("otherwise") + EQ + BinDefinition + 
 BinningSection = (pp.Keyword("binning").suppress() + pp.ZeroOrMore(pp.Group(OtherwiseBin | (BinDefinition + SEMI))) + End)("BinningSection")
 
 def create_BinningSection(binning):
+    """
+    :param binning:
+    :return: formatted str for output
+    """
     rstr = "binning\n"
     for bindef in binning:
         if bindef["otherwise"]:
@@ -1568,33 +2231,48 @@ def create_BinningSection(binning):
     rstr += EndStr
     return rstr
 
+
 class ParseBinningSection(object):
+    """
+    Receives tokens passed from BinningSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "binning"
+        """str name of section"""
+
         self.binning = []
+        """list of dicts which contain all data for ea bin"""
+
         for tok in toks:
             tempdict = {}
             if "otherwise" in tok:
                 tempdict["otherwise"] = True
             else:
                 tempdict["otherwise"] = False
-            tempdict["swBin"] = tok["swBin"]
-            tempdict["swBinDescription"] = tok["swBinDescription"]
+            tempdict["swBin"] = tok.swBin
+            tempdict["swBinDescription"] = tok.swBinDescription
             if "oocrule" in tok:
                 tempdict["oocrule"] = []
-                for rule in tok["oocrule"]:
+                for rule in tok.oocrule:
                     if len(rule):
                         tempdict["oocrule"].append(rule)
             if "quality" in tok:
-                tempdict["quality"] = tok["quality"]
+                tempdict["quality"] = tok.quality
             if "reprobe" in tok:
-                tempdict["reprobe"] = tok["reprobe"]
-            tempdict["color"] = tok["color"]
+                tempdict["reprobe"] = tok.reprobe
+            tempdict["color"] = tok.color
             if "binNumber" in tok:
-                tempdict["binNumber"] = tok["binNumber"]
+                tempdict["binNumber"] = tok.binNumber
             if "overon" in tok:
-                tempdict["overon"] = tok["overon"]
+                tempdict["overon"] = tok.overon
             self.binning.append(tempdict)
+
     def __str__(self):
         return create_BinningSection(self.binning)
 
@@ -1648,18 +2326,36 @@ SetupFiles = pp.Group(ConfigFile | LevelsFile | TimingFile | VectorFile | Attrib
 SetupSection = (pp.Keyword("context").suppress() + pp.ZeroOrMore(SetupFiles) + End)("SetupSection")
 
 def create_SetupSection(setup_files):
+    """
+    :param setup_files: dict of setup files(value) and their type(key)
+    :return: formatted str for output
+    """
     rstr = 'context\n'
     for k,v in setup_files.iteritems():
         rstr += k + ' = ' + v + ';\n'
     rstr += EndStr
     return rstr
 
+
 class ParseSetupSection(object):
+    """
+    Receives tokens passed from SetupSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "context"
+        """str name of section"""
+
         self.SetupFiles = {}
+
         for tok in toks:
             self.SetupFiles[tok[0]] = tok[1]
+
     def __str__(self):
         return create_SetupSection(self.SetupFiles)
 
@@ -1673,19 +2369,38 @@ SetupSection.setParseAction(ParseSetupSection)
 OOCSection = (pp.Keyword("oocrule").suppress() + OOCRule + End)("OOCSection")
 
 def create_OOCSection(ooc_rules):
+    """
+    :param ooc_rules: list of rules (ea rule is 5 tokens long)
+    :return: formatted str for output
+    """
     rstr = 'oocrule\n'
     for rule in ooc_rules:
         rstr += rule[0] + ' = ' + rule[1] + ' ' + rule[2] + ' ' + rule[3] + ' ' + rule[4] + '\n'
     rstr += EndStr
     return rstr
 
+
 class ParseOOCSection(object):
+    """
+    Receives tokens passed from OOCSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "oocrule"
+        """str name of section"""
+
         self.OOCRules = []
+        """list of rules (ea rule is 5 tokens long)"""
+
         for tok in toks:
             if len(tok):
                 self.OOCRules.append(tok)
+
     def __str__(self):
         return create_OOCSection(self.OOCRules)
 
@@ -1702,18 +2417,37 @@ HardBinDescription = pp.Group(integer + EQ + QuotedString + SEMI)
 HardwareBinSection = (pp.Keyword("hardware_bin_descriptions").suppress() + pp.ZeroOrMore(HardBinDescription) + End)("HardwareBinSection")
 
 def create_HardwareBinSection(hbin_descriptions):
+    """
+    :param hbin_descriptions: dict of hwBin(key) and description(value)
+    :return: formatted str for output
+    """
     rstr = 'hardware_bin_descriptions\n'
     for k,v in hbin_descriptions.iteritems():
         rstr += k + ' = ' + v + ';\n'
     rstr += EndStr
     return rstr
 
+
 class ParseHardwareBinSection(object):
+    """
+    Receives tokens passed from HardwareBinSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.section_name = "hardware_bin_descriptions"
+        """str name of section"""
+
         self.hbin_descriptions = {}
+        """dict of hwBin(key) and description(value)"""
+
         for tok in toks:
             self.hbin_descriptions[tok[0]] = tok[1]
+
     def __str__(self):
         return create_HardwareBinSection(self.hbin_descriptions)
 
@@ -1765,34 +2499,69 @@ Sections << pp.ZeroOrMore(EmptySection |
                           HardwareBinSection + pp.Optional(Sections))
 
 # FROM TestflowParser.cpp: Start = OptFileHeader[Start.isUTMBased=false] >> OptRevision >> Sections;
-Start = pp.Group(OptFileHeader + OptRevision + Sections)
+Start = (OptFileHeader + OptRevision + Sections)
+
+
 class ParseStart(object):
+    """
+    Receives tokens passed from Start.setParseAction()
+    """
+
     def __init__(self,toks):
-        self.toks = toks[0]
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
+        self.toks = toks
+
         # pass along the objects to higher level for post parsing
-        self.OptFileHeader = toks[0].OptFileHeader
-        self.OptRevision = toks[0].OptRevision
-        self.InformationSection = toks[0].InformationSection
-        self.ImplicitDeclarationSection = toks[0].ImplicitDeclarationSection
-        self.DeclarationSection = toks[0].DeclarationSection
-        self.FlagSection = toks[0].FlagSection
-        self.TestmethodParameterSection = toks[0].TestmethodParameterSection
-        self.TestmethodLimitSection = toks[0].TestmethodLimitSection
-        self.TestmethodSection = toks[0].TestmethodSection
-        self.TestfunctionSection = toks[0].TestfunctionSection
-        self.UserprocedureSection = toks[0].UserprocedureSection
-        self.TestsuiteSection = toks[0].TestsuiteSection
-        self.TestflowSection = toks[0].TestflowSection
-        self.SpecialTestsuiteSection = toks[0].SpecialTestsuiteSection
-        self.BinningSection = toks[0].BinningSection
-        self.SetupSection = toks[0].SetupSection
-        self.OOCSection = toks[0].OOCSection
-        self.HardwareBinSection = toks[0].HardwareBinSection
+        self.OptFileHeader = toks.OptFileHeader
+
+        self.OptRevision = toks.OptRevision
+
+        self.InformationSection = toks.InformationSection
+
+        self.ImplicitDeclarationSection = toks.ImplicitDeclarationSection
+
+        self.DeclarationSection = toks.DeclarationSection
+
+        self.FlagSection = toks.FlagSection
+
+        self.TestmethodParameterSection = toks.TestmethodParameterSection
+
+        self.TestmethodLimitSection = toks.TestmethodLimitSection
+
+        self.TestmethodSection = toks.TestmethodSection
+
+        self.TestfunctionSection = toks.TestfunctionSection
+
+        self.UserprocedureSection = toks.UserprocedureSection
+
+        self.TestsuiteSection = toks.TestsuiteSection
+
+        self.TestflowSection = toks.TestflowSection
+
+        self.SpecialTestsuiteSection = toks.SpecialTestsuiteSection
+
+        self.BinningSection = toks.BinningSection
+
+        self.SetupSection = toks.SetupSection
+
+        self.OOCSection = toks.OOCSection
+
+        self.HardwareBinSection = toks.HardwareBinSection
+
     def __str__(self):
         return '\n'.join([str(x) for x in self.toks])
 Start.setParseAction(ParseStart)
 
 def format_tf(tf_str):
+    """
+    Print test_flow section with proper indentation for readability
+    :param tf_str: raw str with no indentation yet
+    :return: formatted str for output
+    """
     indent_lev = 0
     indent = '  '
     rstr = ''
@@ -1807,41 +2576,69 @@ def format_tf(tf_str):
             indent_lev += 1
     return rstr
 
+
 class ParseTestflowSection(Statement):
+    """
+    Receives tokens passed from TestflowSection.setParseAction()
+    """
+
     def __init__(self,toks):
+        """
+        :param toks: tokens found from pyparsing object
+        :type toks: pyparsing.ParseResults object
+        """
+
         self.data = toks[:]
+        """top level container for all tokens returned by all statements"""
+
         self.section_name = "test_flow"
+        """str name of section"""
+
     def __repr__(self):
         rstr = self.section_name + '\n'
         rstr += ''.join([str(x) for x in self.data]) + '\n'
         rstr += EndStr
         return format_tf(rstr)
+
     def _nodes(self):
         return [x._nodes() for x in self.data]
 
 TestflowSection.setParseAction(ParseTestflowSection)
 
 def get_file_contents(infile,strip_comments=True):
-        _f = open(infile)
-        contents = '\n'.join(_f.read().splitlines())
-        _f.close()
-        if strip_comments:
-            # string comments before parsing
-            contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
-        return contents
+    """
+    Gets contents of file passed and (if strip_comments=True) also
+    stripped of comments that start with '--' and no double quotes in comments
+    :param infile: file name
+    :param strip_comments: bool
+    :return: str contents of file
+    """
+    _f = open(infile)
+    contents = '\n'.join(_f.read().splitlines())
+    _f.close()
+    if strip_comments:
+        # string comments before parsing
+        contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
+    return contents
+
 
 class Testflow(Statement):
     """
-        usage:
-            tf = Testflow(testflow_file.tf)
+        Create an instance of this class after including this module.
+        Example usage:
+            tf = Testflow(<testflow.tf>)
             print tf
             pprint(tf.showNodeMap())
             pprint(tf.testsuites)
     """
+
     def __init__(self,tf_file,testflow_only=False):
         contents = get_file_contents(tf_file)
+
         self.tf = Start.parseString(contents,1)[0]
+
         self._nodeMap = self.tf.TestflowSection._nodes()
+
     def showNodeMap(self):
         return tf.traverse_tree(self._nodeMap)
 
@@ -1861,11 +2658,11 @@ if __name__ == '__main__':
     print '\n\n'
     tf = Testflow(args[0],True)
 
-    print tf
+    # print tf
     # print '===================================================================================================\n'*4
     # pprint(tf.showNodeMap())
     # print '===================================================================================================\n'*4
-    # pprint(tf.testsuites)
+    pprint(tf.testsuites)
 
 # TODO : gather all testsuite meta data
 # TODO : get all parent ids/conditions so that we can add that to testsuite information

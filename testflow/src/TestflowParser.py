@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """
     This script was converted from TestflowParser.cpp provided by Advantest R&D (date provided: 9/28/2015).
-    The original script was written in c++ using Boost/Spirit but this python script uses pyparsing.
-    Both are very similar in that they mimic BNF, with the difference being that Boost/Spirit is
-    a bottom up parser and pyparsing is top down.
+    At the time this script was provided from R&D, the latest SMT release was 7.3.x.x
 
-    At the time this script was provided from R&D, the latest SmarTest release was 7.3.2.4
+    The original script was written in c++ using Boost/Spirit but this python script uses pyparsing.
+    Both are very similar in how they mimic BNF, with the difference being that Boost/Spirit is
+    a bottom up parser and pyparsing is top down except where pp.Forward() is used for nested situations.
 
     Since none of the dependencies were provided, certain liberties were taken to figure out post parsing.
     Most of the Boost/Spirit code is preserved in various places in comments, always
@@ -16,20 +16,23 @@
     v1.0:
         - Reads/Parses testflow file
         - Does NOT evaluate assignments or expressions (just passes them along as strings)
-        - Can print(or write to file) copy of input testflow file for debugging:
-            tf = Testflow(<testflow.tf>)
-            print tf
+        - Can print/write to file a copy of the input testflow file AFTER PARSING:
+            * Useful for debugging
+            * Example:
+                tf = Testflow(<testflow.tf>)
+                print tf
         - Print node map to show the Tree and meta data for each node:
-            print tf.showNodeMap()
+            * Useful for debugging
+            * Example:
+                print tf.showNodeMap()
         - Print testsuites and their node id which can be used for map location and retrieving meta data:
-            print tf.testsuites
+            * Later, this will be used to modify the tree map (re-arranging nodes)
+            * Example:
+                print tf.testsuites
 """
 
 __author__ = 'Roger Logan'
 __version__ = '1.0'
-
-# modified to True if certain sections are found
-isUTMBased = False
 
 import pyparsing as pp
 import sys
@@ -38,18 +41,18 @@ import re
 
 SEMI = pp.Literal(';').suppress()
 AT = pp.Literal('@').suppress()
-ATtok = pp.Literal('@')
+ATtok = pp.Literal('@') # don't suppress token
 COLON = pp.Literal(':').suppress()
-COLONtok = pp.Literal(':')
+COLONtok = pp.Literal(':') # don't suppress token
 COMMA = pp.Literal(',').suppress()
-COMMAtok = pp.Literal(',')
+COMMAtok = pp.Literal(',') # don't suppress token
 UNDER = pp.Literal('_')
 DOT = pp.Literal('.').suppress()
 PERIOD = DOT
-DOTtok = pp.Literal('.')
-PERIODtok = DOTtok
+DOTtok = pp.Literal('.') # don't suppress token
+PERIODtok = DOTtok # don't suppress token
 EQ = pp.Literal('=').suppress()
-EQtok = pp.Literal('=')
+EQtok = pp.Literal('=') # don't suppress token
 DASH = pp.Literal('-')
 MINUS = DASH
 PLUS = pp.Literal('+')
@@ -67,8 +70,11 @@ LCURL = pp.Literal('{').suppress()
 RCURL = pp.Literal('}').suppress()
 LPAR = pp.Literal('(').suppress()
 RPAR = pp.Literal(')').suppress()
-LPARtok = pp.Literal('(')
-RPARtok = pp.Literal(')')
+LPARtok = pp.Literal('(') # don't suppress token
+RPARtok = pp.Literal(')') # don't suppress token
+
+# modified to True if certain sections are found
+isUTMBased = False
 
 # common output strings
 EndStr = "end\n-----------------------------------------------------------------"
@@ -171,14 +177,31 @@ TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 # FROM TestflowParser.cpp:      str_p("string")[Type.type = ::xoc::tapi::ZTestflowVariableType_STRING];
 Type = pp.Keyword("double") | pp.Keyword("string")
 
+
+class TestflowData(object):
+    """Super class to contain common methods/data"""
+
+    __id = -1 # unique node_id for each instance of child class
+    node_id = -1
+    nodeData = {}
+    nodeMap = []
+    testsuite_data = {}
+
+    @staticmethod
+    def getNodeId():
+        TestflowData.__id += 1
+        return TestflowData.__id
+
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return self.node_id
+
 # FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))("OptFileHeader")
 
 
-class ParseOptFileHeader(object):
-    """
-    Receives tokens passed from OptFileHeader.setParseAction()
-    """
+class ParseOptFileHeader(TestflowData):
+    """Receives tokens passed from OptFileHeader.setParseAction()"""
 
     def __init__(self,toks):
 
@@ -206,15 +229,13 @@ def create_OptRevision(lang):
     return "language_revision" + ' = ' + str(lang) + ';\n'
 
 
-class ParseOptRevision(object):
-    """
-    Receives tokens passed from OptRevision.setParseAction()
-    """
+class ParseOptRevision(TestflowData):
+    """Receives tokens passed from OptRevision.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of OptRevision
         """
 
         self.section_name = "OptRevision"
@@ -232,15 +253,13 @@ OptRevision.setParseAction(ParseOptRevision)
 EmptySection = pp.Group(pp.Literal(';'))("EmptySection")
 
 
-class ParseEmptySection(object):
-    """
-    Receives tokens passed from EmptySection.setParseAction()
-    """
+class ParseEmptySection(TestflowData):
+    """Receives tokens passed from EmptySection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object  based on definition of EmptySection
         """
 
         self.section_name = ""
@@ -309,15 +328,13 @@ def create_InformationSection(dev_name='',dev_rev='',test_rev='',descr='',app=''
     return rstr
 
 
-class ParseInformationSection(object):
-    """
-    Receives tokens passed from InformationSection.setParseAction()
-    """
+class ParseInformationSection(TestflowData):
+    """Receives tokens passed from InformationSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of InformationSection
         """
 
         self.section_name = "information"
@@ -368,18 +385,18 @@ def create_ImplicitDeclarationSection(declarations):
 
 
 class ParseImplicitDeclarationSection(object):
-    """
-    Receives tokens passed from ImplicitDeclarationSection.setParseAction()
-    """
+    """Receives tokens passed from ImplicitDeclarationSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of ImplicitDeclarationSection
         """
         self.section_name = "implicit_declarations"
         """str name of section"""
+
         self.Declarations = {}
+
         for tok in toks:
             self.Declarations[tok[0]] = tok[1]
 
@@ -416,14 +433,12 @@ def create_DeclarationSection(variables):
 
 
 class ParseDeclarationSection(object):
-    """
-    Receives tokens passed from DeclarationSection.setParseAction()
-    """
+    """Receives tokens passed from DeclarationSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of DeclarationSection
         """
 
         self.section_name = "declarations"
@@ -475,14 +490,12 @@ def create_FlagSection(user_flags,sys_flags):
 
 
 class ParseFlagSection(object):
-    """
-    Receives tokens passed from FlagSection.setParseAction()
-    """
+    """Receives tokens passed from FlagSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of FlagSection
         """
 
         self.section_name = "flags"
@@ -546,13 +559,11 @@ def create_TestfunctionSection(test_funcs):
 
 
 class ParseTestfunctionSection(object):
-    """
-    Receives tokens passed from TestfunctionSection.setParseAction()
-    """
+    """Receives tokens passed from TestfunctionSection.setParseAction()"""
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestfunctionSection
         """
 
         self.section_name = "testfunctions"
@@ -615,13 +626,11 @@ def create_TestmethodParameterSection(utm_tm_params):
 
 
 class ParseTestmethodParameterSection(object):
-    """
-    Receives tokens passed from TestmethodParameterSection.setParseAction()
-    """
+    """Receives tokens passed from TestmethodParameterSection.setParseAction()"""
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestmethodParameterSection
         """
 
         global isUTMBased
@@ -721,14 +730,12 @@ def create_TestmethodLimitSection(utm_tm_limits):
 
 
 class ParseTestmethodLimitSection(object):
-    """
-    Receives tokens passed from TestmethodLimitSection.setParseAction()
-    """
+    """Receives tokens passed from TestmethodLimitSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestmethodLimitSection
         """
 
         global isUTMBased
@@ -740,17 +747,17 @@ class ParseTestmethodLimitSection(object):
         self.UTMTestmethodLimits = {}
 
         for tok in toks:
-            tm_id = tok["StartTestmethod"]
+            tm_id = tok.StartTestmethod
             if tm_id not in self.UTMTestmethodLimits:
                 self.UTMTestmethodLimits[tm_id] = {}
-            self.UTMTestmethodLimits[tm_id]["name"] = tok["name"]
-            self.UTMTestmethodLimits[tm_id]["loVal"] = tok["loVal"]
-            self.UTMTestmethodLimits[tm_id]["LowLimitSymbol"] = tok["LowLimitSymbol"]
-            self.UTMTestmethodLimits[tm_id]["hiVal"] = tok["hiVal"]
-            self.UTMTestmethodLimits[tm_id]["HighLimitSymbol"] = tok["HighLimitSymbol"]
-            self.UTMTestmethodLimits[tm_id]["unit"] = tok["unit"]
-            self.UTMTestmethodLimits[tm_id]["numOffset"] = tok["numOffset"]
-            self.UTMTestmethodLimits[tm_id]["numInc"] = tok["numInc"]
+            self.UTMTestmethodLimits[tm_id]["name"] = tok.name
+            self.UTMTestmethodLimits[tm_id]["loVal"] = tok.loVal
+            self.UTMTestmethodLimits[tm_id]["LowLimitSymbol"] = tok.LowLimitSymbol
+            self.UTMTestmethodLimits[tm_id]["hiVal"] = tok.hiVal
+            self.UTMTestmethodLimits[tm_id]["HighLimitSymbol"] = tok.HighLimitSymbol
+            self.UTMTestmethodLimits[tm_id]["unit"] = tok.unit
+            self.UTMTestmethodLimits[tm_id]["numOffset"] = tok.numOffset
+            self.UTMTestmethodLimits[tm_id]["numInc"] = tok.numInc
 
     def __str__(self):
         return create_TestmethodLimitSection(self.UTMTestmethodLimits)
@@ -832,14 +839,12 @@ def create_TestmethodSection(test_methods,utm_based=True):
 
 
 class ParseTestmethodSection(object):
-    """
-    Receives tokens passed from TestmethodSection.setParseAction()
-    """
+    """Receives tokens passed from TestmethodSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestmethodSection
         """
 
         self.section_name = "testmethods"
@@ -850,15 +855,15 @@ class ParseTestmethodSection(object):
         self.Testmethods = {}
 
         for tok in toks:
-            tm_id = tok["tm_id"]
+            tm_id = tok.tm_id
             if tm_id not in self.Testmethods:
                 self.Testmethods[tm_id] = {}
-                self.Testmethods[tm_id]["Class"] = tok["Class"]
+                self.Testmethods[tm_id]["Class"] = tok.Class
                 if not self.isUTMBased:
-                    self.Testmethods[tm_id]["methodId"] = tok["methodId"]
-                    self.Testmethods[tm_id]["parameter"] = tok["parameter"]
-                    self.Testmethods[tm_id]["limits"] = tok["limits"]
-                    self.Testmethods[tm_id]["name"] = tok["name"]
+                    self.Testmethods[tm_id]["methodId"] = tok.methodId
+                    self.Testmethods[tm_id]["parameter"] = tok.parameter
+                    self.Testmethods[tm_id]["limits"] = tok.limits
+                    self.Testmethods[tm_id]["name"] = tok.name
 
     def __str__(self):
         return create_TestmethodSection(self.Testmethods)
@@ -893,16 +898,13 @@ def create_UserprocedureSection(user_procs):
     return rstr
     
 
-
 class ParseUserprocedureSection(object):
-    """
-    Receives tokens passed from UserprocedureSection.setParseAction()
-    """
+    """Receives tokens passed from UserprocedureSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of UserprocedureSection
         """
 
         self.section_name = "tests"
@@ -1201,29 +1203,25 @@ def create_TestsuiteSection(testsuites):
     return rstr
 
 
-class ParseTestsuiteSection(object):
-    """
-    Receives tokens passed from TestsuiteSection.setParseAction()
-    """
+class ParseTestsuiteSection(TestflowData):
+    """Receives tokens passed from TestsuiteSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestsuiteSection
         """
 
         self.section_name = "test_suites"
         """str name of section"""
 
-        self.Testsuites = {}
-
         for tok in toks:
-            ts_name = tok["TestsuiteName"][0]
-            ts_def = tok["TestsuiteDefinition"]
-            self.Testsuites.update(parse_testsuite_def(ts_name,ts_def))
+            ts_name = tok.TestsuiteName[0]
+            ts_def = tok.TestsuiteDefinition
+            self.testsuite_data.update(parse_testsuite_def(ts_name,ts_def))
 
     def __str__(self):
-        return create_TestsuiteSection(self.Testsuites)
+        return create_TestsuiteSection(self.testsuite_data)
 
 TestsuiteSection.setParseAction(ParseTestsuiteSection)
 
@@ -1232,26 +1230,6 @@ TestsuiteSection.setParseAction(ParseTestsuiteSection)
 # -------------------------------------------------------------------------------------------
 
 FlowStatements = pp.Forward()
-
-
-class Statement(object):
-    """
-        Super class to contain common methods/data for XXXXStatement classes (children)
-    """
-
-    __id = -1 # unique node_id for each instance of child class
-    node_id = -1
-    _nodeData = {}
-    _nodeMap = []
-    testsuites = {}
-
-    @staticmethod
-    def getNodeId():
-        Statement.__id += 1
-        return Statement.__id
-
-    def _nodes(self):
-        return self.node_id
 
 # FROM TestflowParser.cpp: RunStatement = (str_p("run") >> ch_p('(') >> Identifier[RunStatement.testsuite = construct_<string>(arg1, arg2)] >> ')' >> ';')
 # FROM TestflowParser.cpp:                [bind(&CreateRunStatement)(RunStatement.testsuite)];
@@ -1265,31 +1243,31 @@ def create_RunStatement(testsuite):
     return 'run(' + testsuite + ');\n'
 
 
-class ParseRunStatement(Statement):
-    """
-    Receives tokens passed from RunStatement.setParseAction()
-    """
+class ParseRunStatement(TestflowData):
+    """Receives tokens passed from RunStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of RunStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'RunStatement'
+        """str name of statement"""
 
         self.testsuite = toks.testsuite
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'testsuite' : self.testsuite
+            'testsuite' : self.testsuite,
+            'parent' : None
         }
 
-        self.testsuites[self.testsuite] = self.node_id
+        self.testsuite_data[self.testsuite]['node_id'] = self.node_id
 
     def __repr__(self):
         return create_RunStatement(self.testsuite)
@@ -1327,15 +1305,13 @@ def create_RunAndBranchStatement(testsuite,rb_pass,rb_fail):
     return rstr
 
 
-class ParseRunAndBranchStatement(Statement):
-    """
-    Receives tokens passed from RunAndBranchStatement.setParseAction()
-    """
+class ParseRunAndBranchStatement(TestflowData):
+    """Receives tokens passed from RunAndBranchStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of RunAndBranchStatement
         """
 
         self.node_id = self.getNodeId()
@@ -1343,6 +1319,7 @@ class ParseRunAndBranchStatement(Statement):
         self.type = 'RunAndBranchStatement'
 
         self.testsuite = toks.testsuite
+        """str name of statement"""
 
         self.rb_pass = toks.RB_PASS[:]
 
@@ -1350,17 +1327,19 @@ class ParseRunAndBranchStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'testsuite' : self.testsuite
+            'testsuite' : self.testsuite,
+            'parent' : None
         }
 
-        self.testsuites[self.testsuite] = self.node_id
+        self.testsuite_data[self.testsuite]['node_id'] = self.node_id
 
     def __repr__(self):
         return create_RunAndBranchStatement(self.testsuite,self.rb_pass,self.rb_fail)
-    def _nodes(self):
-        return [self.node_id ,[x._nodes() for x in self.rb_pass],[x._nodes() for x in self.rb_fail]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id ,[x.buildNodes(self.node_id) for x in self.rb_pass],[x.buildNodes(self.node_id) for x in self.rb_fail]]
 
 RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 
@@ -1369,8 +1348,8 @@ RunAndBranchStatement.setParseAction(ParseRunAndBranchStatement)
 # FROM TestflowParser.cpp:               >> (str_p("{")) [bind(&EnterSubBranch)(0)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]
 # FROM TestflowParser.cpp:               >> !(str_p("else") >> (str_p("{")) [bind(&EnterSubBranch)(1)] >> FlowStatements >> (str_p("}")) [bind(&LeaveSubBranch)()]);
 IfStatement = (pp.Keyword("if").suppress() + Expression("condition")
-                       + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("IF_TRUE") + RCURL
-                       + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("IF_FALSE") + RCURL))
+               + pp.Keyword("then").suppress() + LCURL + pp.Group(FlowStatements)("IF_TRUE") + RCURL
+               + pp.Optional(pp.Keyword("else").suppress() + LCURL + pp.Group(FlowStatements)("IF_FALSE") + RCURL))
 
 def create_IfStatement(condition,if_true,if_false):
     """
@@ -1393,20 +1372,19 @@ def create_IfStatement(condition,if_true,if_false):
     return rstr
 
 
-class ParseIfStatement(Statement):
-    """
-    Receives tokens passed from IfStatement.setParseAction()
-    """
+class ParseIfStatement(TestflowData):
+    """Receives tokens passed from IfStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of IfStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'IfStatement'
+        """str name of statement"""
 
         self.condition = toks.condition
 
@@ -1416,16 +1394,18 @@ class ParseIfStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'condition' : self.condition
+            'condition' : self.condition,
+            'parent' : None
         }
 
     def __repr__(self):
         return create_IfStatement(self.condition,self.if_true,self.if_false)
 
-    def _nodes(self):
-        return [self.node_id ,[x._nodes() for x in self.if_true],[x._nodes() for x in self.if_false]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id ,[x.buildNodes(self.node_id) for x in self.if_true],[x.buildNodes(self.node_id) for x in self.if_false]]
 
 IfStatement.setParseAction(ParseIfStatement)
 
@@ -1461,20 +1441,19 @@ def create_GroupStatement(gr_sub,gr_open,gr_label,gr_desc,gr_bypass_cond=''):
     return rstr
 
 
-class ParseGroupStatement(Statement):
-    """
-    Receives tokens passed from GroupStatement.setParseAction()
-    """
+class ParseGroupStatement(TestflowData):
+    """Receives tokens passed from GroupStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of GroupStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'GroupStatement'
+        """str name of statement"""
 
         self.gr_bypass_cond = toks.SetGroupBypass
 
@@ -1488,19 +1467,21 @@ class ParseGroupStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'gr_bypass_cond' : self.gr_bypass_cond,
             'gr_open' : self.gr_open,
             'gr_label' : self.gr_label,
-            'gr_desc' : self.gr_desc
+            'gr_desc' : self.gr_desc,
+            'parent' : None
         }
 
     def __repr__(self):
         return create_GroupStatement(self.gr_sub,self.gr_open,self.gr_label,self.gr_desc,self.gr_bypass_cond)
 
-    def _nodes(self):
-        return [self.node_id , [x._nodes() for x in self.gr_sub]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id , [x.buildNodes(self.node_id) for x in self.gr_sub]]
 
 GroupStatement.setParseAction(ParseGroupStatement)
 
@@ -1518,28 +1499,28 @@ def create_AssignmentStatement(assignment):
     return assignment + '\n'
 
 
-class ParseAssignmentStatement(Statement):
-    """
-    Receives tokens passed from AssignmentStatement.setParseAction()
-    """
+class ParseAssignmentStatement(TestflowData):
+    """Receives tokens passed from AssignmentStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of AssignmentStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'AssignmentStatement'
+        """str name of statement"""
 
         self.assignment = ' '.join(toks[:]) + ';'
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'assignment' : self.assignment
+            'assignment' : self.assignment,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1618,20 +1599,19 @@ def create_StopBinStatement(swBin,swBinDescription,oocrule,quality,reprobe,color
     return rstr
 
 
-class ParseStopBinStatement(Statement):
-    """
-    Receives tokens passed from StopBinStatement.setParseAction()
-    """
+class ParseStopBinStatement(TestflowData):
+    """Receives tokens passed from StopBinStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of StopBinStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'StopBinStatement'
+        """str name of statement"""
 
         self.swBin = toks.swBin
 
@@ -1651,7 +1631,7 @@ class ParseStopBinStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'swBin' : self.swBin,
             'swBinDescription' : self.swBinDescription,
@@ -1659,7 +1639,8 @@ class ParseStopBinStatement(Statement):
             'quality' : self.quality,
             'reprobe' : self.reprobe,
             'binNumber' : self.binNumber,
-            'overon' : self.overon
+            'overon' : self.overon,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1680,28 +1661,28 @@ def create_PrintStatement(statement):
     return 'print(' + statement + ');\n'
 
 
-class ParsePrintStatement(Statement):
-    """
-    Receives tokens passed from PrintStatement.setParseAction()
-    """
+class ParsePrintStatement(TestflowData):
+    """Receives tokens passed from PrintStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of PrintStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'PrintStatement'
+        """str name of statement"""
 
         self.statement = toks.statement
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'statement' : self.statement
+            'statement' : self.statement,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1720,28 +1701,28 @@ def create_PrintDatalogStatement(statement):
     return 'print_dl(' + statement + ');\n'
 
 
-class ParsePrintDatalogStatement(Statement):
-    """
-    Receives tokens passed from PrintDatalogStatement.setParseAction()
-    """
+class ParsePrintDatalogStatement(TestflowData):
+    """Receives tokens passed from PrintDatalogStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of PrintDatalogStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'PrintDatalogStatement'
+        """str name of statement"""
 
         self.statement = toks.statement
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
-            'statement' : self.statement
+            'statement' : self.statement,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1768,20 +1749,19 @@ def create_SVLRTimingStatement(equSet,specSet,variable,value):
     return 'svlr_timing_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
 
 
-class ParseSVLRTimingStatement(Statement):
-    """
-    Receives tokens passed from SVLRTimingStatement.setParseAction()
-    """
+class ParseSVLRTimingStatement(TestflowData):
+    """Receives tokens passed from SVLRTimingStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of SVLRTimingStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'SVLRTimingStatement'
+        """str name of statement"""
 
         self.equSet = toks.equSet
 
@@ -1793,12 +1773,13 @@ class ParseSVLRTimingStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'equSet' : self.equSet,
             'specSet' : self.specSet,
             'variable' : self.variable,
-            'value' : self.value
+            'value' : self.value,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1823,20 +1804,19 @@ def create_SVLRLevelStatement(equSet,specSet,variable,value):
     return 'svlr_level_command(' + equSet + ',' + specSet + ',' + variable + ',' + value + ');\n'
 
 
-class ParseSVLRLevelStatement(Statement):
-    """
-    Receives tokens passed from SVLRLevelStatement.setParseAction()
-    """
+class ParseSVLRLevelStatement(TestflowData):
+    """Receives tokens passed from SVLRLevelStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of SVLRLevelStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'SVLRLevelStatement'
+        """str name of statement"""
 
         self.equSet = toks.equSet
 
@@ -1848,12 +1828,13 @@ class ParseSVLRLevelStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'equSet' : self.equSet,
             'specSet' : self.specSet,
             'variable' : self.variable,
-            'value' : self.value
+            'value' : self.value,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -1883,20 +1864,19 @@ def create_WhileStatement(condition,testnum,w_true):
     return rstr
 
 
-class ParseWhileStatement(Statement):
-    """
-    Receives tokens passed from WhileStatement.setParseAction()
-    """
+class ParseWhileStatement(TestflowData):
+    """Receives tokens passed from WhileStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of WhileStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'WhileStatement'
+        """str name of statement"""
 
         self.condition = toks.condition
 
@@ -1906,17 +1886,19 @@ class ParseWhileStatement(Statement):
 
         self.toks = toks
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'condition' : self.condition,
-            'testnum' : self.testnum
+            'testnum' : self.testnum,
+            'parent' : None
         }
 
     def __repr__(self):
         return create_WhileStatement(self.condition,self.testnum,self.w_true)
 
-    def _nodes(self):
-        return [self.node_id ,[x._nodes() for x in self.w_true]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id ,[x.buildNodes(self.node_id) for x in self.w_true]]
 
 WhileStatement.setParseAction(ParseWhileStatement)
 
@@ -1938,20 +1920,19 @@ def create_RepeatStatement(condition,testnum,rpt_true):
     return rstr
 
 
-class ParseRepeatStatement(Statement):
-    """
-    Receives tokens passed from RepeatStatement.setParseAction()
-    """
+class ParseRepeatStatement(TestflowData):
+    """Receives tokens passed from RepeatStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of RepeatStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'RepeatStatement'
+        """str name of statement"""
 
         self.rpt_true = toks.RPT_TRUE[:]
 
@@ -1959,17 +1940,19 @@ class ParseRepeatStatement(Statement):
 
         self.testnum = ' '.join(toks.SetRepeatTestnum)
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'condition' : self.condition,
-            'testnum' : self.testnum
+            'testnum' : self.testnum,
+            'parent' : None
         }
 
     def __repr__(self):
         return create_RepeatStatement(self.condition,self.testnum,self.rpt_true)
 
-    def _nodes(self):
-        return [self.node_id ,[x._nodes() for x in self.rpt_true]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id ,[x.buildNodes(self.node_id) for x in self.rpt_true]]
 
 RepeatStatement.setParseAction(ParseRepeatStatement)
 
@@ -2003,20 +1986,19 @@ def create_ForStatement(assignVar,assignValue,condition,incrementVar,incrementVa
     return rstr
 
 
-class ParseForStatement(Statement):
-    """
-    Receives tokens passed from ForStatement.setParseAction()
-    """
+class ParseForStatement(TestflowData):
+    """Receives tokens passed from ForStatement.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of ForStatement
         """
 
         self.node_id = self.getNodeId()
 
         self.type = 'ForStatement'
+        """str name of statement"""
 
         self.assignVar = toks.assignVar
 
@@ -2032,20 +2014,22 @@ class ParseForStatement(Statement):
 
         self.for_true = toks.FOR_TRUE[:]
 
-        self._nodeData[self.node_id] = {
+        self.nodeData[self.node_id] = {
             'type' : self.type,
             'assignVar' : self.assignVar,
             'condition' : self.condition,
             'incrementVar' : self.incrementVar,
             'incrementValue' : self.incrementValue,
-            'testnum' : self.testnum
+            'testnum' : self.testnum,
+            'parent' : None
         }
 
     def __repr__(self):
         return create_ForStatement(self.assignVar,self.assignValue,self.condition,self.incrementVar,
                                    self.incrementValue,self.testnum,self.for_true)
-    def _nodes(self):
-        return [self.node_id ,[x._nodes() for x in self.for_true]]
+    def buildNodes(self,parent):
+        self.nodeData[self.node_id]['parent'] = parent
+        return [self.node_id ,[x.buildNodes(self.node_id) for x in self.for_true]]
 
 ForStatement.setParseAction(ParseForStatement)
 
@@ -2059,16 +2043,19 @@ def create_MultiBinStatement():
     return 'multi_bin;\n'
 
 
-class ParseMultiBinStatement(Statement):
-    """
-    Receives tokens passed from MultiBinStatement.setParseAction()
-    """
+class ParseMultiBinStatement(TestflowData):
+    """Receives tokens passed from MultiBinStatement.setParseAction()"""
 
     def __init__(self):
+
         self.node_id = self.getNodeId()
+
         self.type = 'MultiBinStatement'
-        self._nodeData[self.node_id] = {
+        """str name of statement"""
+
+        self.nodeData[self.node_id] = {
             'type' : self.type,
+            'parent' : None
         }
 
     def __repr__(self):
@@ -2165,14 +2152,12 @@ def create_SpecialTestsuiteSection(special_testsuites):
 
 
 class ParseSpecialTestsuiteSection(object):
-    """
-    Receives tokens passed from SpecialTestsuiteSection.setParseAction()
-    """
+    """Receives tokens passed from SpecialTestsuiteSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of SpecialTestsuiteSection
         """
 
         self.section_name = ""
@@ -2233,14 +2218,12 @@ def create_BinningSection(binning):
 
 
 class ParseBinningSection(object):
-    """
-    Receives tokens passed from BinningSection.setParseAction()
-    """
+    """Receives tokens passed from BinningSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of BinningSection
         """
 
         self.section_name = "binning"
@@ -2338,14 +2321,12 @@ def create_SetupSection(setup_files):
 
 
 class ParseSetupSection(object):
-    """
-    Receives tokens passed from SetupSection.setParseAction()
-    """
+    """Receives tokens passed from SetupSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of SetupSection
         """
 
         self.section_name = "context"
@@ -2381,14 +2362,12 @@ def create_OOCSection(ooc_rules):
 
 
 class ParseOOCSection(object):
-    """
-    Receives tokens passed from OOCSection.setParseAction()
-    """
+    """Receives tokens passed from OOCSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of OOCSection
         """
 
         self.section_name = "oocrule"
@@ -2429,14 +2408,12 @@ def create_HardwareBinSection(hbin_descriptions):
 
 
 class ParseHardwareBinSection(object):
-    """
-    Receives tokens passed from HardwareBinSection.setParseAction()
-    """
+    """Receives tokens passed from HardwareBinSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of HardwareBinSection
         """
 
         self.section_name = "hardware_bin_descriptions"
@@ -2503,60 +2480,41 @@ Start = (OptFileHeader + OptRevision + Sections)
 
 
 class ParseStart(object):
-    """
-    Receives tokens passed from Start.setParseAction()
-    """
+    """Receives tokens passed from Start.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of Start
         """
 
         self.toks = toks
 
         # pass along the objects to higher level for post parsing
         self.OptFileHeader = toks.OptFileHeader
-
         self.OptRevision = toks.OptRevision
-
         self.InformationSection = toks.InformationSection
-
         self.ImplicitDeclarationSection = toks.ImplicitDeclarationSection
-
         self.DeclarationSection = toks.DeclarationSection
-
         self.FlagSection = toks.FlagSection
-
         self.TestmethodParameterSection = toks.TestmethodParameterSection
-
         self.TestmethodLimitSection = toks.TestmethodLimitSection
-
         self.TestmethodSection = toks.TestmethodSection
-
         self.TestfunctionSection = toks.TestfunctionSection
-
         self.UserprocedureSection = toks.UserprocedureSection
-
         self.TestsuiteSection = toks.TestsuiteSection
-
         self.TestflowSection = toks.TestflowSection
-
         self.SpecialTestsuiteSection = toks.SpecialTestsuiteSection
-
         self.BinningSection = toks.BinningSection
-
         self.SetupSection = toks.SetupSection
-
         self.OOCSection = toks.OOCSection
-
         self.HardwareBinSection = toks.HardwareBinSection
 
     def __str__(self):
         return '\n'.join([str(x) for x in self.toks])
 Start.setParseAction(ParseStart)
 
-def format_tf(tf_str):
+def formatTestflow(tf_str):
     """
     Print test_flow section with proper indentation for readability
     :param tf_str: raw str with no indentation yet
@@ -2577,15 +2535,13 @@ def format_tf(tf_str):
     return rstr
 
 
-class ParseTestflowSection(Statement):
-    """
-    Receives tokens passed from TestflowSection.setParseAction()
-    """
+class ParseTestflowSection(TestflowData):
+    """Receives tokens passed from TestflowSection.setParseAction()"""
 
     def __init__(self,toks):
         """
         :param toks: tokens found from pyparsing object
-        :type toks: pyparsing.ParseResults object
+        :type toks: pyparsing.ParseResults object based on definition of TestflowSection
         """
 
         self.data = toks[:]
@@ -2598,10 +2554,10 @@ class ParseTestflowSection(Statement):
         rstr = self.section_name + '\n'
         rstr += ''.join([str(x) for x in self.data]) + '\n'
         rstr += EndStr
-        return format_tf(rstr)
+        return formatTestflow(rstr)
 
-    def _nodes(self):
-        return [x._nodes() for x in self.data]
+    def buildNodes(self,parent):
+        return [x.buildNodes(parent) for x in self.data]
 
 TestflowSection.setParseAction(ParseTestflowSection)
 
@@ -2609,8 +2565,9 @@ def get_file_contents(infile,strip_comments=True):
     """
     Gets contents of file passed and (if strip_comments=True) also
     stripped of comments that start with '--' and no double quotes in comments
-    :param infile: file name
-    :param strip_comments: bool
+    :param infile: testflow file name
+    :param strip_comments: bool to decide whether to strip single line comments or not
+                           ('only supports single line comments that begin with '--')
     :return: str contents of file
     """
     _f = open(infile)
@@ -2622,10 +2579,10 @@ def get_file_contents(infile,strip_comments=True):
     return contents
 
 
-class Testflow(Statement):
+class Testflow(TestflowData):
     """
         Create an instance of this class after including this module.
-        Example usage:
+        Example usages:
             tf = Testflow(<testflow.tf>)
             print tf
             pprint(tf.showNodeMap())
@@ -2637,16 +2594,31 @@ class Testflow(Statement):
 
         self.tf = Start.parseString(contents,1)[0]
 
-        self._nodeMap = self.tf.TestflowSection._nodes()
+        self.nodeMap = self.tf.TestflowSection.buildNodes(None)
+        """Nested list of of nodes by id"""
 
-    def showNodeMap(self):
-        return tf.traverse_tree(self._nodeMap)
+        self.traverse_tree(self.nodeMap,True)
+        """just calling this to set the nodes"""
 
-    def traverse_tree(self,obj):
-        if isinstance(obj, list):
-            return [self.traverse_tree(elem) for elem in obj]
+
+    def showNodeMap(self,ids_only=False):
+        if ids_only:
+            return self.nodeMap
         else:
-            return self._nodeData[obj]
+            return self.traverse_tree(self.nodeMap,False)
+
+    def traverse_tree(self, obj, setNodes=False):
+        """recursively walk the node tree and do stuff"""
+
+        if isinstance(obj, list):
+            # obj must be a list, so keep walking
+            return [self.traverse_tree(elem,setNodes) for elem in obj]
+        else:
+            # obj must be a node_id, so we can stop and do some useful things here
+            if setNodes:
+                self.nodeData[obj]['node_id'] = obj
+            return self.nodeData[obj]
+
     def __str__(self):
         return str(self.tf)
 
@@ -2658,11 +2630,14 @@ if __name__ == '__main__':
     print '\n\n'
     tf = Testflow(args[0],True)
 
-    # print tf
-    # print '===================================================================================================\n'*4
-    # pprint(tf.showNodeMap())
-    # print '===================================================================================================\n'*4
-    pprint(tf.testsuites)
+    # pprint(tf.testsuite_data)
+
+    # pprint((tf.nodeData.keys()))
+    # print ('='*80+'\n')*4
+    pprint(tf.showNodeMap(True))
+    pprint(tf.showNodeMap())
+    # print ('='*80+'\n')*4
+    pprint(tf.nodeData)
 
 # TODO : gather all testsuite meta data
 # TODO : get all parent ids/conditions so that we can add that to testsuite information

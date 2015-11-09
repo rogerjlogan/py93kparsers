@@ -90,8 +90,6 @@ def read_tm_limits(pathfn):
     return limit_data
 
 
-from print_debug import *
-
 def main():
     parser = argparse.ArgumentParser(description="Description: "+__description__)
     parser.add_argument("files", nargs='*', help="Limit files to be analyzed (*.csv)")

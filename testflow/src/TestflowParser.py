@@ -202,6 +202,11 @@ class TestflowData(object):
     nodeMap = []
     testsuite_data = {}
 
+    variables = {}
+    """dict of variables(key) and their values(value)"""
+
+    implicit_declarations = {}
+
     # these should only be defined where needed in sub-classes
 
     true_branch = None
@@ -470,13 +475,11 @@ class ParseImplicitDeclarationSection(TestflowData):
         self.section_name = "implicit_declarations"
         """str name of section"""
 
-        self.Declarations = {}
-
         for tok in toks:
-            self.Declarations[tok[0]] = tok[1]
+            self.implicit_declarations[tok[0]] = tok[1]
 
     def __str__(self):
-        return create_ImplicitDeclarationSection(self.Declarations)
+        return create_ImplicitDeclarationSection(self.implicit_declarations)
 
 ImplicitDeclarationSection.setParseAction(ParseImplicitDeclarationSection)
 
@@ -518,9 +521,6 @@ class ParseDeclarationSection(TestflowData):
 
         self.section_name = "declarations"
         """str name of section"""
-
-        self.variables = {}
-        """dict of variables(key) and their values(value)"""
 
         for tok in toks:
             self.variables[tok[0]] = tok[1]
@@ -2643,7 +2643,7 @@ TestflowSection.setParseAction(ParseTestflowSection)
 def get_file_contents(infile,strip_comments=True):
     """
     Gets contents of file passed and (if strip_comments=True) also
-    stripped of comments that start with '--' and no double quotes in comments
+    stripped of comments that start with '--' (and no double quotes in comments)
     :param infile: testflow file name
     :param strip_comments: bool to decide whether to strip single line comments or not
                            ('only supports single line comments that begin with '--')
@@ -2668,10 +2668,12 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def __init__(self,tf_file,testflow_only=False):
+    def __init__(self,tf_file,show_testflow=False):
         contents = get_file_contents(tf_file)
 
         self.tf = Start.parseString(contents,1)[0]
+        if show_testflow:
+            print self.tf
 
         if USE_NEWICK:
             self.newick = self.tf.TestflowSection.getNewickStr()
@@ -2690,10 +2692,11 @@ if __name__ == '__main__':
         print "usage: (python) TestflowParser.py <input file>"
         exit()
     print '\n\n'
-    tf = Testflow(args[0],True)
-    # pprint(tf.testsuite_data)
+    tf = Testflow(args[0],show_testflow=False)
 
-    pprint(tf.nodeMap)
+    # pprint(tf.nodeMap)
+    pprint(tf.variables)
+    pprint(tf.implicit_declarations)
 
     # if USE_NEWICK:
     #     t = Tree(tf.newick,format=1)

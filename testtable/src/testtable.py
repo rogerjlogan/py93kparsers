@@ -1,7 +1,7 @@
-__author__ = 'Roger'
-__description__ = """
+#!/usr/bin/env python
+"""
     This module parses the bin csv files.
-    """
+"""
 
 import time
 _start_time = time.time()
@@ -10,6 +10,8 @@ import argparse
 import sys
 from common import *
 from pprint import pprint
+
+__author__ = 'Roger'
 
 # these were taken from TDC Topic: 112490 (SMT 7.3.3)
 VALID_BIN_HEADERS = ['Limit key', 'Suite name', 'Test name', 'Pins', 'Test number',
@@ -58,13 +60,13 @@ def read_tm_limits(pathfn):
             print ",".join(unknown_headers)
             return
 
-
         row_key_names = get_row_key_names(headers)
-        if row_key_names == None:
+        if row_key_names is None:
             print fn, color.BOLD+color.RED+" is not a bin file! Skipping due to MISSING KEY(s) headers (must have one of these combinations): "+color.END,
             print POSSIBLE_ROW_KEYS
             return
 
+        # using csv.reader() for slice indexing
         row_data = csv.reader(csvFile)
 
         limit_data = {}
@@ -91,7 +93,7 @@ def read_tm_limits(pathfn):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Description: "+__description__)
+    parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument("files", nargs='*', help="Limit files to be analyzed (*.csv)")
     args = parser.parse_args()
 

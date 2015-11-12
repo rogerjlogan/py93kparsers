@@ -1,35 +1,38 @@
 #!/usr/bin/env python
 """
-    This script was converted from TestflowParser.cpp provided by Advantest R&D (date provided: 9/28/2015).
-    At the time this script was provided from R&D, the latest SMT release was 7.3.x.x
+    TestflowParser.py:
 
-    The original script was written in c++ using Boost/Spirit but this python script uses pyparsing.
-    Both are very similar in how they mimic BNF, with the difference being that Boost/Spirit is
-    a bottom up parser and pyparsing is top down except where pp.Forward() is used for nested situations.
+        This script was converted from TestflowParser.cpp provided by Advantest R&D (date provided: 9/28/2015).
+        At the time this script was provided from R&D, the latest SMT release was 7.3.x.x
 
-    Since none of the dependencies were provided, certain liberties were taken to figure out post parsing.
-    Most of the Boost/Spirit code is preserved in various places in comments, always
-    beginning with "FROM TestflowParser.cpp: ".
+        The original script was written in c++ using Boost/Spirit but this python script uses pyparsing.
+        Both are very similar in how they mimic BNF, with the difference being that Boost/Spirit is
+        a bottom up parser and pyparsing is top down except where pp.Forward() is used for nested situations.
 
-    REVISION NOTES:
+        Since none of the dependencies were provided, certain liberties were taken to figure out post parsing.
+        Most of the Boost/Spirit code is preserved in various places in comments, always
+        beginning with "FROM TestflowParser.cpp: ".
 
-    v1.0:
-        - Reads/Parses testflow file
-        - Does NOT evaluate assignments or expressions (just passes them along as strings)
-        - Can print/write to file a copy of the input testflow file AFTER PARSING:
-            * Useful for debugging
-            * Example:
-                tf = Testflow(<testflow.tf>)
-                print tf
-        - Print node map to show the Tree and meta data for each node:
-            * Useful for debugging
-            * Example:
-                print tf.showNodeMap()
-        - Print testsuites and their node id which can be used for map location and retrieving meta data:
-            * Later, this will be used to modify the tree map (re-arranging nodes)
-            * Example:
-                print tf.testsuites
+        REVISION NOTES:
+
+        v1.0:
+            - Reads/Parses testflow file
+            - Does NOT evaluate assignments or expressions (just passes them along as strings)
+            - Can print/write to file a copy of the input testflow file AFTER PARSING:
+                * Useful for debugging
+                * Example:
+                    tf = Testflow(<testflow.tf>)
+                    print tf
+            - Print node map to show the Tree and meta data for each node:
+                * Useful for debugging
+                * Example:
+                    print tf.showNodeMap()
+            - Print testsuites and their node id which can be used for map location and retrieving meta data:
+                * Later, this will be used to modify the tree map (re-arranging nodes)
+                * Example:
+                    print tf.testsuites
 """
+import os
 import re
 import pyparsing as pp
 
@@ -2670,6 +2673,9 @@ class Testflow(TestflowData):
 
     def __init__(self,tf_file,show_testflow=False):
         contents = get_file_contents(tf_file)
+
+        tp_path, fn = os.path.split(tf_file)
+        print 'Parsing '+fn+' .....'
 
         self.tf = Start.parseString(contents,1)[0]
         if show_testflow:

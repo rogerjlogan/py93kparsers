@@ -1,5 +1,7 @@
 import sys
 import os
+from pprint import *
+import logging as log
 
 class color:
    PURPLE = '\033[95m'
@@ -78,7 +80,68 @@ class LineSplitter(object):
 
 
 def print2file(ostring, ofile="debug.out"):
-    from pprint import *
     f = open(ofile,"wb")
     pprint(ostring,f, indent=4)
     f.close()
+
+def init_logging(scriptname='default.log', args=None):
+    """
+    :param args: argparse object with (at least) the following objects:
+        args.output_dir
+        args.verbose
+        args.maxlogs
+    """
+    if not isinstance(vars(args),dict):
+        sys.exit('ERROR!!! "args" passed is not a argparse object.  Exiting ...')
+
+    warn_msg = []
+    outdir = ''
+    if len(args.output_dir):
+        if os.path.isfile(args.output_dir):
+            # let's not clobber the file
+            outdir = os.path.split(args.output_dir)[0]
+            msg = 'output_dir: ' + args.output_dir + ' is a file! Creating directory in ' + outdir
+            warn_msg.append(msg)
+            print 'WARNING! : ' + msg
+        elif os.path.isdir(args.output_dir):
+            outdir = args.output_dir
+        else:
+            raise IOError
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
+    if args.maxlogs > 0:
+        basename = scriptname.split('.')[0]
+        logname = basename + '.log'
+        log_pathfn = os.path.join(outdir, logname)
+
+        MAX_NUM_LOGS = 3
+        counter = 0
+        while os.path.isfile(log_pathfn):
+            counter += 1
+            if counter >= args.maxlogs:
+                warn_msg.append('maxlogs reached! Consider moving/deleting previous logs. Clobbering ' + logname)
+                break
+            else:
+                logname = basename + '.' + str(counter) + '.log'
+                log_pathfn = os.path.join(outdir, logname)
+
+        print '\nCreating log file:',log_pathfn
+        log.basicConfig(filename=log_pathfn, format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w')
+    else:
+        log.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p')
+    for msg in warn_msg:
+        log.warning(msg)
+    if args.verbose:
+        log.getLogger().setLevel('DEBUG')
+        log.debug('Setting log level to DEBUG (-v option was passed)')
+    else:
+        log.getLogger().setLevel('INFO')
+        log.info('Setting log level to INFO (add -v option to see more stuff logged)')
+        log.debug('Test string. You should NOT see this in the log file.')
+
+    if isinstance(vars(args),dict):
+        for k,v in vars(args).iteritems():
+            log.debug('ARGUMENT PASSED: name(%s) = %s',k,v)
+
+    log.info('BEGIN ' + scriptname)

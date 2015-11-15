@@ -33,8 +33,17 @@
                     print tf.testsuites
 """
 import os
+import sys
 import re
+import argparse
 import pyparsing as pp
+import logging as log
+from pprint import pprint
+import time
+from common import humanize_time,init_logging
+
+_start_time = time.time()
+
 
 USE_NEWICK = False
 if USE_NEWICK:
@@ -2652,6 +2661,10 @@ def get_file_contents(infile,strip_comments=True):
                            ('only supports single line comments that begin with '--')
     :return: str contents of file
     """
+    if '.mfh' == infile.strip()[-4:]:
+        err = 'Testflow file is an ".mfh" file. This is NOT supported yet! Exiting ...'
+        log.critical(err)
+        sys.exit(err)
     _f = open(infile)
     contents = '\n'.join(_f.read().splitlines())
     _f.close()
@@ -2675,7 +2688,7 @@ class Testflow(TestflowData):
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
-        print 'Parsing '+fn+' .....'
+        log.info('Parsing '+fn+' .....')
 
         self.tf = Start.parseString(contents,1)[0]
         if show_testflow:
@@ -2691,14 +2704,16 @@ class Testflow(TestflowData):
         return str(self.tf)
 
 if __name__ == '__main__':
-    import sys
-    from pprint import pprint
-    args = sys.argv[1:]
-    if len(args) != 1:
-        print "usage: (python) TestflowParser.py <input file>"
-        exit()
-    print '\n\n'
-    tf = Testflow(args[0],show_testflow=False)
+    parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
+    parser.add_argument('-tf','--path_to_testflowfile',required=True, help='Path to testflow file')
+    parser.add_argument('-out','--output_dir',required=False, help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
+    args = parser.parse_args()
+
+    init_logging(args.verbose, scriptname=os.path.split(sys.modules[__name__].__file__)[1], logDir=args.output_dir, args=args)
+
+    tf = Testflow(args.path_to_testflowfile,show_testflow=False)
 
     # pprint(tf.nodeMap)
     pprint(tf.variables)
@@ -2711,3 +2726,8 @@ if __name__ == '__main__':
 
 # TODO : get all parent ids/conditions so that we can add that to testsuite information
 # TODO : gather all testsuite meta data
+
+    time = time.time()-_start_time
+    msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'
+    log.info(msg)
+    print msg

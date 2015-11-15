@@ -10,7 +10,7 @@ import sys
 from common import *
 from pprint import pprint
 from TestflowParser import Testflow
-from testtable import VALID_BIN_HEADERS
+from testtable_parser import VALID_LIM_HEADERS
 import time
 _start_time = time.time()
 
@@ -150,7 +150,7 @@ def parse_special_csv(pathfn, csv_type=None):
         elif csv_type == 'test_name_type':
             # using csv.DictReader() for key indexing
             for row in csv.DictReader(csvFile):
-                test_name_type[row[TESTSUITE_COLUMN_NAME]] = {x:row[x] for x in row.keys() if x not in VALID_BIN_HEADERS}
+                test_name_type[row[TESTSUITE_COLUMN_NAME]] = {x:row[x] for x in row.keys() if x not in VALID_LIM_HEADERS}
             test_name_type_done = True
 
         elif csv_type == 'categories':
@@ -169,7 +169,7 @@ def parse_special_csv(pathfn, csv_type=None):
                                    if len(row[x]) and x not in [SBIN_NUM_COLUMN_NAME, CONDITION_COLUMN_NAME]]
                     }
                 )
-            # calculate set differences (exclude MEMORYREPAIRED which is virtual test
+            # calculate set differences (exclude MEMORYREPAIRED which is a virtual test
             categories_extra_tests = set(category_tests.keys() + [MEMORYREPAIRED]) -\
                                      set(testflow.testsuite_data.keys() + bin_groups.keys())
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
@@ -196,14 +196,14 @@ def parse_special_csv(pathfn, csv_type=None):
 def main():
     global __verbose__,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tf','--testFlowFile',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
-    parser.add_argument('-bg','--binBinGrpsFile',required=False, help='name of binning groups csv file (Example: Binning_Groups.csv)')
-    parser.add_argument('-ssg','--binSpdSrtGrpsFile',required=True, help='name of speed sort groups csv file (Example: SpeedSortGroups.csv)')
-    parser.add_argument('-c','--binCatsFile',required=True, help='name of binning categories csv file (Example: Binning_Categories.csv)')
-    parser.add_argument('-tnt','--binTNTFile',required=True, help='name of test name type csv file (Example: Kepler_TestNameTypeList.csv)')
+    parser.add_argument('-f','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
+    parser.add_argument('-t','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
+    parser.add_argument('-out','--output_dir',required=False, help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
     args = parser.parse_args()
-    __verbose__ = args.verbose
+
+    init_logging(args.verbose, scriptname=os.path.split(sys.modules[__name__].__file__)[1], logDir=args.output_dir, args=args)
 
     get_testflow(args.testFlowFile)
     if 'binBinGrpsFile' in args:

@@ -2706,8 +2706,8 @@ class Testflow(TestflowData):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--path_to_testflowfile',required=True, help='Path to testflow file')
-    parser.add_argument('-out','--output_dir',required=False, help='Directory to place log file(s).')
-    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
     args = parser.parse_args()
 

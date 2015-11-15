@@ -198,8 +198,8 @@ def main():
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-f','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
     parser.add_argument('-t','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
-    parser.add_argument('-out','--output_dir',required=False, help='Directory to place log file(s).')
-    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
     args = parser.parse_args()
 

@@ -35,7 +35,6 @@ def humanize_time(secs):
     hours, mins = divmod(mins, 60)
     return '%02dh:%02dm:%02ds' % (hours, mins, secs)
 
-
 def get_recursive_files(item,extension=".csv",zipped_ok=False):
     for dir_,_,files in os.walk(item):
         for fn in files:
@@ -78,7 +77,6 @@ class LineSplitter(object):
             self.prev = token
             return self.count
 
-
 def print2file(ostring, ofile="debug.out"):
     f = open(ofile,"wb")
     pprint(ostring,f, indent=4)
@@ -94,23 +92,23 @@ def init_logging(scriptname='default.log', args=None):
     if not isinstance(vars(args),dict):
         sys.exit('ERROR!!! "args" passed is not a argparse object.  Exiting ...')
 
-    warn_msg = []
-    outdir = ''
-    if len(args.output_dir):
-        if os.path.isfile(args.output_dir):
-            # let's not clobber the file
-            outdir = os.path.split(args.output_dir)[0]
-            msg = 'output_dir: ' + args.output_dir + ' is a file! Creating directory in ' + outdir
-            warn_msg.append(msg)
-            print 'WARNING! : ' + msg
-        elif os.path.isdir(args.output_dir):
-            outdir = args.output_dir
-        else:
-            raise IOError
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
     if args.maxlogs > 0:
+        warn_msg = []
+        outdir = ''
+        if len(args.output_dir):
+            if os.path.isfile(args.output_dir):
+                # let's not clobber the file
+                outdir = os.path.split(args.output_dir)[0]
+                msg = 'output_dir: ' + args.output_dir + ' is a file! Creating directory in ' + outdir
+                warn_msg.append(msg)
+                print 'WARNING! : ' + msg
+            elif os.path.isdir(args.output_dir):
+                outdir = args.output_dir
+            else:
+                raise IOError
+            if not os.path.exists(outdir):
+                os.makedirs(outdir)
+
         basename = scriptname.split('.')[0]
         logname = basename + '.log'
         log_pathfn = os.path.join(outdir, logname)
@@ -128,10 +126,10 @@ def init_logging(scriptname='default.log', args=None):
 
         print '\nCreating log file:',log_pathfn
         log.basicConfig(filename=log_pathfn, format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w')
+        for msg in warn_msg:
+            log.warning(msg)
     else:
         log.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p')
-    for msg in warn_msg:
-        log.warning(msg)
     if args.verbose:
         log.getLogger().setLevel('DEBUG')
         log.debug('Setting log level to DEBUG (-v option was passed)')

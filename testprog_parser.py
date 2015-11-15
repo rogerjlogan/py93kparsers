@@ -75,9 +75,9 @@ class ProgFile(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tp','--path_to_progfile',required=True, help='Path to testprog file')
-    parser.add_argument('-out','--output_dir',required=False, help='Directory to place log file(s).')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
-    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=no log created). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
     init_logging(args.verbose, scriptname=os.path.split(sys.modules[__name__].__file__)[1], logDir=args.output_dir, args=args)

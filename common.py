@@ -2,6 +2,7 @@ import sys
 import os
 from pprint import *
 import logging as log
+import gzip
 
 class color:
    PURPLE = '\033[95m'
@@ -14,6 +15,11 @@ class color:
    BOLD = '\033[1m'
    UNDERLINE = '\033[4m'
    END = '\033[0m'
+
+def myOpen(fn, mode="r"):
+    if fn.endswith('.gz'):
+        return gzip.open(fn,mode)
+    return open(fn,mode)
 
 def progress_tracker(lineno):
     if lineno%1000 == 0:
@@ -92,9 +98,10 @@ def init_logging(scriptname='default.log', args=None):
     if not isinstance(vars(args),dict):
         sys.exit('ERROR!!! "args" passed is not a argparse object.  Exiting ...')
 
+    outdir = ''
     if args.maxlogs > 0:
         warn_msg = []
-        outdir = ''
+        info_msg = []
         if len(args.output_dir):
             if os.path.isfile(args.output_dir):
                 # let's not clobber the file
@@ -102,12 +109,20 @@ def init_logging(scriptname='default.log', args=None):
                 msg = 'output_dir: ' + args.output_dir + ' is a file! Creating directory in ' + outdir
                 warn_msg.append(msg)
                 print 'WARNING! : ' + msg
-            elif os.path.isdir(args.output_dir):
-                outdir = args.output_dir
             else:
-                raise IOError
-            if not os.path.exists(outdir):
-                os.makedirs(outdir)
+                outdir = args.output_dir
+                print outdir
+                if not os.path.isdir(outdir):
+                    try:
+                        msg = "Creating new directory: "+outdir
+                        info_msg.append(msg)
+                        os.makedirs(outdir)
+                    except:
+                        err = 'Unable to create directory: '+outdir+'\n'
+                        err += 'Check file read/write permissions\n'
+                        err += 'You might also try closing all editors and explorer windows with a view in this directory.\n'
+                        print err
+                        raise IOError
 
         basename = scriptname.split('.')[0]
         logname = basename + '.log'
@@ -128,6 +143,8 @@ def init_logging(scriptname='default.log', args=None):
         log.basicConfig(filename=log_pathfn, format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w')
         for msg in warn_msg:
             log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
     else:
         log.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p')
     if args.verbose:
@@ -140,6 +157,25 @@ def init_logging(scriptname='default.log', args=None):
 
     if isinstance(vars(args),dict):
         for k,v in vars(args).iteritems():
-            log.debug('ARGUMENT PASSED: name(%s) = %s',k,v)
+            if len(str(v).strip()):
+                log.debug('ARGUMENT PASSED: name(%s) = %s',k,v)
 
     log.info('BEGIN ' + scriptname)
+    return outdir
+
+from tempfile import mkstemp
+from shutil import move
+from os import remove, close
+
+def replace(file_path, pattern, subst):
+    #Create temp file
+    fh, abs_path = mkstemp()
+    with gzip.open(abs_path,'wb') as new_file:
+        with myOpen(file_path) as old_file:
+            for line in old_file:
+                new_file.write(line.replace(pattern, subst))
+    close(fh)
+    #Remove original file
+    remove(file_path)
+    #Move new file
+    move(abs_path, file_path)

@@ -111,7 +111,6 @@ def init_logging(scriptname='default.log', args=None):
                 print 'WARNING! : ' + msg
             else:
                 outdir = args.output_dir
-                print outdir
                 if not os.path.isdir(outdir):
                     try:
                         msg = "Creating new directory: "+outdir

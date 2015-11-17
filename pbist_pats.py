@@ -141,12 +141,15 @@ class PbistPats(object):
         out.write('SQPG 1,BEND,,,,('+port+')\n')
         out.close()
 
-        # let's create the MPB (and overwrite if already exists)
+        # let's create the jsub call pattern (and overwrite if already exists)
         out = self.create_open_file(jsub_file)
-        out.write('DMAS SQPG,SM,2,('+port+')\n')
-        out.write('SQLB "'+jsub_label+'",MPBU,0,1,"",('+port+')\n')
-        out.write('SQPG 0,CALL,,"'+jsub2_label+'",,('+port+')\n')
-        out.write('SQPG 1,BEND,,,,('+port+')\n')
+        out.write('DMAS SQPG,SM,4,('+port+')\n')
+        out.write('SQLB "'+jsub_label+'",MAIN,0,3,"'+self.wavetable+'",('+port+')\n')
+        out.write('SQLB LBL,"'+jsub_label+'","PARA_MEM=SHMEM,SCAN_MEM=NONE,PARA_MCTX=DEFAULT",('+port+')\n')
+        out.write('SQPG 0,STVA,0,,,('+port+')\n')
+        out.write('SQPG 1,STSA,,,,('+port+')\n')
+        out.write('SQPG 2,JSUB,,"'+jsub2_label+'",,('+port+')\n')
+        out.write('SQPG 3,STOP,,,,('+port+')\n')
         out.close()
 
 if __name__ == "__main__":

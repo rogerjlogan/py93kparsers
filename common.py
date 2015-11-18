@@ -123,7 +123,11 @@ def init_logging(scriptname='default.log', args=None):
                         print err
                         raise IOError
 
-        basename = scriptname.split('.')[0]
+        if len(args.name):
+            progname = '_'+args.name
+        else:
+            progname = ''
+        basename = scriptname.split('.')[0]+progname
         logname = basename + '.log'
         log_pathfn = os.path.join(outdir, logname)
 

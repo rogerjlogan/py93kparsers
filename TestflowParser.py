@@ -38,7 +38,7 @@ import re
 import argparse
 import pyparsing as pp
 import logging as log
-from pprint import pprint
+from pprint import pprint,pformat
 import time
 from common import humanize_time,init_logging
 
@@ -204,7 +204,6 @@ TestsuiteFlag = AT + (Identifier + DOT + Identifier)
 # FROM TestflowParser.cpp:      str_p("string")[Type.type = ::xoc::tapi::ZTestflowVariableType_STRING];
 Type = pp.Keyword("double") | pp.Keyword("string")
 
-
 class TestflowData(object):
     """Super class to contain methods/data"""
 
@@ -243,10 +242,6 @@ class TestflowData(object):
 
     Testmethods = {}
 
-
-
-
-
     @staticmethod
     def getNodeId():
         """Get unique id"""
@@ -276,7 +271,8 @@ class TestflowData(object):
                     self.nodeData[self.node_id][self.testsuite]['Userprocedures'] = self.Userprocedures[tm_id]
                 if tm_id in self.Testmethods:
                     self.nodeData[self.node_id][self.testsuite]['Testmethods'] = self.Testmethods[tm_id]
-            # sys.exit()
+            log.info(pformat(self.nodeData,indent=4))
+            sys.exit()
         nested_data[self.node_id]['data'] = self.nodeData[self.node_id]
         if len(self.true_branch):
             nested_data[self.node_id]['true'] = []
@@ -2707,17 +2703,18 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--path_to_testflowfile',required=True, help='Path to testflow file')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
     args = parser.parse_args()
 
-    init_logging(args.verbose, scriptname=os.path.split(sys.modules[__name__].__file__)[1], logDir=args.output_dir, args=args)
+    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
     tf = Testflow(args.path_to_testflowfile,show_testflow=False)
 
-    # pprint(tf.nodeMap)
-    pprint(tf.variables)
-    pprint(tf.implicit_declarations)
+    pprint(tf.nodeMap)
+    # pprint(tf.variables)
+    # pprint(tf.implicit_declarations)
 
     # if USE_NEWICK:
     #     t = Tree(tf.newick,format=1)

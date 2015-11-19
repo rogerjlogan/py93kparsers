@@ -435,7 +435,7 @@ class TestTable(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tt','--path_to_testtable_file',required=True, help='Path to testtable master file')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of stuff')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')

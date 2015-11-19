@@ -92,7 +92,7 @@ def init_logging(scriptname='default.log', args=None):
     """
     :param args: argparse object with (at least) the following objects:
         args.output_dir
-        args.verbose
+        args.debug
         args.maxlogs
     """
     if not isinstance(vars(args),dict):
@@ -149,7 +149,7 @@ def init_logging(scriptname='default.log', args=None):
             log.info(msg)
     else:
         log.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p')
-    if args.verbose:
+    if args.debug:
         log.getLogger().setLevel('DEBUG')
         log.debug('Setting log level to DEBUG (-v option was passed)')
     else:

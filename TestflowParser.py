@@ -45,9 +45,7 @@ from common import humanize_time,init_logging
 _start_time = time.time()
 
 
-USE_NEWICK = False
-if USE_NEWICK:
-    from ete2 import *
+from ete2 import *
 
 __author__ = 'Roger Logan'
 __version__ = '1.0'
@@ -211,6 +209,8 @@ class TestflowData(object):
     node_id = -1
     nodeData = {}
     nodeMap = []
+    newickStr = ''
+    newick_tree = None
     testsuite_data = {}
 
     variables = {}
@@ -249,8 +249,7 @@ class TestflowData(object):
         return TestflowData.__id
 
     def buildNodes(self,parent=None):
-        nested_data = {self.node_id: {}}
-        nested_data[self.node_id]['parent'] = parent
+        nested_data = {self.node_id:{'parent':parent}}
         if self.type == 'RunStatement' or self.type == 'RunAndBranchStatement':
             # let's modify testsuite name to dict to encapsulate the testsuite data as well
             self.nodeData[self.node_id][self.testsuite] = self.testsuite_data[self.testsuite]
@@ -271,8 +270,6 @@ class TestflowData(object):
                     self.nodeData[self.node_id][self.testsuite]['Userprocedures'] = self.Userprocedures[tm_id]
                 if tm_id in self.Testmethods:
                     self.nodeData[self.node_id][self.testsuite]['Testmethods'] = self.Testmethods[tm_id]
-            log.info(pformat(self.nodeData,indent=4))
-            sys.exit()
         nested_data[self.node_id]['data'] = self.nodeData[self.node_id]
         if len(self.true_branch):
             nested_data[self.node_id]['true'] = []
@@ -283,6 +280,34 @@ class TestflowData(object):
             for x in self.false_branch:
                 nested_data[self.node_id]['false'].append(x.buildNodes(self.node_id))
         return nested_data
+
+    def getNewickStr(self):
+        rstr = ''
+        if self.type in ['RunAndBranchStatement','IfStatement']:
+            if len(self.true_branch) or len(self.false_branch):
+                rstr += '('
+                if len(self.true_branch):
+                    rstr += '('
+                    for x in self.true_branch:
+                        rstr += x.getNewickStr() + ','
+                    rstr = rstr[:-1] + ')' + str(self.node_id)+'T'
+                if len(self.false_branch):
+                    if rstr.endswith('T'):
+                        rstr += ','
+                    rstr += '('
+                    for x in self.false_branch:
+                        rstr += x.getNewickStr() + ','
+                    rstr = rstr[:-1] + ')' + str(self.node_id)+'F'
+                rstr += ')'
+        elif self.type in ['GroupStatement','WhileStatement','RepeatStatement','ForStatement']:
+            if len(self.true_branch):
+                rstr += '('
+                for x in self.true_branch:
+                    rstr += x.getNewickStr() + ','
+                rstr = rstr[:-1] + ')'
+        rstr += str(self.node_id)
+        return rstr
+
 
 # FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))("OptFileHeader")
@@ -1341,8 +1366,6 @@ class ParseRunStatement(TestflowData):
             'testsuite' : self.testsuite
         }
 
-        # self.testsuite_data[self.testsuite]['node_id'] = self.node_id
-
     def __repr__(self):
         return create_RunStatement(self.testsuite)
 
@@ -1406,8 +1429,6 @@ class ParseRunAndBranchStatement(TestflowData):
             'type' : self.type,
             'testsuite' : self.testsuite
         }
-
-        # self.testsuite_data[self.testsuite]['node_id'] = self.node_id
 
     def __repr__(self):
         return create_RunAndBranchStatement(self.testsuite,self.true_branch,self.false_branch)
@@ -2642,9 +2663,9 @@ class ParseTestflowSection(TestflowData):
         """format the node data in newick style data string"""
         rstr = '('
         for x in self.data:
-            rstr += x.buildNodes(self.node_id,newick=True)
-        rstr += ')Start;'
-        return re.sub(re.compile(r',(?=\))'),'',rstr)
+            rstr += x.getNewickStr() + ','
+        rstr = rstr[:-1] + ')Start;'
+        return rstr
 
 TestflowSection.setParseAction(ParseTestflowSection)
 
@@ -2680,6 +2701,37 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
+    def showMyTree(self,t,name='Testflow'):
+        from ete2 import Tree, TreeStyle, TextFace, NodeStyle, AttrFace, faces
+        # Basic tree style
+        ts = TreeStyle()
+        ts.show_leaf_name = True
+        ts.show_scale = False
+        ts.show_border = True
+        ts.branch_vertical_margin = 50 # 50 pixels between adjacent branches
+        ts.scale = 100 # 100 pixels per branch length unit
+        ts.title.add_face(TextFace(name, fsize=10), column=0)
+        ts.tree_width = 80
+        # Draws nodes as small red spheres of diameter equal to 10 pixels
+        nstyle = NodeStyle()
+        nstyle["shape"] = "sphere"
+        nstyle["size"] = 10
+        nstyle["fgcolor"] = "darkred"
+        nstyle["vt_line_width"] = 2
+        nstyle["hz_line_width"] = 2
+        nstyle["vt_line_type"] = 0 # 0 solid, 1 dashed, 2 dotted
+        nstyle["hz_line_type"] = 0
+        nstyle["hz_line_color"] = "black"
+        nstyle["vt_line_color"] = "black"
+        # Applies the same static style to all nodes in the tree. Note that,
+        # if "nstyle" is modified, changes will affect to all nodes
+        for n in t.traverse():
+            n.set_style(nstyle)
+            n.dist = 0.2
+        t.dist = 0.1
+        t.render(name+".pdf", h=100, units="mm", tree_style=ts, dpi=200)
+        t.show()
+
     def __init__(self,tf_file,show_testflow=False):
         contents = get_file_contents(tf_file)
 
@@ -2690,11 +2742,25 @@ class Testflow(TestflowData):
         if show_testflow:
             print self.tf
 
-        if USE_NEWICK:
-            self.newick = self.tf.TestflowSection.getNewickStr()
-            """Get newick formatted string of testflow"""
-
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
+        log.debug(self.nodeMap)
+
+        self.newickStr = self.tf.TestflowSection.getNewickStr()
+        log.debug(self.newickStr)
+
+        self.newick_tree = Tree(self.newickStr,format=1)
+        # self.newick_tree.get_ascii(attributes=['name','label'],show_internal=True)
+        # self.newick_tree.show(name="Final_RPC_flow")
+        if args.debug:
+            self.showMyTree(self.newick_tree,name="Final_RPC_flow")
+
+        log.debug(self.newick_tree)
+
+        # for node in self.newick_tree.traverse('postorder'):
+        #     print node.name
+        #     for child in node.get_children():
+        #         print '\t'+child.name
+        #     print '-='*80
 
     def __str__(self):
         return str(self.tf)
@@ -2705,24 +2771,16 @@ if __name__ == '__main__':
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
-    parser.add_argument('-v','--verbose',action='store_true',help='print a lot of stuff')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of stuff')
     args = parser.parse_args()
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
     tf = Testflow(args.path_to_testflowfile,show_testflow=False)
 
-    pprint(tf.nodeMap)
+    # pprint(tf.nodeMap)
     # pprint(tf.variables)
     # pprint(tf.implicit_declarations)
-
-    # if USE_NEWICK:
-    #     t = Tree(tf.newick,format=1)
-    #     t.get_ascii(attributes=['name','label'],show_internal=True)
-    #     t.show(name="Final_RPC_flow")
-
-# TODO : get all parent ids/conditions so that we can add that to testsuite information
-# TODO : gather all testsuite meta data
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

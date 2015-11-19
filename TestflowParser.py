@@ -41,11 +41,9 @@ import logging as log
 from pprint import pprint,pformat
 import time
 from common import humanize_time,init_logging
+from ete2 import Tree
 
 _start_time = time.time()
-
-
-from ete2 import *
 
 __author__ = 'Roger Logan'
 __version__ = '1.0'
@@ -2701,36 +2699,19 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def showMyTree(self,t,name='Testflow'):
-        from ete2 import Tree, TreeStyle, TextFace, NodeStyle, AttrFace, faces
-        # Basic tree style
+    def showMyTree(self,t,name=''):
+
+        from ete2 import TreeStyle,faces,AttrFace
+
+        def my_layout(node):
+            # Add name label to all nodes
+            faces.add_face_to_node(AttrFace("name"), node, column=0, position="branch-right")
+
         ts = TreeStyle()
-        ts.show_leaf_name = True
+        ts.show_leaf_name = False
         ts.show_scale = False
-        ts.show_border = True
-        ts.branch_vertical_margin = 50 # 50 pixels between adjacent branches
-        ts.scale = 100 # 100 pixels per branch length unit
-        ts.title.add_face(TextFace(name, fsize=10), column=0)
-        ts.tree_width = 80
-        # Draws nodes as small red spheres of diameter equal to 10 pixels
-        nstyle = NodeStyle()
-        nstyle["shape"] = "sphere"
-        nstyle["size"] = 10
-        nstyle["fgcolor"] = "darkred"
-        nstyle["vt_line_width"] = 2
-        nstyle["hz_line_width"] = 2
-        nstyle["vt_line_type"] = 0 # 0 solid, 1 dashed, 2 dotted
-        nstyle["hz_line_type"] = 0
-        nstyle["hz_line_color"] = "black"
-        nstyle["vt_line_color"] = "black"
-        # Applies the same static style to all nodes in the tree. Note that,
-        # if "nstyle" is modified, changes will affect to all nodes
-        for n in t.traverse():
-            n.set_style(nstyle)
-            n.dist = 0.2
-        t.dist = 0.1
-        t.render(name+".pdf", h=100, units="mm", tree_style=ts, dpi=200)
-        t.show()
+        ts.layout_fn = my_layout
+        t.show(tree_style=ts)
 
     def __init__(self,tf_file,show_testflow=False):
         contents = get_file_contents(tf_file)
@@ -2749,18 +2730,22 @@ class Testflow(TestflowData):
         log.debug(self.newickStr)
 
         self.newick_tree = Tree(self.newickStr,format=1)
-        # self.newick_tree.get_ascii(attributes=['name','label'],show_internal=True)
-        # self.newick_tree.show(name="Final_RPC_flow")
+
         if args.debug:
-            self.showMyTree(self.newick_tree,name="Final_RPC_flow")
+            self.showMyTree(self.newick_tree,name=args.name)
 
         log.debug(self.newick_tree)
 
-        # for node in self.newick_tree.traverse('postorder'):
-        #     print node.name
-        #     for child in node.get_children():
-        #         print '\t'+child.name
-        #     print '-='*80
+        for node in self.newick_tree.traverse('postorder'):
+            try:
+                node_id = int(node.name)
+            except:
+                continue
+            self.nodeData[node_id]['children'] = []
+            for child in node.get_children():
+                self.nodeData[node_id]['children'].append(child.name)
+
+        log.debug('\n'+pformat(self.nodeData))
 
     def __str__(self):
         return str(self.tf)
@@ -2778,9 +2763,9 @@ if __name__ == '__main__':
 
     tf = Testflow(args.path_to_testflowfile,show_testflow=False)
 
-    # pprint(tf.nodeMap)
-    # pprint(tf.variables)
-    # pprint(tf.implicit_declarations)
+    log.debug(tf.nodeMap)
+    log.debug(tf.variables)
+    log.debug(tf.implicit_declarations)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

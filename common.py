@@ -131,7 +131,6 @@ def init_logging(scriptname='default.log', args=None):
         logname = basename + '.log'
         log_pathfn = os.path.join(outdir, logname)
 
-        MAX_NUM_LOGS = 3
         counter = 0
         while os.path.isfile(log_pathfn):
             counter += 1

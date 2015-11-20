@@ -102,7 +102,9 @@ def init_logging(scriptname='default.log', args=None):
     if args.maxlogs > 0:
         warn_msg = []
         info_msg = []
-        if len(args.output_dir):
+        if not len(args.output_dir):
+            outdir = os.path.dirname(os.path.realpath(__file__))
+        else:
             if os.path.isfile(args.output_dir):
                 # let's not clobber the file
                 outdir = os.path.split(args.output_dir)[0]

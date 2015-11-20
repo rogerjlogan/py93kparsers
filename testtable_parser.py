@@ -475,7 +475,7 @@ if __name__ == "__main__":
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
-    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all csv testtables')
+    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     args = parser.parse_args()
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)

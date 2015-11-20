@@ -2722,6 +2722,8 @@ class Testflow(TestflowData):
         log.debug(t)
         if not len(name):
             name = 'Testflow'
+        if not len(outdir):
+            outdir = os.path.dirname(os.path.realpath(__file__))
         pathfn = os.path.join(outdir,name+'.png')
         msg = 'Creating new testflow picture:' + pathfn
         print msg
@@ -2729,15 +2731,13 @@ class Testflow(TestflowData):
         t.render(pathfn,tree_style=ts)
         t.show(tree_style=ts)
 
-    def __init__(self,tf_file,show_testflow=False):
+    def __init__(self,tf_file,debug=False):
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
         log.info('Parsing '+fn+' .....')
 
         self.tf = Start.parseString(contents,1)[0]
-        if show_testflow:
-            print self.tf
 
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
         log.debug(self.nodeMap)
@@ -2747,7 +2747,7 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
-        if args.debug:
+        if debug:
             self.showMyTree(self.newick_tree,name=args.name,outdir=args.output_dir)
 
         for node in self.newick_tree.traverse('postorder'):
@@ -2775,10 +2775,12 @@ if __name__ == '__main__':
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tf = Testflow(args.path_to_testflowfile,show_testflow=False)
+    tf = Testflow(args.path_to_testflowfile,args.debug)
 
     log.debug(tf.nodeMap)
     log.debug(tf.variables)
+
+    # show
     log.debug(tf.implicit_declarations)
 
     time = time.time()-_start_time

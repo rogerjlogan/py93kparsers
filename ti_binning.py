@@ -15,7 +15,6 @@ import time
 _start_time = time.time()
 
 __author__ = 'Roger'
-__verbose__ = True
 
 # global constants below here in CAPS
 
@@ -74,12 +73,6 @@ testflow_extra_tests = []
 testflow = None
 """Parsed Testflow object"""
 
-def get_testflow(pathfn):
-    global testflow
-    testflow = Testflow(pathfn)
-    if __verbose__:
-        print sys.modules[testflow.__module__].__doc__
-
 def get_category_testname(test, sbin):
     global category_tests
 
@@ -115,7 +108,7 @@ def get_category_testname(test, sbin):
     }
     return test
 
-def parse_special_csv(pathfn, csv_type=None):
+def parse_special_csv(pathfn, csv_type=None,debug=False):
     global bin_groups_done,speed_sort_groups_done,test_name_type_done
     global bin_groups,category_defs,categories_extra_tests,testflow_extra_tests
 
@@ -194,25 +187,26 @@ def parse_special_csv(pathfn, csv_type=None):
             sys.exit(err)
 
 def main():
-    global __verbose__,bin_groups_exist
+    global testflow,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-f','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
-    parser.add_argument('-t','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
+    parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
+    parser.add_argument('-tt','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
-    init_logging(args.verbose, scriptname=os.path.split(sys.modules[__name__].__file__)[1], logDir=args.output_dir, args=args)
+    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    get_testflow(args.testFlowFile)
-    if 'binBinGrpsFile' in args:
-        parse_special_csv(args.binBinGrpsFile,'bin_groups')
-        bin_groups_exist = True
-    parse_special_csv(args.binSpdSrtGrpsFile,'speed_sort_groups')
-    parse_special_csv(args.binTNTFile,'test_name_type')
-    parse_special_csv(args.binCatsFile,'categories')
+    testflow = Testflow(args.testflow_file)
+    # if 'binBinGrpsFile' in args:
+    #     parse_special_csv(args.binBinGrpsFile,'bin_groups')
+    #     bin_groups_exist = True
+    # parse_special_csv(args.binSpdSrtGrpsFile,'speed_sort_groups')
+    # parse_special_csv(args.binTNTFile,'test_name_type')
+    # parse_special_csv(args.binCatsFile,'categories')
 
 if __name__ == "__main__":
     main()

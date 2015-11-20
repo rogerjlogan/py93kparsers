@@ -279,7 +279,7 @@ class TestflowData(object):
                 nested_data[self.node_id]['false'].append(x.buildNodes(self.node_id))
         return nested_data
 
-    def getNewickStr(self):
+    def generateNewickStr(self, named=True):
         rstr = ''
         if self.type in ['RunAndBranchStatement','IfStatement']:
             if len(self.true_branch) or len(self.false_branch):
@@ -287,23 +287,29 @@ class TestflowData(object):
                 if len(self.true_branch):
                     rstr += '('
                     for x in self.true_branch:
-                        rstr += x.getNewickStr() + ','
+                        rstr += x.generateNewickStr() + ','
                     rstr = rstr[:-1] + ')' + str(self.node_id)+'T'
                 if len(self.false_branch):
                     if rstr.endswith('T'):
                         rstr += ','
                     rstr += '('
                     for x in self.false_branch:
-                        rstr += x.getNewickStr() + ','
+                        rstr += x.generateNewickStr() + ','
                     rstr = rstr[:-1] + ')' + str(self.node_id)+'F'
                 rstr += ')'
         elif self.type in ['GroupStatement','WhileStatement','RepeatStatement','ForStatement']:
             if len(self.true_branch):
                 rstr += '('
                 for x in self.true_branch:
-                    rstr += x.getNewickStr() + ','
+                    rstr += x.generateNewickStr() + ','
                 rstr = rstr[:-1] + ')'
-        rstr += str(self.node_id)
+        if named:
+            if self.type in ['RunAndBranchStatement','RunStatement']:
+                rstr += self.testsuite + '-' + str(self.node_id)
+            else:
+                rstr += '<'+self.type.replace('Statement','').upper() + '>-' + str(self.node_id)
+        else:
+            rstr += str(self.node_id)
         return rstr
 
 
@@ -2657,11 +2663,11 @@ class ParseTestflowSection(TestflowData):
             self.nodeMap.append(x.buildNodes(None))
         return self.nodeMap
 
-    def getNewickStr(self):
+    def buildNewickStr(self):
         """format the node data in newick style data string"""
         rstr = '('
         for x in self.data:
-            rstr += x.getNewickStr() + ','
+            rstr += x.generateNewickStr() + ','
         rstr = rstr[:-1] + ')Start;'
         return rstr
 
@@ -2699,7 +2705,7 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def showMyTree(self,t,name=''):
+    def showMyTree(self,t,name='',outdir=''):
 
         from ete2 import TreeStyle,faces,AttrFace
 
@@ -2710,7 +2716,17 @@ class Testflow(TestflowData):
         ts = TreeStyle()
         ts.show_leaf_name = False
         ts.show_scale = False
+        # ts.mode = 'c'
+        # ts.arc_span = 180
         ts.layout_fn = my_layout
+        log.debug(t)
+        if not len(name):
+            name = 'Testflow'
+        pathfn = os.path.join(outdir,name+'.png')
+        msg = 'Creating new testflow picture:' + pathfn
+        print msg
+        log.debug(msg)
+        t.render(pathfn,tree_style=ts)
         t.show(tree_style=ts)
 
     def __init__(self,tf_file,show_testflow=False):
@@ -2726,15 +2742,13 @@ class Testflow(TestflowData):
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
         log.debug(self.nodeMap)
 
-        self.newickStr = self.tf.TestflowSection.getNewickStr()
+        self.newickStr = self.tf.TestflowSection.buildNewickStr()
         log.debug(self.newickStr)
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
         if args.debug:
-            self.showMyTree(self.newick_tree,name=args.name)
-
-        log.debug(self.newick_tree)
+            self.showMyTree(self.newick_tree,name=args.name,outdir=args.output_dir)
 
         for node in self.newick_tree.traverse('postorder'):
             try:

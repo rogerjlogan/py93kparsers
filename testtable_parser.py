@@ -41,6 +41,7 @@ MAXLENGTH_BINNAME = 30
 
 class TestTable(object):
 
+    __testnum = 0
     testtables = []
     special_testtables = []
     unordered_limit_data = {}
@@ -68,7 +69,13 @@ class TestTable(object):
     binmap_err = {}
     binmap_err_tests = {}
 
-    def __init__(self,pathfn):
+    @staticmethod
+    def getNewTestNumber():
+        """Get unique 'Test number'"""
+        TestTable.__testnum += 1
+        return str(TestTable.__testnum)
+
+    def __init__(self,pathfn,renum=False):
         self.path, self.fn = os.path.split(pathfn)
         log.info('Parsing testtable master file: '+self.fn+' .....')
         limPat = re.compile(r'^\s*testerfile\s*:(?P<limit_file>.*)')
@@ -81,13 +88,39 @@ class TestTable(object):
                 obj = re.search(limPat,line)
                 if obj:
                     fn = os.path.join(self.path,obj.group('limit_file').strip())
-                    self.parse_testtable(fn)
+                    self.parse_testtable(fn,renum)
         if not hdr_found:
             err = 'ERROR!!! OptFileHeader ('+TESTTABLE_OPTFILE_HEADER+') not found'
             log.critical(err)
             sys.exit(err)
 
         self.log_errors()
+
+    def renum_test_numbers(self,pathfn):
+        fn = os.path.split(pathfn)[1]
+        if os.path.exists(pathfn+'.bak'):
+            os.remove(pathfn+'.bak')
+        os.rename(pathfn, pathfn+'.bak')
+        csv_in = open(pathfn+'.bak', 'rb')
+        csv_out = open(pathfn, 'wb')
+        reader = csv.reader(csv_in)
+
+        # get headers since we are not using DictReader, then reset the file pointer
+        headers = reader.next()[:]
+        tnum_idx = headers.index('Test number')
+        csv_in.seek(0)
+
+        log.info('Re-numbering "Test number" column for %s',fn)
+        log.debug(headers)
+
+        writer = csv.writer(csv_out)
+
+        for r,row in enumerate(reader):
+            if 0 == r or row[0].strip() == 'Test mode':
+                writer.writerow(row)
+            else:
+                new_row = row[:tnum_idx]+[self.getNewTestNumber()]+row[tnum_idx+1:]
+                writer.writerow(new_row)
 
     def get_row_key_names(self,fieldnames):
         row_key = []
@@ -113,7 +146,7 @@ class TestTable(object):
             self.all_row_keys.append(rkl_str)
         return row_key_list,row_key_indices
 
-    def parse_testtable(self,pathfn):
+    def parse_testtable(self,pathfn,runum=False):
 
         with open(pathfn) as csvFile:
 
@@ -301,6 +334,9 @@ class TestTable(object):
                             self.binmap_err[Bin_s_name] = []
                         if "MISSING_HBIN_NAME" not in self.binmap_err[Bin_s_name]:
                             self.binmap_err[Bin_s_name].append("MISSING_HBIN_NAME")
+        if runum and not special_testtable:
+            self.renum_test_numbers(pathfn)
+
     def log_errors(self):
         errors = False
         if len(self.sbin_name_err):
@@ -439,11 +475,12 @@ if __name__ == "__main__":
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all csv testtables')
     args = parser.parse_args()
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tt = TestTable(args.path_to_testtable_file)
+    tt = TestTable(args.path_to_testtable_file,args.renumber)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

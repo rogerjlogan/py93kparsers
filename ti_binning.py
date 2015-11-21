@@ -10,6 +10,7 @@ import sys
 from common import *
 from pprint import pprint
 from TestflowParser import Testflow
+from testtable_parser import TestTable
 from testtable_parser import VALID_LIM_HEADERS
 import time
 _start_time = time.time()
@@ -49,6 +50,7 @@ bin_groups_exist = False
 bin_groups_done = False
 speed_sort_groups_done = False
 test_name_type_done = False
+bin_groups_file = False
 
 # data collection variables below here
 
@@ -71,6 +73,17 @@ categories_extra_tests = []
 testflow_extra_tests = []
 
 testflow = None
+
+testtable = None
+
+categories_file = None
+
+test_name_type_file = None
+
+speed_sort_groups_file = None
+
+test_name_type_file = None
+
 """Parsed Testflow object"""
 
 def get_category_testname(test, sbin):
@@ -168,13 +181,11 @@ def parse_special_csv(pathfn, csv_type=None,debug=False):
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
 
             if len(categories_extra_tests):
-                print '\n'+'='*80+'\nWARNING!!! Extra tests in Binning Categories that do not exist in Testflow or Binning Groups!'
-                if __verbose__:
-                    pprint(categories_extra_tests)
+                log.warning('Extra tests in Binning Categories that do not exist in Testflow or Binning Groups!')
+                log.debug(pformat(categories_extra_tests))
             if len(testflow_extra_tests):
-                print '\n'+'='*80+'\nWARNING!!! Extra tests in Testflow that do not exist in Binning Categories!'
-                if __verbose__:
-                    pprint(testflow_extra_tests)
+                log.warning('Extra tests in Testflow that do not exist in Binning Categories!')
+                log.debug(pformat(testflow_extra_tests))
 
             sys.exit()
 
@@ -186,8 +197,40 @@ def parse_special_csv(pathfn, csv_type=None,debug=False):
             err += 'Exiting ...'
             sys.exit(err)
 
+def identify_ti_csv_files(special_testtables):
+    global categories_file,speed_sort_suites_file,speed_sort_groups_file,test_name_type_file,bin_groups_file
+    for pathfn in special_testtables:
+        fn = os.path.split(pathfn)[1]
+        with open(pathfn) as csvFile:
+            headers = csv.DictReader(csvFile).fieldnames
+            if 'SW Bin Number' in headers:
+                categories_file = pathfn
+                log.info('Found categories_file: %s',fn)
+            elif 'SpeedSortSuites' in headers:
+                speed_sort_suites_file = pathfn
+                log.info('Found speed_sort_suites_file: %s',fn)
+            elif 'SpeedSortGroups' in headers:
+                speed_sort_groups_file = pathfn
+                log.info('Found speed_sort_groups_file: %s',fn)
+            elif 'Test name' in headers and any([True if x in testflow.variables['@TITESTTYPE_valid'] else False for x in headers]):
+                test_name_type_file = pathfn
+                log.info('Found test_name_type_file: %s',fn)
+            elif 'Group' in headers and 'testname0' in headers:
+                bin_groups_file = pathfn
+                log.info('Found bin_groups_file: %s',fn)
+    if categories_file is None:
+        log.error('Unable to find categories_file')
+    if speed_sort_suites_file is None:
+        log.error('Unable to find speed_sort_suites_file')
+    if speed_sort_groups_file is None:
+        log.error('Unable to find speed_sort_groups_file')
+    if test_name_type_file is None:
+        log.error('Unable to find test_name_type_file')
+    if bin_groups_file is None:
+        log.warning('Unable to find bin_groups_file - This may not be a problem if you don\'t care about insertion specific enable/disable checks')
+
 def main():
-    global testflow,bin_groups_exist
+    global testflow,testtable,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
     parser.add_argument('-tt','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
@@ -201,14 +244,20 @@ def main():
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
     testflow = Testflow(args.testflow_file)
-    # if 'binBinGrpsFile' in args:
-    #     parse_special_csv(args.binBinGrpsFile,'bin_groups')
-    #     bin_groups_exist = True
-    # parse_special_csv(args.binSpdSrtGrpsFile,'speed_sort_groups')
-    # parse_special_csv(args.binTNTFile,'test_name_type')
-    # parse_special_csv(args.binCatsFile,'categories')
+    testtable = TestTable(args.testtable_file,args.renumber)
+
+    identify_ti_csv_files(testtable.special_testtables)
+
+    if bin_groups_file is not None:
+        parse_special_csv(bin_groups_file,'bin_groups')
+        bin_groups_exist = True
+    parse_special_csv(speed_sort_groups_file,'speed_sort_groups')
+    parse_special_csv(test_name_type_file,'test_name_type')
+    parse_special_csv(categories_file,'categories')
 
 if __name__ == "__main__":
     main()
     time = time.time()-_start_time
-    print '\nScript took',round(time,3),'seconds','('+humanize_time(time)+')'
+    msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'
+    log.info(msg)
+    print '\n' + msg

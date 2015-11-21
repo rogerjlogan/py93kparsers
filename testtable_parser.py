@@ -167,13 +167,17 @@ class TestTable(object):
             if len(unknown_headers):
                 # Found some unknown headers.  This must be a special testtable.
                 special_testtable = True
-                self.special_testtables.append(pathfn)
+                if pathfn not in self.special_testtables:
+                    self.special_testtables.append(pathfn)
+                log.debug('Non-Standard Testtable: %s',pathfn)
 
             row_key_names = self.get_row_key_names(headers)
-            if row_key_names is None:
+
+            if row_key_names is None and not special_testtable:
                 # None of the required row key combinations were found.  This must be a special testtable.
                 special_testtable = True
-                self.special_testtables.append(pathfn)
+                if pathfn not in self.special_testtables:
+                    self.special_testtables.append(pathfn)
 
             if special_testtable:
                 # not able to parse non standard testtables

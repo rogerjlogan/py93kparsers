@@ -112,14 +112,14 @@ class PbistPats(object):
         :return:
         """
 
-        self.getSeqInstrPerPat(args.path_to_memBistCtlr_csv)
+        self.getSeqInstrPerPat(args.memBistCtlr_csv)
 
         outdir = args.output_dir
         hdr_found = False
         dmas_found = False
         sqlb_found = False
-        self.path, self.fn = os.path.split(args.path_to_MEM_BIST_MPB)
-        for line in myOpen(args.path_to_MEM_BIST_MPB):
+        self.path, self.fn = os.path.split(args.MEM_BIST_MPB)
+        for line in myOpen(args.MEM_BIST_MPB):
             if not hdr_found:
                 if -1 != line.find(VECTOR_OPTFILE_HEADER):
                     hdr_found = True
@@ -288,8 +288,8 @@ class PbistPats(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-mpb','--path_to_MEM_BIST_MPB',required=True, help='Path to FULL bist MPB file that you want to split')
-    parser.add_argument('-csv','--path_to_memBistCtlr_csv',required=True, help='Path to memBistCtlr.csv file')
+    parser.add_argument('-mpb','--MEM_BIST_MPB',required=True, help='Path to FULL bist MPB file that you want to split')
+    parser.add_argument('-csv','--memBistCtlr_csv',required=True, help='Path to memBistCtlr.csv file')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')

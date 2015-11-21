@@ -474,7 +474,7 @@ class TestTable(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tt','--path_to_testtable_file',required=True, help='Path to testtable master file')
+    parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
@@ -484,7 +484,7 @@ if __name__ == "__main__":
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tt = TestTable(args.path_to_testtable_file,args.renumber)
+    tt = TestTable(args.testtable_file,args.renumber)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

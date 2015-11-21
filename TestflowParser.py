@@ -306,6 +306,8 @@ class TestflowData(object):
         if named:
             if self.type in ['RunAndBranchStatement','RunStatement']:
                 rstr += self.testsuite + '-' + str(self.node_id)
+            elif self.type == 'GroupStatement':
+                rstr += '<'+self.type.replace('Statement','').upper() + ' ' + self.gr_label + '>-' + str(self.node_id)
             else:
                 rstr += '<'+self.type.replace('Statement','').upper() + '>-' + str(self.node_id)
         else:
@@ -2705,7 +2707,7 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def showMyTree(self,t,name='',outdir=''):
+    def showMyTree(self,t,name='',outdir='',show=False):
 
         from ete2 import TreeStyle,faces,AttrFace
 
@@ -2725,13 +2727,16 @@ class Testflow(TestflowData):
         if not len(outdir):
             outdir = os.path.dirname(os.path.realpath(__file__))
         pathfn = os.path.join(outdir,name+'.png')
-        msg = 'Creating new testflow picture:' + pathfn
+        msg = 'Attempting to create new testflow picture:' + pathfn
         print msg
         log.debug(msg)
-        t.render(pathfn,tree_style=ts)
-        t.show(tree_style=ts)
+        t.write(format=1, outfile=pathfn)
 
-    def __init__(self,tf_file,debug=False):
+        t.render(pathfn,tree_style=ts)
+        if show:
+            t.show(tree_style=ts)
+
+    def __init__(self,tf_file,debug=False,split=False):
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
@@ -2747,8 +2752,19 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
-        if debug:
-            self.showMyTree(self.newick_tree,name=args.name,outdir=args.output_dir)
+        if not split:
+            self.showMyTree(self.newick_tree,name=args.name,outdir=args.output_dir,show=True)
+        else:
+            for node in self.newick_tree.iter_descendants('levelorder'):
+                if not re.search(r'\<GROUP',node.name):
+                    break
+
+                node_id = int(node.name.split('-')[-1])
+                if self.nodeData[node_id]['type'] != 'GroupStatement':
+                    log.critical('KEY ERROR:'+self.nodeData[node_id]['type'])
+                gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
+                node_tree = self.newick_tree.search_nodes(name=node.name)[0]
+                self.showMyTree(node_tree,name=gr_label,outdir=args.output_dir,show=False)
 
         for node in self.newick_tree.traverse('postorder'):
             try:
@@ -2766,21 +2782,20 @@ class Testflow(TestflowData):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tf','--path_to_testflowfile',required=True, help='Path to testflow file')
+    parser.add_argument('-tf','--testflowfile',required=True, help='Path to testflow file')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tf = Testflow(args.path_to_testflowfile,args.debug)
+    tf = Testflow(args.testflowfile,args.debug,args.split)
 
     log.debug(tf.nodeMap)
     log.debug(tf.variables)
-
-    # show
     log.debug(tf.implicit_declarations)
 
     time = time.time()-_start_time

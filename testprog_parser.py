@@ -74,7 +74,7 @@ class ProgFile(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tp','--path_to_progfile',required=True, help='Path to testprog file')
+    parser.add_argument('-tp','--progfile',required=True, help='Path to testprog file')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tp = ProgFile(args.path_to_progfile)
+    tp = ProgFile(args.progfile)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

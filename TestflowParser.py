@@ -2701,7 +2701,7 @@ def get_file_contents(infile,strip_comments=True):
         contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
     return contents
 
-
+import inspect
 class Testflow(TestflowData):
     """
         Create an instance of this class after including this module.
@@ -2712,7 +2712,8 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def showMyTree(self,t, name='', outdir='', show=False):
+    @staticmethod
+    def showMyTree(t, nodeData, name='', outdir='', show=False):
 
         from ete2 import TreeStyle,NodeStyle,faces,AttrFace,TextFace
 
@@ -2726,21 +2727,21 @@ class Testflow(TestflowData):
         for node in t.iter_descendants('levelorder'):
             if node.name[-1] not in ['T','F']:
                 node_id = int(node.name.split('-')[-1])
-                if self.nodeData[node_id]['type'] == 'GroupStatement':
-                    if self.nodeData[node_id]['gr_bypass']:
+                if nodeData[node_id]['type'] == 'GroupStatement':
+                    if nodeData[node_id]['gr_bypass']:
                         node.img_style["bgcolor"] = "yellow"
-                elif self.nodeData[node_id]['type'] in ['RunStatement','RunAndBranchStatement']:
+                elif nodeData[node_id]['type'] in ['RunStatement','RunAndBranchStatement']:
                     suite_name = node.name.split('-')[0]
-                    if 'TestsuiteFlags' in self.nodeData[node_id][suite_name]:
+                    if 'TestsuiteFlags' in nodeData[node_id][suite_name]:
                         # node.add_face(TextFace(node.name,fgcolor="blue"), column=0, position = "float")
-                        if 'bypass' in self.nodeData[node_id][suite_name]['TestsuiteFlags']:
+                        if 'bypass' in nodeData[node_id][suite_name]['TestsuiteFlags']:
                             node.img_style['bgcolor'] = 'yellow'
-                elif self.nodeData[node_id]['type'] == 'StopBinStatement':
-                    if self.nodeData[node_id]['quality'] == 'good':
+                elif nodeData[node_id]['type'] == 'StopBinStatement':
+                    if nodeData[node_id]['quality'] == 'good':
                         node.set_style(nstyle_green_bin)
-                    elif self.nodeData[node_id]['quality'] == 'bad':
+                    elif nodeData[node_id]['quality'] == 'bad':
                         node.set_style(nstyle_red_bin)
-                elif self.nodeData[node_id]['type'] == 'MultiBinStatement':
+                elif nodeData[node_id]['type'] == 'MultiBinStatement':
                     node.set_style(nstyle_red_bin)
 
         def my_layout(node):
@@ -2784,19 +2785,22 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
-        if not split:
-            self.showMyTree(self.newick_tree,name=args.name,outdir=args.output_dir,show=True)
-        else:
-            for node in self.newick_tree.iter_descendants('levelorder'):
-                if not re.search(r'\<GROUP',node.name):
-                    break
+        # Make sure this code is NOT executed when called as a module from another script
+        if os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
+            if not split:
+                # input parameter selected to split rendered '.png' files into separate files
+                self.showMyTree(self.newick_tree,self.nodeData,name=args.name,outdir=args.output_dir,show=True)
+            else:
+                for node in self.newick_tree.iter_descendants('levelorder'):
+                    if not re.search(r'\<GROUP',node.name):
+                        break
 
-                node_id = int(node.name.split('-')[-1])
-                if self.nodeData[node_id]['type'] != 'GroupStatement':
-                    log.critical('KEY ERROR:'+self.nodeData[node_id]['type'])
-                gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
-                node_tree = self.newick_tree.search_nodes(name=node.name)[0]
-                self.showMyTree(node_tree,name=gr_label,outdir=args.output_dir,show=False)
+                    node_id = int(node.name.split('-')[-1])
+                    if self.nodeData[node_id]['type'] != 'GroupStatement':
+                        log.critical('KEY ERROR:'+self.nodeData[node_id]['type'])
+                    gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
+                    node_tree = self.newick_tree.search_nodes(name=node.name)[0]
+                    self.showMyTree(node_tree,self.nodeData,name=gr_label,outdir=args.output_dir,show=False)
 
         for node in self.newick_tree.traverse('postorder'):
             try:

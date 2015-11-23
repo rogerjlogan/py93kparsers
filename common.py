@@ -3,6 +3,7 @@ import os
 from pprint import *
 import logging as log
 import gzip
+from itertools import islice
 
 class color:
    PURPLE = '\033[95m'
@@ -183,3 +184,7 @@ def replace(file_path, pattern, subst):
     remove(file_path)
     #Move new file
     move(abs_path, file_path)
+
+def take(n, iterable):
+    "Return first n items of the iterable as a list"
+    return list(islice(iterable, n))

@@ -42,6 +42,7 @@ MEMORYREPAIRED = 'MEMORYREPAIRED'
 """Defined like this in case the name of this virtual test ever changes"""
 
 testflow = None
+testflow_file = None
 testtable = None
 categories_file = None
 test_name_type_file = None
@@ -175,13 +176,11 @@ def parse_special_csv(pathfn, csv_type=None):
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
 
             if len(categories_extra_tests):
-                log.warning('Extra tests in '+os.path.basename(categories_file)+' that do not exist in Testflow or Binning Groups!')
-                log.debug(pformat(categories_extra_tests))
+                log.warning('Extra tests in '+os.path.basename(categories_file)+' that do not exist in '+os.path.basename(testflow_file) + ' or '+os.path.basename(bin_groups_file))
+                log.debug(pformat(categories_extra_tests,indent=4))
             if len(testflow_extra_tests):
-                log.warning('Extra tests in Testflow that do not exist in '+os.path.basename(categories_file))
-                log.debug(pformat(testflow_extra_tests))
-
-            # TODO: Get bins from testflow, testtable and categories and build bins.csv
+                log.warning('Extra tests in '+os.path.basename(testflow_file) + ' that do not exist in '+os.path.basename(categories_file))
+                log.debug(pformat(testflow_extra_tests,indent=4))
 
         else:
             err += 'Unknown csv_type found!\n'
@@ -223,8 +222,18 @@ def identify_ti_csv_files(special_testtables):
     if bin_groups_file is None:
         log.warning('Unable to find bin_groups_file - This may not be a problem if you don\'t care about insertion specific enable/disable checks')
 
+def check_binning():
+    for node_id in testflow.nodeData:
+        if 'testsuite' in testflow.nodeData[node_id]:
+            testsuite = testflow.nodeData[node_id]['testsuite']
+            descendants = testflow.nodeData[node_id]['descendants']
+            print testsuite.ljust(50),descendants
+    # for ts in testflow.testsuite_data:
+
+    sys.exit()
+
 def main():
-    global testflow,testtable,bin_groups_exist
+    global testflow,testflow_file,testtable,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
     parser.add_argument('-tt','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
@@ -237,7 +246,8 @@ def main():
 
     init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
-    testflow = Testflow(args.testflow_file,args.debug)
+    testflow_file = args.testflow_file
+    testflow = Testflow(testflow_file,args.debug)
     testtable = TestTable(args.testtable_file,args.renumber)
 
     identify_ti_csv_files(testtable.special_testtables)
@@ -249,14 +259,16 @@ def main():
     parse_special_csv(test_name_type_file,'test_name_type')
     parse_special_csv(categories_file,'categories')
 
-    # list all data containers and their contents
-    log.debug('bin_groups: ' + pformat(bin_groups))
-    log.debug('speed_sort_groups: ' + pformat(speed_sort_groups))
-    log.debug('test_name_type: ' + pformat(test_name_type))
-    log.debug('category_defs: ' + pformat(category_defs))
-    log.debug('category_tests: ' + pformat(category_tests))
-    log.debug('categories_extra_tests: ' + pformat(categories_extra_tests))
-    log.debug('testflow_extra_tests: ' + pformat(testflow_extra_tests))
+    check_binning()
+
+    # For debug and future development, list this module's data containers and their contents
+    log.debug('bin_groups:\n' + pformat(bin_groups,indent=4))
+    log.debug('speed_sort_groups:\n' + pformat(speed_sort_groups,indent=4))
+    log.debug('test_name_type:\n' + pformat(test_name_type,indent=4))
+    log.debug('category_defs:\n' + pformat(category_defs,indent=4))
+    log.debug('category_tests:\n' + pformat(category_tests,indent=4))
+    log.debug('categories_extra_tests:\n' + pformat(categories_extra_tests,indent=4))
+    log.debug('testflow_extra_tests:\n' + pformat(testflow_extra_tests,indent=4))
 
 if __name__ == "__main__":
     main()

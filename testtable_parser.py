@@ -11,7 +11,7 @@ import sys
 from common import *
 from pprint import *
 import time
-from common import humanize_time,init_logging
+from common import humanize_time,init_logging,take
 from string import *
 _start_time = time.time()
 
@@ -52,7 +52,6 @@ class TestTable(object):
     sbin_nums = {}
     hbin_nums = {}
     binmaps = {}
-
 
     sbin_name_err = {}
     sbin_num_to_testname = {}
@@ -485,6 +484,18 @@ if __name__ == "__main__":
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
     tt = TestTable(args.testtable_file,args.renumber)
+
+    # For debug and future development, list this module's data containers and their contents
+    log.debug('testtables:\n' + pformat(tt.testtables,indent=4))
+    log.debug('unordered_limit_data: (data set too large .. displaying only a sample 2 rows from 3 tables) ... ')
+    for table in take(3,tt.unordered_limit_data.iteritems()):
+        log.debug(table[:2])
+    log.debug('special_testtables:\n' + pformat(tt.special_testtables,indent=4))
+    log.debug('sbin_names:\n' + pformat(tt.sbin_names,indent=4))
+    log.debug('hbin_names:\n' + pformat(tt.hbin_names,indent=4))
+    log.debug('sbin_nums:\n' + pformat(tt.sbin_nums,indent=4))
+    log.debug('hbin_nums:\n' + pformat(tt.hbin_nums,indent=4))
+    log.debug('binmaps:\n' + pformat(tt.binmaps,indent=4))
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

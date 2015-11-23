@@ -2788,30 +2788,35 @@ class Testflow(TestflowData):
         # Make sure this code is NOT executed when called as a module from another script
         if os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
             if not split:
-                # input parameter selected to split rendered '.png' files into separate files
                 self.showMyTree(self.newick_tree,self.nodeData,name=args.name,outdir=args.output_dir,show=True)
             else:
-                for node in self.newick_tree.iter_descendants('levelorder'):
-                    if not re.search(r'\<GROUP',node.name):
-                        break
-
-                    node_id = int(node.name.split('-')[-1])
-                    if self.nodeData[node_id]['type'] != 'GroupStatement':
-                        log.critical('KEY ERROR:'+self.nodeData[node_id]['type'])
-                    gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
+                # input parameter 'split' selected to divide rendered '.png' files into separate files
+                # get_children is only the top level items (breadth, no depth)
+                for node in self.newick_tree.get_children():
+                    try:
+                        node_id = int(node.name.split('-')[-1])
+                    except:
+                        log.error('Unknown node (node_id = %d) on top level of testflow! Skipping png creation for this node ...',node_id)
+                        continue
+                    nodetype = self.nodeData[node_id]['type'].replace('Statement','').upper()
+                    name = args.name + '_' + str(node_id) + '_'+nodetype
+                    if self.nodeData[node_id]['type'] == 'GroupStatement':
+                        gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
+                        name = name + '_' + gr_label
+                    elif self.nodeData[node_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
+                        testsuite = self.nodeData[node_id]['testsuite']
+                        name = name + '_' + testsuite
                     node_tree = self.newick_tree.search_nodes(name=node.name)[0]
-                    self.showMyTree(node_tree,self.nodeData,name=gr_label,outdir=args.output_dir,show=False)
+                    self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
 
         for node in self.newick_tree.traverse('postorder'):
             try:
-                node_id = int(node.name)
+                node_id = int(node.name.split('-')[-1])
             except:
                 continue
-            self.nodeData[node_id]['children'] = []
-            for child in node.get_children():
-                self.nodeData[node_id]['children'].append(child.name)
-
-        log.debug('\n'+pformat(self.nodeData))
+            self.nodeData[node_id]['descendants'] = []
+            for child in node.get_descendants():
+                self.nodeData[node_id]['descendants'].append(child.name)
 
     def __str__(self):
         return str(self.tf)
@@ -2830,6 +2835,7 @@ if __name__ == '__main__':
 
     tf = Testflow(args.testflowfile,args.debug,args.split)
 
+    log.debug(tf.nodeData)
     log.debug(tf.nodeMap)
     log.debug(tf.variables)
     log.debug(tf.implicit_declarations)

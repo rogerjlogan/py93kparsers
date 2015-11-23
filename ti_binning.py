@@ -4,11 +4,8 @@
 """
 
 import csv
-import re
 import argparse
-import sys
 from common import *
-from pprint import pprint
 from TestflowParser import Testflow
 from testtable_parser import TestTable
 from testtable_parser import VALID_LIM_HEADERS
@@ -44,6 +41,12 @@ CATEGORY_VALID_OR = ['S_ANY','OR']
 MEMORYREPAIRED = 'MEMORYREPAIRED'
 """Defined like this in case the name of this virtual test ever changes"""
 
+testflow = None
+testtable = None
+categories_file = None
+test_name_type_file = None
+speed_sort_groups_file = None
+
 # control variables below here (boolean)
 
 bin_groups_exist = False
@@ -71,19 +74,6 @@ category_tests = {}
 categories_extra_tests = []
 
 testflow_extra_tests = []
-
-testflow = None
-
-testtable = None
-
-categories_file = None
-
-test_name_type_file = None
-
-speed_sort_groups_file = None
-
-test_name_type_file = None
-
 """Parsed Testflow object"""
 
 def get_category_testname(test, sbin):
@@ -121,7 +111,7 @@ def get_category_testname(test, sbin):
     }
     return test
 
-def parse_special_csv(pathfn, csv_type=None,debug=False):
+def parse_special_csv(pathfn, csv_type=None):
     global bin_groups_done,speed_sort_groups_done,test_name_type_done
     global bin_groups,category_defs,categories_extra_tests,testflow_extra_tests
 
@@ -142,14 +132,18 @@ def parse_special_csv(pathfn, csv_type=None,debug=False):
         if csv_type == 'bin_groups':
             # using csv.reader() for slice indexing
             for i,row in enumerate(csv.reader(csvFile)):
-                if 0 == i or '#' == row[0][0] : continue # skip header row or if row starts with '#'
+                if 0 == i or '#' == row[0][0]:
+                    # skip header row or if row starts with '#'
+                    continue
                 bin_groups[row[BINNING_GROUP_TESTNAME]] = [x for x in row[BINNING_GROUP_TESTNAME+1:] if len(x.strip())]
             bin_groups_done = True
 
         elif csv_type == 'speed_sort_groups':
             # using csv.reader() for slice indexing
             for i,row in enumerate(csv.reader(csvFile)):
-                if 0 == i or '#' == row[i][0] : continue # skip header row or if row starts with '#'
+                if 0 == i or '#' == row[i][0]:
+                    # skip header row or if row starts with '#'
+                    continue
                 speed_sort_groups.append(row[SPEED_SORT_GROUP_TESTNAME])
             speed_sort_groups_done = True
 
@@ -175,19 +169,19 @@ def parse_special_csv(pathfn, csv_type=None,debug=False):
                                    if len(row[x]) and x not in [SBIN_NUM_COLUMN_NAME, CONDITION_COLUMN_NAME]]
                     }
                 )
+
             # calculate set differences (exclude MEMORYREPAIRED which is a virtual test
-            categories_extra_tests = set(category_tests.keys() + [MEMORYREPAIRED]) -\
-                                     set(testflow.testsuite_data.keys() + bin_groups.keys())
+            categories_extra_tests = set(category_tests.keys() + [MEMORYREPAIRED]) - set(testflow.testsuite_data.keys() + bin_groups.keys())
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
 
             if len(categories_extra_tests):
-                log.warning('Extra tests in Binning Categories that do not exist in Testflow or Binning Groups!')
+                log.warning('Extra tests in '+os.path.basename(categories_file)+' that do not exist in Testflow or Binning Groups!')
                 log.debug(pformat(categories_extra_tests))
             if len(testflow_extra_tests):
-                log.warning('Extra tests in Testflow that do not exist in Binning Categories!')
+                log.warning('Extra tests in Testflow that do not exist in '+os.path.basename(categories_file))
                 log.debug(pformat(testflow_extra_tests))
 
-            sys.exit()
+            # TODO: Get bins from testflow, testtable and categories and build bins.csv
 
         else:
             err += 'Unknown csv_type found!\n'
@@ -241,7 +235,7 @@ def main():
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
+    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     testflow = Testflow(args.testflow_file,args.debug)
     testtable = TestTable(args.testtable_file,args.renumber)
@@ -254,6 +248,15 @@ def main():
     parse_special_csv(speed_sort_groups_file,'speed_sort_groups')
     parse_special_csv(test_name_type_file,'test_name_type')
     parse_special_csv(categories_file,'categories')
+
+    # list all data containers and their contents
+    log.debug('bin_groups: ' + pformat(bin_groups))
+    log.debug('speed_sort_groups: ' + pformat(speed_sort_groups))
+    log.debug('test_name_type: ' + pformat(test_name_type))
+    log.debug('category_defs: ' + pformat(category_defs))
+    log.debug('category_tests: ' + pformat(category_tests))
+    log.debug('categories_extra_tests: ' + pformat(categories_extra_tests))
+    log.debug('testflow_extra_tests: ' + pformat(testflow_extra_tests))
 
 if __name__ == "__main__":
     main()

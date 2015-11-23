@@ -308,6 +308,8 @@ class TestflowData(object):
                 rstr += self.testsuite + '-' + str(self.node_id)
             elif self.type == 'GroupStatement':
                 rstr += '<'+self.type.replace('Statement','').upper() + ' ' + self.gr_label + '>-' + str(self.node_id)
+            elif self.type == 'StopBinStatement':
+                rstr += '<'+self.quality.upper() + ' sbin=' + self.swBin.replace('"','') + ' hbin=' + self.binNumber.replace('"','') + '>-' + str(self.node_id)
             else:
                 rstr += '<'+self.type.replace('Statement','').upper() + '>-' + str(self.node_id)
         else:
@@ -1515,21 +1517,21 @@ GroupStatement = (LCURL + pp.Group(FlowStatements)("GR_SUB") + RCURL + COMMA + p
                   (pp.Keyword("open") | pp.Keyword("closed"))("SetGroupOpen") + COMMA +
                   QuotedString("SetGroupLabel") + COMMA + QuotedString("SetGroupDescription"))
 
-def create_GroupStatement(gr_sub,gr_open,gr_label,gr_desc,gr_bypass_cond=''):
+def create_GroupStatement(gr_sub,gr_open,gr_label,gr_desc,gr_bypass=''):
     """
     :param gr_sub:
     :param gr_open:
     :param gr_label:
     :param gr_desc:
-    :param gr_bypass_cond:
+    :param gr_bypass:
     :return: formatted str for output
     """
     gr_sub_str = '\n'.join([str(x) for x in gr_sub]).strip()
     rstr = '{\n'
     rstr += gr_sub_str + '\n'
     rstr += '},'
-    if len(gr_bypass_cond):
-        rstr += gr_bypass_cond + ','
+    if len(gr_bypass):
+        rstr += gr_bypass + ','
     rstr += gr_open + ',' + gr_label + ',' + gr_desc + '\n'
     return rstr
 
@@ -1548,7 +1550,10 @@ class ParseGroupStatement(TestflowData):
         self.type = 'GroupStatement'
         """str name of statement"""
 
-        self.gr_bypass_cond = toks.SetGroupBypass
+        if toks.SetGroupBypass == 'groupbypass':
+            self.gr_bypass = True
+        else:
+            self.gr_bypass = False
 
         self.true_branch = toks.GR_SUB[:]
 
@@ -1564,14 +1569,14 @@ class ParseGroupStatement(TestflowData):
 
         self.nodeData[self.node_id] = {
             'type' : self.type,
-            'gr_bypass_cond' : self.gr_bypass_cond,
+            'gr_bypass' : self.gr_bypass,
             'gr_open' : self.gr_open,
             'gr_label' : self.gr_label,
             'gr_desc' : self.gr_desc
         }
 
     def __repr__(self):
-        return create_GroupStatement(self.true_branch,self.gr_open,self.gr_label,self.gr_desc,self.gr_bypass_cond)
+        return create_GroupStatement(self.true_branch,self.gr_open,self.gr_label,self.gr_desc,self.gr_bypass)
 
 GroupStatement.setParseAction(ParseGroupStatement)
 
@@ -2707,9 +2712,36 @@ class Testflow(TestflowData):
             pprint(tf.testsuites)
     """
 
-    def showMyTree(self,t,name='',outdir='',show=False):
+    def showMyTree(self,t, name='', outdir='', show=False):
 
-        from ete2 import TreeStyle,faces,AttrFace
+        from ete2 import TreeStyle,NodeStyle,faces,AttrFace,TextFace
+
+        nstyle_green_bin = NodeStyle()
+        nstyle_red_bin = NodeStyle()
+        nstyle_red_bin["fgcolor"] = "red"
+        nstyle_green_bin["fgcolor"] = "green"
+        nstyle_red_bin["size"] = 15
+        nstyle_green_bin["size"] = 15
+
+        for node in t.iter_descendants('levelorder'):
+            if node.name[-1] not in ['T','F']:
+                node_id = int(node.name.split('-')[-1])
+                if self.nodeData[node_id]['type'] == 'GroupStatement':
+                    if self.nodeData[node_id]['gr_bypass']:
+                        node.img_style["bgcolor"] = "yellow"
+                elif self.nodeData[node_id]['type'] in ['RunStatement','RunAndBranchStatement']:
+                    suite_name = node.name.split('-')[0]
+                    if 'TestsuiteFlags' in self.nodeData[node_id][suite_name]:
+                        # node.add_face(TextFace(node.name,fgcolor="blue"), column=0, position = "float")
+                        if 'bypass' in self.nodeData[node_id][suite_name]['TestsuiteFlags']:
+                            node.img_style['bgcolor'] = 'yellow'
+                elif self.nodeData[node_id]['type'] == 'StopBinStatement':
+                    if self.nodeData[node_id]['quality'] == 'good':
+                        node.set_style(nstyle_green_bin)
+                    elif self.nodeData[node_id]['quality'] == 'bad':
+                        node.set_style(nstyle_red_bin)
+                elif self.nodeData[node_id]['type'] == 'MultiBinStatement':
+                    node.set_style(nstyle_red_bin)
 
         def my_layout(node):
             # Add name label to all nodes

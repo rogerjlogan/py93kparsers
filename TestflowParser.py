@@ -23,14 +23,6 @@
                 * Example:
                     tf = Testflow(<testflow.tf>)
                     print tf
-            - Print node map to show the Tree and meta data for each node:
-                * Useful for debugging
-                * Example:
-                    print tf.showNodeMap()
-            - Print testsuites and their node id which can be used for map location and retrieving meta data:
-                * Later, this will be used to modify the tree map (re-arranging nodes)
-                * Example:
-                    print tf.testsuites
 """
 import os
 import sys
@@ -210,6 +202,8 @@ class TestflowData(object):
     newickStr = ''
     newick_tree = None
     testsuite_data = {}
+    bypassed_testsuites = []
+    testsuite_nodeids = {}
 
     variables = {}
     """dict of variables(key) and their values(value)"""
@@ -1374,6 +1368,8 @@ class ParseRunStatement(TestflowData):
             'testsuite' : self.testsuite
         }
 
+        self.testsuite_nodeids[self.testsuite] = self.node_id
+
     def __repr__(self):
         return create_RunStatement(self.testsuite)
 
@@ -1437,6 +1433,8 @@ class ParseRunAndBranchStatement(TestflowData):
             'type' : self.type,
             'testsuite' : self.testsuite
         }
+
+        self.testsuite_nodeids[self.testsuite] = self.node_id
 
     def __repr__(self):
         return create_RunAndBranchStatement(self.testsuite,self.true_branch,self.false_branch)
@@ -2811,14 +2809,30 @@ class Testflow(TestflowData):
                     node_tree = self.newick_tree.search_nodes(name=node.name)[0]
                     self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
 
-        for node in self.newick_tree.traverse('postorder'):
+        gr_bypass = False
+        for node in self.newick_tree.traverse('levelorder'):
             try:
                 node_id = int(node.name.split('-')[-1])
             except:
                 continue
+            if self.nodeData[node_id]['type'] == 'GroupStatement':
+                gr_bypass = self.nodeData[node_id]['gr_bypass']
             self.nodeData[node_id]['descendants'] = []
-            for child in node.get_descendants():
-                self.nodeData[node_id]['descendants'].append(child.name)
+            for desc in node.get_descendants():
+                self.nodeData[node_id]['descendants'].append(desc.name)
+                try:
+                    desc_id = int(desc.name.split('-')[-1])
+                except:
+                    continue
+                if self.nodeData[desc_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
+                    suite_name = desc.name.split('-')[0]
+                    if 'bypass' in self.nodeData[desc_id][suite_name]['TestsuiteFlags']:
+                        ts_bypass = True
+                    else:
+                        ts_bypass = False
+                    bypass = gr_bypass and ts_bypass
+                    if bypass and suite_name not in self.bypassed_testsuites:
+                        self.bypassed_testsuites.append(suite_name)
 
     def __str__(self):
         return str(self.tf)

@@ -290,15 +290,17 @@ def create_binning_csv(outdir,fn):
     msg += '\tThe "multi_sbins" column only applies to standard testtables (limit files) which bin only with multibins in the testflow'
     print msg
     log.info(msg)
-    headers = ['Testsuite','stop_sbins','category_sbins','multi_sbins']
+    headers = ['node_id','Testsuite','stop_sbins','category_sbins','multi_sbins','bypassed']
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for testsuite in testsuite_all_sbins:
-            writer.writerow({'Testsuite' : testsuite,
+            writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
+                             'Testsuite' : testsuite,
                              'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
                              'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
-                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
+                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins']),
+                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else ''})
 
 def main():
     global testflow,testflow_file,testtable,bin_groups_exist

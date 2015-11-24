@@ -282,6 +282,8 @@ def gather_all_testsuites_bins():
                         testsuite_all_sbins[tf_testsuite]['cat_sbins'] = unique_sbins
 
 def create_binning_csv(outdir,fn):
+    if not len(outdir):
+        outdir = os.path.dirname(os.path.realpath(__file__))
     csv_file = os.path.join(outdir,fn+'_binning.csv')
     # pprint(testsuite_all_sbins)
     msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column, "X_" indicates that the '.format(csv_file)

@@ -2809,30 +2809,33 @@ class Testflow(TestflowData):
                     node_tree = self.newick_tree.search_nodes(name=node.name)[0]
                     self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
 
-        gr_bypass = False
         for node in self.newick_tree.traverse('levelorder'):
             try:
                 node_id = int(node.name.split('-')[-1])
             except:
                 continue
-            if self.nodeData[node_id]['type'] == 'GroupStatement':
-                gr_bypass = self.nodeData[node_id]['gr_bypass']
             self.nodeData[node_id]['descendants'] = []
             for desc in node.get_descendants():
                 self.nodeData[node_id]['descendants'].append(desc.name)
-                try:
-                    desc_id = int(desc.name.split('-')[-1])
-                except:
-                    continue
-                if self.nodeData[desc_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
-                    suite_name = desc.name.split('-')[0]
-                    if 'bypass' in self.nodeData[desc_id][suite_name]['TestsuiteFlags']:
-                        ts_bypass = True
-                    else:
-                        ts_bypass = False
-                    bypass = gr_bypass and ts_bypass
-                    if bypass and suite_name not in self.bypassed_testsuites:
-                        self.bypassed_testsuites.append(suite_name)
+
+            if self.nodeData[node_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
+                suite_name = node.name.split('-')[0]
+                if 'bypass' in self.nodeData[node_id][suite_name]['TestsuiteFlags']:
+                    ts_bypass = True
+                else:
+                    ts_bypass = False
+
+                gr_bypass = False # init
+                for anc in node.get_ancestors():
+                    try:
+                        anc_id = int(anc.name.split('-')[-1])
+                    except:
+                        continue
+                    if self.nodeData[anc_id]['type'] == 'GroupStatement':
+                        gr_bypass = gr_bypass or self.nodeData[anc_id]['gr_bypass']
+                bypass = gr_bypass or ts_bypass
+                if bypass and suite_name not in self.bypassed_testsuites:
+                    self.bypassed_testsuites.append(suite_name)
 
     def __str__(self):
         return str(self.tf)

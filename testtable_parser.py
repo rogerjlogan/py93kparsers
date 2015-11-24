@@ -68,6 +68,8 @@ class TestTable(object):
     binmap_err = {}
     binmap_err_tests = {}
 
+    testsuite_sbins = {}
+
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
@@ -122,7 +124,6 @@ class TestTable(object):
                 writer.writerow(new_row)
 
     def get_row_key_names(self,fieldnames):
-        row_key = []
         for key in POSSIBLE_LIM_ROW_KEYS:
             row_key = tuple([x for x in key if x in fieldnames])
             if len(row_key):
@@ -183,7 +184,9 @@ class TestTable(object):
                 return
             else:
                 # this is a standard testtable, so let's continue with the parsing
-                log.info('Parsing testtable standard file: '+fn+' .....')
+                msg = 'Parsing standard testtable file: '+fn+' .....'
+                print msg
+                log.info(msg)
                 self.testtables.append(pathfn)
 
                 if fn in self.unordered_limit_data:
@@ -216,6 +219,11 @@ class TestTable(object):
                 # using csv.DictReader() for key indexing
                 for row in csv.DictReader(csvFile):
                     lineno += 1
+
+                    testsuite = row['Suite name'].strip()
+                    if testsuite not in self.testsuite_sbins:
+                        self.testsuite_sbins[testsuite] = []
+
                     testname = row['Test name'].strip()
                     testnum = row['Test number'].strip()
                     if 'Pins' in row:
@@ -226,6 +234,9 @@ class TestTable(object):
                     Bin_s_name = row['Bin_s_name'].strip()
                     Bin_h_num  = row['Bin_h_num'].strip()
                     Bin_h_name = row['Bin_h_name'].strip()
+
+                    if Bin_s_num not in self.testsuite_sbins[testsuite]:
+                        self.testsuite_sbins[testsuite].append(Bin_s_num)
 
                     # check for duplicate test numbers
                     if len(testnum):
@@ -240,7 +251,7 @@ class TestTable(object):
                     else:
                         fulltestname = testname
                     if len(fulltestname) > MAXLENGTH_TESTNAME:
-                        log.warning('Max length of testname: %s reached in file: %s.  Possible truncation in STDF',fulltestname,fn)
+                        log.warning('Max length of testname(max=%d: %s reached in file: %s.  Possible truncation in STDF',MAXLENGTH_TESTNAME,fulltestname,fn)
 
                     # check for sbin name to too many nums
                     if len(Bin_s_name):

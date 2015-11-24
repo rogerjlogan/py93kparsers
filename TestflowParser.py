@@ -2773,7 +2773,9 @@ class Testflow(TestflowData):
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
-        log.info('Parsing '+fn+' .....')
+        msg = 'Parsing testflow file: '+fn+' .....'
+        print msg
+        log.info(msg)
 
         self.tf = Start.parseString(contents,1)[0]
 

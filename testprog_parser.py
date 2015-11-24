@@ -48,7 +48,9 @@ class ProgFile(object):
 
     def __init__(self, pathfn):
         self.path, self.fn = os.path.split(pathfn)
-        log.info('Parsing '+self.fn+' .....')
+        msg = 'Parsing testprog file: '+self.fn+' .....'
+        print msg
+        log.info(msg)
 
         progPat = re.compile(r'(?P<key>.*):(?P<value>.*)')
 

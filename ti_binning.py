@@ -77,6 +77,8 @@ categories_extra_tests = []
 testflow_extra_tests = []
 """Parsed Testflow object"""
 
+testsuite_all_sbins = {}
+
 def get_category_testname(test, sbin):
     global category_tests
 
@@ -101,11 +103,14 @@ def get_category_testname(test, sbin):
     if test not in category_tests:
         category_tests[test] = {}
     if sbin in category_tests[test]:
-        err = '\nERROR!!! Duplicate test/bin combination in Binning Categories!\n'
+        # err = '\nCRITICAL ERROR!!! Duplicate test/bin combination in Binning Categories!\n'
+        err = '\nPOSSIBLE ERRROR !!! Duplicate test/bin combination in Binning Categories!\n'
         err += 'Test: ' + test + '\n'
         err += 'sbin: ' + sbin + '\n'
-        err += 'Exiting ...\n'
-        sys.exit(err)
+        # err += 'Exiting ...\n'
+        # sys.exit(err)
+        # print err
+        log.warning(err)
     category_tests[test][sbin] = {
         'good' : good,
         'ignore' : ignore
@@ -125,7 +130,9 @@ def parse_special_csv(pathfn, csv_type=None):
 
     with open(pathfn) as csvFile:
         tp_path, fn = os.path.split(pathfn)
-        print 'Parsing '+fn+' .....'
+        msg = 'Parsing TI specific testtable file: '+fn+' .....'
+        print msg
+        log.info(msg)
 
         # no error yet, just preparing for the worst (is that a glass half empty thing?)
         err = '\nERROR!!! Houston, we have a problem!\n'
@@ -222,15 +229,76 @@ def identify_ti_csv_files(special_testtables):
     if bin_groups_file is None:
         log.warning('Unable to find bin_groups_file - This may not be a problem if you don\'t care about insertion specific enable/disable checks')
 
-def check_binning():
+def gather_all_testsuites_bins():
+    global testsuite_all_sbins
     for node_id in testflow.nodeData:
         if 'testsuite' in testflow.nodeData[node_id]:
-            testsuite = testflow.nodeData[node_id]['testsuite']
+            testtable_binnable = False # init
+            tf_testsuite = testflow.nodeData[node_id]['testsuite']
             descendants = testflow.nodeData[node_id]['descendants']
-            print testsuite.ljust(50),descendants
-    # for ts in testflow.testsuite_data:
+            # stop_sbin = testflow.nodeData[node_id][]
+            if tf_testsuite not in testsuite_all_sbins:
+                testsuite_all_sbins[tf_testsuite] = {
+                    'stop_sbins' : [],
+                    'multi_sbins' : [],
+                    'cat_sbins' : []
+                }
+            for desc in descendants:
+                try:
+                    desc_id = int(desc.split('-')[-1])
+                except:
+                    # can't make int out of id, which means it can't be a bin anyways... skip
+                    continue
+                if testflow.nodeData[desc_id]['type'] == 'StopBinStatement':
+                    sbin = testflow.nodeData[desc_id]['swBin'].replace('"','')
+                    if sbin not in testsuite_all_sbins[tf_testsuite]['stop_sbins']:
+                        testsuite_all_sbins[tf_testsuite]['stop_sbins'].append(sbin)
+                if testflow.nodeData[desc_id]['type'] == 'MultiBinStatement':
+                    testtable_binnable = True
 
-    sys.exit()
+            if tf_testsuite in testtable.testsuite_sbins:
+                if not testtable_binnable:
+                    sbins = ['X_'+x for x in testtable.testsuite_sbins[tf_testsuite]]
+                else:
+                    sbins = testtable.testsuite_sbins[tf_testsuite]
+                unique_sbins = list(set(testsuite_all_sbins[tf_testsuite]['multi_sbins'] + sbins))
+                testsuite_all_sbins[tf_testsuite]['multi_sbins'] = unique_sbins
+
+            if tf_testsuite in category_tests:
+                sbins = category_tests[tf_testsuite].keys()
+                unique_sbins = list(set(testsuite_all_sbins[tf_testsuite]['cat_sbins'] + sbins))
+                testsuite_all_sbins[tf_testsuite]['cat_sbins'] = unique_sbins
+            else:
+                # testsuite not in categories, so let's check groups
+                groups = [x for x in bin_groups if tf_testsuite in bin_groups[x]]
+                if len(groups) > 1:
+                    warn = 'POSSIBLE ERROR!!! Testflow Testsuite: "{}" in more than one Category Group: "{}"'.format(tf_testsuite,','.join(groups))
+                    print warn
+                    log.warning(warn)
+                for group in groups:
+                    if group in category_tests:
+                        sbins = category_tests[group].keys()
+                        unique_sbins = list(set(testsuite_all_sbins[tf_testsuite]['cat_sbins'] + sbins))
+                        testsuite_all_sbins[tf_testsuite]['cat_sbins'] = unique_sbins
+
+def create_binning_csv(outdir,fn):
+    csv_file = os.path.join(outdir,fn+'_binning.csv')
+    # pprint(testsuite_all_sbins)
+    msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column, "X_" indicates that the '.format(csv_file)
+    msg += 'bin is not reachable in the testflow "downstream".\n'
+    msg += '\tIn other words, there is no multibin TO THE RIGHT of the Testsuite (fail branches, etc) in the testflow.\n'
+    msg += '\tThe "multi_sbins" column only applies to standard testtables (limit files) which bin only with multibins in the testflow'
+    print msg
+    log.info(msg)
+    headers = ['Testsuite','stop_sbins','category_sbins','multi_sbins']
+    with open(csv_file,'wb') as csvFile:
+        writer = csv.DictWriter(csvFile,fieldnames=headers)
+        writer.writeheader()
+        for testsuite in testsuite_all_sbins:
+            writer.writerow({'Testsuite' : testsuite,
+                             'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
+                             'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
+                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def main():
     global testflow,testflow_file,testtable,bin_groups_exist
@@ -259,7 +327,8 @@ def main():
     parse_special_csv(test_name_type_file,'test_name_type')
     parse_special_csv(categories_file,'categories')
 
-    check_binning()
+    gather_all_testsuites_bins()
+    create_binning_csv(args.output_dir,args.name)
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('bin_groups:\n' + pformat(bin_groups,indent=4))

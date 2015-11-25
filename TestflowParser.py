@@ -2699,7 +2699,6 @@ def get_file_contents(infile,strip_comments=True):
         contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
     return contents
 
-import inspect
 class Testflow(TestflowData):
     """
         Create an instance of this class after including this module.
@@ -2764,10 +2763,10 @@ class Testflow(TestflowData):
         t.write(format=1, outfile=pathfn)
 
         t.render(pathfn,tree_style=ts)
-        if show:
+        if show and os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
             t.show(tree_style=ts)
 
-    def __init__(self,tf_file,debug=False,split=False):
+    def __init__(self,tf_file,debug=False,split=False,progname='',outdir=os.path.dirname(os.path.realpath(__file__))):
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
@@ -2785,29 +2784,27 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
-        # Make sure this code is NOT executed when called as a module from another script
-        if os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
-            if not split:
-                self.showMyTree(self.newick_tree,self.nodeData,name=args.name,outdir=args.output_dir,show=True)
-            else:
-                # input parameter 'split' selected to divide rendered '.png' files into separate files
-                # get_children is only the top level items (breadth, no depth)
-                for node in self.newick_tree.get_children():
-                    try:
-                        node_id = int(node.name.split('-')[-1])
-                    except:
-                        log.error('Unknown node (node_id = %d) on top level of testflow! Skipping png creation for this node ...',node_id)
-                        continue
-                    nodetype = self.nodeData[node_id]['type'].replace('Statement','').upper()
-                    name = args.name + '_' + str(node_id) + '_'+nodetype
-                    if self.nodeData[node_id]['type'] == 'GroupStatement':
-                        gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
-                        name = name + '_' + gr_label
-                    elif self.nodeData[node_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
-                        testsuite = self.nodeData[node_id]['testsuite']
-                        name = name + '_' + testsuite
-                    node_tree = self.newick_tree.search_nodes(name=node.name)[0]
-                    self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
+        if not split:
+            self.showMyTree(self.newick_tree,self.nodeData,name=progname,outdir=outdir,show=True)
+        else:
+            # input parameter 'split' selected to divide rendered '.png' files into separate files
+            # get_children is only the top level items (breadth, no depth)
+            for node in self.newick_tree.get_children():
+                try:
+                    node_id = int(node.name.split('-')[-1])
+                except:
+                    log.error('Unknown node (node_id = %d) on top level of testflow! Skipping png creation for this node ...',node_id)
+                    continue
+                nodetype = self.nodeData[node_id]['type'].replace('Statement','').upper()
+                name = args.name + '_' + str(node_id) + '_'+nodetype
+                if self.nodeData[node_id]['type'] == 'GroupStatement':
+                    gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
+                    name = name + '_' + gr_label
+                elif self.nodeData[node_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
+                    testsuite = self.nodeData[node_id]['testsuite']
+                    name = name + '_' + testsuite
+                node_tree = self.newick_tree.search_nodes(name=node.name)[0]
+                self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
 
         for node in self.newick_tree.traverse('levelorder'):
             try:
@@ -2852,7 +2849,7 @@ if __name__ == '__main__':
 
     init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
 
-    tf = Testflow(args.testflowfile,args.debug,args.split)
+    tf = Testflow(args.testflowfile,args.debug,args.split,args.name,args.output_dir)
 
     log.debug(tf.nodeData)
     log.debug(tf.nodeMap)

@@ -313,13 +313,14 @@ def main():
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
+    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
     init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     testflow_file = args.testflow_file
-    testflow = Testflow(testflow_file,args.debug)
+    testflow = Testflow(testflow_file,args.debug,args.split,args.name,args.output_dir)
     testtable = TestTable(args.testtable_file,args.renumber)
 
     identify_ti_csv_files(testtable.special_testtables)

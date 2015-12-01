@@ -54,6 +54,15 @@ __version__ = '1.0'
 #     graph.write('test.dot',prog='dot')
 #
 
+TESTFLOW_OPTFILE_HEADER = 'hp93000,testflow,0.1'
+TESTFLOW_LANGUAGE_HEADER = 'language_revision = 1;'
+TESTFLOW_MFH_OPTFILE_HEADER = 'hp93000,testflow_master_file,0.1'
+
+SECTION_NAMES = ['context','information','implicit_declarations','declarations','flags','testmethodparameters',
+                 'testmethodlimits','testmethods','testfunctions','tests','test_suites','test_flow','binning',
+                 'oocrule','hardware_bin_descriptions']
+SPECIAL_TESTSUITES = ['download','initialize','pause','abort','reset','exit','bin_disconnect','multi_bin_decision']
+
 SEMI = pp.Literal(';').suppress()
 AT = pp.Literal('@').suppress()
 ATtok = pp.Literal('@') # don't suppress token
@@ -312,7 +321,7 @@ class TestflowData(object):
 
 
 # FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
-OptFileHeader = (pp.Optional(pp.Keyword("hp93000,testflow,0.1")))("OptFileHeader")
+OptFileHeader = (pp.Optional(pp.Keyword(TESTFLOW_OPTFILE_HEADER)))("OptFileHeader")
 
 
 class ParseOptFileHeader(TestflowData):
@@ -817,19 +826,19 @@ UTMTestmethodLimits = pp.ZeroOrMore(TestmethodLimit)
 TestmethodLimitSection = (pp.Keyword("testmethodlimits").suppress() + UTMTestmethodLimits + End)("TestmethodLimitSection")
 
 def create_TestmethodLimitSection(utm_tm_limits):
-        rstr = 'testmethodlimits\n'
-        for tm_id in utm_tm_limits:
-            rstr += tm_id + ':\n  '
-            rstr += utm_tm_limits[tm_id]['name'] + ' = '
-            rstr += utm_tm_limits[tm_id]['loVal'] + ':'
-            rstr += utm_tm_limits[tm_id]['LowLimitSymbol'] + ':'
-            rstr += utm_tm_limits[tm_id]['hiVal'] + ':'
-            rstr += utm_tm_limits[tm_id]['HighLimitSymbol'] + ':'
-            rstr += utm_tm_limits[tm_id]['unit'] + ':'
-            rstr += utm_tm_limits[tm_id]['numOffset'] + ':'
-            rstr += utm_tm_limits[tm_id]['numInc'] + ';\n'
-        rstr += EndStr
-        return rstr
+    rstr = 'testmethodlimits\n'
+    for tm_id in utm_tm_limits:
+        rstr += tm_id + ':\n  '
+        rstr += utm_tm_limits[tm_id]['name'] + ' = '
+        rstr += utm_tm_limits[tm_id]['loVal'] + ':'
+        rstr += utm_tm_limits[tm_id]['LowLimitSymbol'] + ':'
+        rstr += utm_tm_limits[tm_id]['hiVal'] + ':'
+        rstr += utm_tm_limits[tm_id]['HighLimitSymbol'] + ':'
+        rstr += utm_tm_limits[tm_id]['unit'] + ':'
+        rstr += utm_tm_limits[tm_id]['numOffset'] + ':'
+        rstr += utm_tm_limits[tm_id]['numInc'] + ';\n'
+    rstr += EndStr
+    return rstr
 
 
 class ParseTestmethodLimitSection(TestflowData):
@@ -1528,8 +1537,8 @@ def create_GroupStatement(gr_sub,gr_open,gr_label,gr_desc,gr_bypass=''):
     rstr = '{\n'
     rstr += gr_sub_str + '\n'
     rstr += '},'
-    if len(gr_bypass):
-        rstr += gr_bypass + ','
+    if gr_bypass:
+        rstr += 'groupbypass,'
     rstr += gr_open + ',' + gr_label + ',' + gr_desc + '\n'
     return rstr
 
@@ -2687,16 +2696,142 @@ def get_file_contents(infile,strip_comments=True):
                            ('only supports single line comments that begin with '--')
     :return: str contents of file
     """
-    if '.mfh' == infile.strip()[-4:]:
-        err = 'Testflow file is an ".mfh" file. This is NOT supported yet! Exiting ...'
-        log.critical(err)
-        sys.exit(err)
-    _f = open(infile)
-    contents = '\n'.join(_f.read().splitlines())
-    _f.close()
+
+    dirname = os.path.split(infile)[0]
+
+    last_4 = infile.strip()[-4:]
+
+    with open(infile) as f:
+        contents = '\n'.join(f.read().splitlines())
+
+    optPat = re.compile(TESTFLOW_OPTFILE_HEADER)
+    opt_mfhPat = re.compile(TESTFLOW_MFH_OPTFILE_HEADER)
+
+    is_mfh = False
+    optObj = re.search(optPat,contents)
+    opt_mfhObj = re.search(opt_mfhPat,contents)
+    if optObj:
+        comment_delim = r'--'
+        if last_4 == '.mfh':
+            warn = 'Testflow file: {} has .mfh extension, but optfile header indicates it is just a regular testflow file'.format(infile)
+            print warn
+            log.warning(warn)
+    elif opt_mfhObj:
+        is_mfh = True
+        comment_delim = r'#'
+        if last_4 != '.mfh':
+            warn = 'Testflow file: {} does not have .mfh extension, but optfile header indicates it IS an mfh testflow file'.format(infile)
+            print warn
+            log.warning(warn)
+    else:
+        err = 'Unkown file: {}'.format(infile) + '\nExiting...\n'
+        log.error(err)
+        sys.exit('ERROR!!! ' + err)
+
     if strip_comments:
         # string comments before parsing
-        contents = re.sub(re.compile(r'--[^"]*?\n') ,'' ,contents)
+        contents = re.sub(re.compile(comment_delim + r'[^"]*?\n') ,'' ,contents)
+
+    if is_mfh:
+        # since this is an mfh, we need to combine into one file for parsing
+
+        class TM_Handler(object):
+            """
+            This class is used to update the tm_xxx to be unique as each file is opened.
+            It then replaces the duplicate tm_xxx with the new unique one in the file contents.
+            """
+            _tm = 0
+            _tm_lst = []
+
+            @staticmethod
+            def _get_unique_tm(tm_lst):
+                """
+                Should only be called by uniqify_tms()
+                :param tm_lst:
+                :return: repl_pairs: is list of tuples with (a,b) where 'a' is to be replaced by 'b'
+                """
+                repl_pairs = []
+                for tm in tm_lst:
+                    if tm not in TM_Handler()._tm_lst:
+                        TM_Handler._tm_lst.append(tm)
+                    else:
+                        new_tm = max(tm_lst) + 1
+                        while new_tm in TM_Handler()._tm_lst:
+                            new_tm += 1
+                        TM_Handler._tm_lst.append(new_tm)
+                        repl_pairs.append((tm,new_tm))
+                return repl_pairs
+            def uniqify_tms(self,in_tms,content,fn):
+                repl_pairs = self._get_unique_tm(in_tms)
+                log.debug('repl_pairs:%s', str(repl_pairs))
+                # now let's go thru each repl_pairs and replace
+                for a,b in repl_pairs:
+                    old_tm_str = r'tm_'+str(a)
+                    new_tm_str = r'tm_'+str(b)
+                    content = re.sub(r'\b'+old_tm_str+r'\b',new_tm_str,content)
+                return content
+        tmh = TM_Handler()
+
+        srchPat = re.compile(r'^\s*(?:GROUP\s+)?(?P<name>\S+)\s*(?:\[(open|closed)\]\s*)?:\s*(?P<fn>\S+)\s*$')
+        tmPat = re.compile(r'\btm_(?P<index>\d+)\b')
+
+        tf_header = TESTFLOW_OPTFILE_HEADER + '\n' + TESTFLOW_LANGUAGE_HEADER + '\n'
+
+        sect_content = {}
+        lineno = 0
+        for line in contents.splitlines():
+            lineno += 1
+            srchObj = re.search(srchPat,line)
+            if srchObj:
+                name = srchObj.group('name')
+                fn = srchObj.group('fn')
+                if name == 'testerfile':
+                    # let's not trust the testerfile info
+                    continue
+            elif re.search(opt_mfhPat,line):
+                # this is the correct optfile header line
+                continue
+            else:
+                err = 'UNKNOWN LINE: "{}" in MFH file: "{}" on line:{}; Skipping this line....'.format(line,os.path.basename(infile),lineno)
+                print err
+                log.error(err)
+                continue
+            with open(os.path.join(dirname,fn),'rb') as f:
+                file_content = f.read()
+
+                # get unique sorted list of tms
+                tms = [int(x) for x in sorted(list(set(re.findall(tmPat,file_content))),key=int)]
+                log.debug('FILE:%s; TM #\'s BEFORE modification:%s',fn,str(tms))
+
+                file_content = tmh.uniqify_tms(tms,file_content,fn)
+                tms = [int(x) for x in sorted(list(set(re.findall(tmPat,file_content))),key=int)]
+                log.debug('FILE:%s; TM #\'s AFTER modification:%s',fn,str(tms))
+                log.debug('FN: %s,FILE CONTENT:\n{\n%s\n}\n',fn,file_content)
+
+                section_name = None
+                for sub_line in file_content.splitlines():
+                    sub_line = sub_line.strip()
+                    if sub_line in SECTION_NAMES+SPECIAL_TESTSUITES:
+                        section_name = sub_line
+                        if section_name not in sect_content:
+                            sect_content[section_name] = []
+                    elif sub_line == 'end':
+                        section_name = None
+                    elif section_name is not None:
+                        sect_content[section_name].append(sub_line)
+                    else:
+                        # we don't care about this line
+                        pass
+        body = ''
+        for sect in SECTION_NAMES:
+            if sect in sect_content:
+                body += sect+'\n' + '\n'.join(sect_content[sect])+'\n' + EndStr
+                if sect == 'test_suites':
+                    # let's append the special testsuites now
+                    for special in SPECIAL_TESTSUITES:
+                        if special in sect_content:
+                            body += special+'\n' + '\n'.join(sect_content[special])+'\n' + EndStr
+        contents = tf_header + body
     return contents
 
 class Testflow(TestflowData):
@@ -2777,7 +2912,8 @@ class Testflow(TestflowData):
         self.tf = Start.parseString(contents,1)[0]
 
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
-        log.debug(self.nodeMap)
+        # log.debug(self.nodeMap)
+        log.info('NODE MAP BY NODE ID:\n'+pformat(self.nodeMap,indent=4))
 
         self.newickStr = self.tf.TestflowSection.buildNewickStr()
         log.debug(self.newickStr)
@@ -2847,7 +2983,7 @@ if __name__ == '__main__':
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
+    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     tf = Testflow(args.testflowfile,args.debug,args.split,args.name,args.output_dir)
 

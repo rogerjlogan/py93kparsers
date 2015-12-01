@@ -284,7 +284,15 @@ def gather_all_testsuites_bins():
 def create_binning_csv(outdir,fn):
     if not len(outdir):
         outdir = os.path.dirname(os.path.realpath(__file__))
-    csv_file = os.path.join(outdir,fn+'_binning.csv')
+    if len(fn):
+        progname = fn+'_'
+    else:
+        progname = ''
+    basename = progname + os.path.basename(sys.modules[__name__].__file__).split('.')[0]
+    csvname = basename + '.csv'
+    csv_file = os.path.join(outdir, csvname)
+
+    # csv_file = os.path.join(outdir,fn+'_binning.csv')
     # pprint(testsuite_all_sbins)
     msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column, "X_" indicates that the '.format(csv_file)
     msg += 'bin is not reachable in the testflow "downstream".\n'
@@ -299,10 +307,10 @@ def create_binning_csv(outdir,fn):
         for testsuite in testsuite_all_sbins:
             writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
                              'Testsuite' : testsuite,
+                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
                              'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
                              'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
-                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins']),
-                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else ''})
+                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def main():
     global testflow,testflow_file,testtable,bin_groups_exist

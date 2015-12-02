@@ -45,9 +45,11 @@ class ProgFile(object):
 
     contents = {}
     path, fn = '',''
+    progdir = ''
 
     def __init__(self, pathfn):
         self.path, self.fn = os.path.split(pathfn)
+        self.progdir = self.path[:-len('testprog')]
         msg = 'Parsing testprog file: '+self.fn+' .....'
         print msg
         log.info(msg)
@@ -83,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
+    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     tp = ProgFile(args.progfile)
 

@@ -2975,7 +2975,7 @@ class Testflow(TestflowData):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tf','--testflowfile',required=True, help='Path to testflow file')
+    parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
@@ -2985,7 +2985,7 @@ if __name__ == '__main__':
 
     init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
-    tf = Testflow(args.testflowfile,args.debug,args.split,args.name,args.output_dir)
+    tf = Testflow(args.testflow_file,args.debug,args.split,args.name,args.output_dir)
 
     log.debug(tf.nodeData)
     log.debug(tf.nodeMap)

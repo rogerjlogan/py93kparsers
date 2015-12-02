@@ -6,6 +6,7 @@
 import csv
 import argparse
 from common import *
+from testprog_parser import ProgFile
 from TestflowParser import Testflow
 from testtable_parser import TestTable
 from testtable_parser import VALID_LIM_HEADERS
@@ -315,8 +316,12 @@ def create_binning_csv(outdir,fn):
 def main():
     global testflow,testflow_file,testtable,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow (not .mfh which is not supported yet anyway)')
-    parser.add_argument('-tt','--testtable_file',required=True, help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)')
+    parser.add_argument('-tf','--testflow_file',required=False,default='', help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
+                        WARNING: THIS GOES WITH -tt (--testtable_file), BUT NOT WITH -tp (--testprog_file)')
+    parser.add_argument('-tt','--testtable_file',required=False,default='', help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)\
+                        WARNING: THIS GOES WITH -tt (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
+    parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
+                        WARNING: THIS DOES NOT GO WITH -tt (--testflow_file) OR WITH -tp (--testprog_file)')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
@@ -327,9 +332,24 @@ def main():
 
     init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
-    testflow_file = args.testflow_file
+    if len(args.testprog_file):
+        if len(args.testflow_file) or len(args.testtable_file):
+            err = 'INPUT ERROR!!! testprog_file (-tp) already provided.  Cannot provide testflow_file (-tf) and/or testtable_file (-tt) also! Exiting ...'
+            log.error(err)
+            sys.exit(err)
+        tp = ProgFile(args.testprog_file)
+        testflow_file = os.path.join(tp.progdir,'testflow',tp.contents['Testflow'])
+        testtable_file = os.path.join(tp.progdir,'testtable',tp.contents['Testtable'])
+    elif len(args.testflow_file) and len(args.testtable_file):
+        testflow_file = args.testflow_file
+        testtable_file = args.testtable_file
+    else:
+        err = 'UNSTABLE INPUT: Must provide either testprog_file (-tp) OR both testflow_file (-tf) AND testtable_file (-tt) BUT not all 3! Exiting ...'
+        log.error(err)
+        sys.exit(err)
+
     testflow = Testflow(testflow_file,args.debug,args.split,args.name,args.output_dir)
-    testtable = TestTable(args.testtable_file,args.renumber)
+    testtable = TestTable(testtable_file,args.renumber)
 
     identify_ti_csv_files(testtable.special_testtables)
 

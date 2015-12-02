@@ -296,7 +296,7 @@ if __name__ == "__main__":
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
-    outdir = init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
+    outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     PbistPats(args,outdir)
 

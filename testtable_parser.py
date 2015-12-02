@@ -492,7 +492,7 @@ if __name__ == "__main__":
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.split(sys.modules[__name__].__file__)[1],args=args)
+    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
 
     tt = TestTable(args.testtable_file,args.renumber)
 

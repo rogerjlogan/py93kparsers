@@ -185,6 +185,30 @@ def replace(file_path, pattern, subst):
     #Move new file
     move(abs_path, file_path)
 
+
 def take(n, iterable):
     "Return first n items of the iterable as a list"
     return list(islice(iterable, n))
+
+
+class TextException(Exception): pass
+
+
+def prompt_user(query,errmsg,choices):
+    my_exit = False
+    while 1:
+        try:
+            ans = raw_input(query)
+            if ans.lower() == 'q':
+                my_exit = True
+                break
+            elif ans.lower() not in choices:
+                raise TextException()
+            else:
+                break
+        except Exception:
+            print errmsg
+    if my_exit:
+        sys.exit()
+    else:
+        return ans

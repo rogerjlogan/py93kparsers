@@ -77,6 +77,19 @@ class TestTable(object):
         return str(TestTable.__testnum)
 
     def __init__(self,pathfn,renum=False):
+        if renum:
+            renum_msg = 'WARNING: You\'ve chosen to renumber ALL STANDARD testtables (limit files)?\n\t'
+            renum_msg += 'DO YOU REALLY WANT TO RENUMBER "Test number" column IN PLACE WITH NO BACKUP\n\t'
+            renum_msg += 'Press \'y\' or \'n\' (or \'q\' to quit) and then press <enter>\n'
+            renum_err = "\nERROR!!! You Must Choose 'y' or 'n' (or 'q' to quit) and then press <enter>\n"
+            renum_choices = ('y', 'n')
+            ans = prompt_user(renum_msg, renum_err, renum_choices)
+            if ans == 'n':
+                msg = 'MODIFYING Renumber choice to \'NO\'. Will NOT be modifying limit files.'
+                print msg
+                log.info(msg)
+                renum = False
+
         self.path, self.fn = os.path.split(pathfn)
         log.info('Parsing testtable master file: '+self.fn+' .....')
         limPat = re.compile(r'^\s*testerfile\s*:(?P<limit_file>.*)')

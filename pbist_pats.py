@@ -306,6 +306,9 @@ if __name__ == "__main__":
                                       outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
 
     log = logging.getLogger(logger_name)
+    msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
+    print msg
+    log.info(msg)
 
     PbistPats(args,outdir)
 

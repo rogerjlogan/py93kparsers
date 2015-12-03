@@ -56,6 +56,9 @@ class ProgFile(object):
         logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
                                           outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
         log = logging.getLogger(logger_name)
+        msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
+        print msg
+        log.info(msg)
 
         self.path, self.fn = os.path.split(pathfn)
         self.progdir = self.path[:-len('testprog')]
@@ -78,6 +81,8 @@ class ProgFile(object):
             err = 'ERROR!!! OptFileHeader ('+TESTPROG_OPTFILE_HEADER+') not found'
             log.critical(err)
             sys.exit(err)
+
+        log.info(pformat(self.contents,indent=4))
 
     def __str__(self):
         rstr = TESTPROG_OPTFILE_HEADER + '\n'

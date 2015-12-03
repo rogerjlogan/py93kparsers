@@ -283,9 +283,9 @@ def gather_all_testsuites_bins():
                         unique_sbins = list(set(testsuite_all_sbins[tf_testsuite]['cat_sbins'] + sbins))
                         testsuite_all_sbins[tf_testsuite]['cat_sbins'] = unique_sbins
 
-def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__),outdir='',fn='',maxcsvs=1):
+def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
 
-    csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=fn,outdir=outdir,maxlogs=maxcsvs,ext='.csv')
+    csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
     for msg in warn_msg:
         print 'WARNING!!! ',msg
         log.warning(msg)
@@ -336,6 +336,9 @@ def main():
                                       outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
 
     log = logging.getLogger(logger_name)
+    msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
+    print msg
+    log.info(msg)
 
     if len(args.testprog_file):
         if len(args.testflow_file) or len(args.testtable_file):
@@ -366,7 +369,8 @@ def main():
     parse_special_csv(categories_file,'categories')
 
     gather_all_testsuites_bins()
-    create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__),outdir=args.output_dir,fn=args.name,maxcsvs=max(1,args.maxlogs))
+    create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir, fn=args.name,
+                       maxlogs=max(1, args.maxlogs))
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('bin_groups:\n' + pformat(bin_groups,indent=4))

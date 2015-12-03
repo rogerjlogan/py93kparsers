@@ -2914,7 +2914,8 @@ class Testflow(TestflowData):
     """
 
     @staticmethod
-    def showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=1,t=None, nodeData=None, name='', outdir='', show=False):
+    def showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                   maxlogs=1,t=None,nodeMap=None,nodeData=None,name='',outdir='',show=False):
 
         from ete2 import TreeStyle,NodeStyle,faces,AttrFace,TextFace
 
@@ -2977,16 +2978,23 @@ class Testflow(TestflowData):
 
         if not len(name):
             name = 'Testflow'
-        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxpngs,ext='.png')
+        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=name, outdir=outdir, maxlogs=maxlogs, ext='.png')
         for msg in warn_msg:
             print 'WARNING!!! ',msg
             log.warning(msg)
         for msg in info_msg:
             log.info(msg)
 
-        msg = 'Attempting to create new testflow picture:' + pathfn
-        print msg
-        log.debug(msg)
+        nodepathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                                         name=name,outdir=outdir,maxlogs=max(1,maxlogs),ext='.log')
+        for msg in warn_msg:
+            print 'WARNING!!! ',msg
+            log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
+        with open(nodepathfn,'wb') as f:
+            f.write(pformat(nodeMap,indent=4))
+
         t.write(format=1, outfile=pathfn)
 
         t.render(pathfn,tree_style=ts)
@@ -3002,6 +3010,9 @@ class Testflow(TestflowData):
         logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
                                           outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
         log = logging.getLogger(logger_name)
+        msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
+        print msg
+        log.info(msg)
 
         contents = get_file_contents(tf_file)
 
@@ -3014,17 +3025,7 @@ class Testflow(TestflowData):
 
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
 
-        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),
-                                                         name=progname+'_nodeMap',outdir=outdir,maxlogs=max(1,maxlogs),ext='.log')
-        for msg in warn_msg:
-            print 'WARNING!!! ',msg
-            log.warning(msg)
-        for msg in info_msg:
-            log.info(msg)
-        with open(pathfn,'wb') as f:
-            f.write(pformat(self.nodeMap,indent=4))
-
-        log.info('NODE MAP BY NODE ID:\n'+pformat(self.nodeMap,indent=4))
+        log.debug('NODE MAP BY NODE ID:\n'+pformat(self.nodeMap,indent=4))
 
         self.newickStr = self.tf.TestflowSection.buildNewickStr()
         log.debug(self.newickStr)
@@ -3032,8 +3033,9 @@ class Testflow(TestflowData):
         self.newick_tree = Tree(self.newickStr,format=1)
 
         if not split:
-            self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=max(1,maxlogs),
-                            t=self.newick_tree,nodeData=self.nodeData,name=progname+'_'+fn,outdir=outdir,show=True)
+            flow_name = str(progname+'_'+fn).strip('_')
+            self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__), maxlogs=max(1, maxlogs),
+                            t=self.newick_tree, nodeMap=self.nodeMap, nodeData=self.nodeData, name=flow_name, outdir=outdir, show=True)
         else:
             # input parameter 'split' selected to divide rendered '.png' files into separate files
             # get_children is only the top level items (breadth, no depth)
@@ -3044,7 +3046,7 @@ class Testflow(TestflowData):
                     log.error('Unknown node (node_id = %d) on top level of testflow! Skipping png creation for this node ...',node_id)
                     continue
                 nodetype = self.nodeData[node_id]['type'].replace('Statement','').upper()
-                name = args.name + '_' + str(node_id) + '_'+nodetype
+                name = str(progname + '_' + str(node_id) + '_'+nodetype).strip('_')
                 if self.nodeData[node_id]['type'] == 'GroupStatement':
                     gr_label = self.nodeData[node_id]['gr_label'].replace('"','')
                     name = name + '_' + gr_label
@@ -3052,8 +3054,8 @@ class Testflow(TestflowData):
                     testsuite = self.nodeData[node_id]['testsuite']
                     name = name + '_' + testsuite
                 node_tree = self.newick_tree.search_nodes(name=node.name)[0]
-                self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=max(1,maxlogs),
-                                t=node_tree,nodeData=self.nodeData,name=name,outdir=outdir,show=False)
+                self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__), maxlogs=max(1, maxlogs),
+                                t=node_tree, nodeMap=self.nodeMap, nodeData=self.nodeData, name=name, outdir=outdir, show=False)
 
         for node in self.newick_tree.traverse('levelorder'):
             try:

@@ -143,7 +143,9 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
             fn = basename + '.' + str(counter) + ext
             pathfn = os.path.join(outdir, fn)
 
-    print '\nCreating file:',pathfn
+    msg = 'Creating file: '+pathfn
+    print msg
+    info_msg.append(msg)
     return pathfn,outdir,info_msg,warn_msg
 
 def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', maxlogs=1 ,level=logging.INFO):

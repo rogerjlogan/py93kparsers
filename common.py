@@ -89,57 +89,75 @@ def print2file(ostring, ofile="debug.out"):
     pprint(ostring,f, indent=4)
     f.close()
 
-def init_logging(scriptname='default.log', outdir='', name='', maxlogs=1 ,level=logging.INFO):
+def get_valid_dir(name,outdir=''):
 
     warn_msg = []
     info_msg = []
+
+    if len(outdir) and not os.path.isdir(outdir):
+        warn = '%s is NOT a valid directory'
+        print 'WARNING!!! '+warn
+        warn_msg.append(warn)
+        outdir = ''
+
+    if not len(outdir):
+        outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),name)
+    if os.path.isfile(outdir):
+        # let's not clobber the file
+        outdir = os.path.split(outdir)[0]
+        msg = 'output_dir: ' + outdir + ' is a file! Creating directory in ' + outdir
+        warn_msg.append(msg)
+        print 'WARNING! : ' + msg
+    else:
+        outdir = outdir
+        if not os.path.isdir(outdir):
+            try:
+                msg = "Creating new directory: "+outdir
+                info_msg.append(msg)
+                os.makedirs(outdir)
+            except:
+                err = 'Unable to create directory: '+outdir+'\n'
+                err += 'Check file read/write permissions\n'
+                err += 'You might also try closing all editors and explorer windows with a view in this directory.\n'
+                print err
+                raise IOError
+    return outdir,info_msg,warn_msg
+
+def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),name='',outdir='',maxlogs=1,ext='.log'):
+    outdir,info_msg,warn_msg = get_valid_dir(name=name,outdir=outdir)
+    if len(name):
+        progname = name+'_'
+    else:
+        progname = ''
+    basename = progname + scriptname.split('.')[0]
+    fn = basename + ext
+    pathfn = os.path.join(outdir, fn)
+
+    counter = 0
+    while os.path.isfile(pathfn):
+        counter += 1
+        if counter >= maxlogs:
+            warn_msg.append('maxlogs reached! Consider moving/deleting previous files (logs,png\'s,csv\'s,etc). Clobbering ' + fn)
+            break
+        else:
+            fn = basename + '.' + str(counter) + ext
+            pathfn = os.path.join(outdir, fn)
+
+    print '\nCreating file:',pathfn
+    return pathfn,outdir,info_msg,warn_msg
+
+def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', maxlogs=1 ,level=logging.INFO):
+
+    logger_name = 'log'
     if maxlogs > 0:
-        if not len(outdir):
-            outdir = os.path.dirname(os.path.realpath(__file__))
-        else:
-            if os.path.isfile(outdir):
-                # let's not clobber the file
-                outdir = os.path.split(outdir)[0]
-                msg = 'output_dir: ' + outdir + ' is a file! Creating directory in ' + outdir
-                warn_msg.append(msg)
-                print 'WARNING! : ' + msg
-            else:
-                outdir = outdir
-                if not os.path.isdir(outdir):
-                    try:
-                        msg = "Creating new directory: "+outdir
-                        info_msg.append(msg)
-                        os.makedirs(outdir)
-                    except:
-                        err = 'Unable to create directory: '+outdir+'\n'
-                        err += 'Check file read/write permissions\n'
-                        err += 'You might also try closing all editors and explorer windows with a view in this directory.\n'
-                        print err
-                        raise IOError
 
-        if len(name):
-            progname = name+'_'
-        else:
-            progname = ''
-        basename = progname + scriptname.split('.')[0]
-        logname = basename + '.log'
-        log_pathfn = os.path.join(outdir, logname)
+        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxlogs,ext='.log')
 
-        counter = 0
-        while os.path.isfile(log_pathfn):
-            counter += 1
-            if counter >= maxlogs:
-                warn_msg.append('maxlogs reached! Consider moving/deleting previous logs. Clobbering ' + logname)
-                break
-            else:
-                logname = basename + '.' + str(counter) + '.log'
-                log_pathfn = os.path.join(outdir, logname)
-
-        print '\nCreating log file:',log_pathfn
+        basename = os.path.basename(pathfn).split('.')[0]
         logger_name = 'log_'+basename
         l = logging.getLogger(logger_name)
         formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
-        fileHandler = logging.FileHandler(log_pathfn, mode='w')
+        fileHandler = logging.FileHandler(pathfn, mode='w')
         fileHandler.setFormatter(formatter)
 
         l.setLevel(level)
@@ -148,6 +166,7 @@ def init_logging(scriptname='default.log', outdir='', name='', maxlogs=1 ,level=
         log = logging.getLogger(logger_name)
 
         for msg in warn_msg:
+            print 'WARNING!!! ',msg
             log.warning(msg)
         for msg in info_msg:
             log.info(msg)

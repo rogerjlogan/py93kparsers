@@ -32,7 +32,7 @@ import pyparsing as pp
 import logging
 from pprint import pprint,pformat
 import time
-from common import humanize_time,init_logging
+from common import *
 from ete2 import Tree
 _start_time = time.time()
 log = None
@@ -2914,7 +2914,7 @@ class Testflow(TestflowData):
     """
 
     @staticmethod
-    def showMyTree(t, nodeData, name='', outdir='', show=False):
+    def showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=1,t=None, nodeData=None, name='', outdir='', show=False):
 
         from ete2 import TreeStyle,NodeStyle,faces,AttrFace,TextFace
 
@@ -2974,11 +2974,16 @@ class Testflow(TestflowData):
         # ts.arc_span = 180
         ts.layout_fn = my_layout
         log.debug(t)
+
         if not len(name):
             name = 'Testflow'
-        if not len(outdir):
-            outdir = os.path.dirname(os.path.realpath(__file__))
-        pathfn = os.path.join(outdir,name+'.png')
+        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxpngs,ext='.png')
+        for msg in warn_msg:
+            print 'WARNING!!! ',msg
+            log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
+
         msg = 'Attempting to create new testflow picture:' + pathfn
         print msg
         log.debug(msg)
@@ -3008,7 +3013,17 @@ class Testflow(TestflowData):
         self.tf = Start.parseString(contents,1)[0]
 
         self.nodeMap = self.tf.TestflowSection.getNodeMap()
-        # log.debug(self.nodeMap)
+
+        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                                         name=progname+'_nodeMap',outdir=outdir,maxlogs=max(1,maxlogs),ext='.log')
+        for msg in warn_msg:
+            print 'WARNING!!! ',msg
+            log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
+        with open(pathfn,'wb') as f:
+            f.write(pformat(self.nodeMap,indent=4))
+
         log.info('NODE MAP BY NODE ID:\n'+pformat(self.nodeMap,indent=4))
 
         self.newickStr = self.tf.TestflowSection.buildNewickStr()
@@ -3017,7 +3032,8 @@ class Testflow(TestflowData):
         self.newick_tree = Tree(self.newickStr,format=1)
 
         if not split:
-            self.showMyTree(self.newick_tree,self.nodeData,name=progname,outdir=outdir,show=True)
+            self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=max(1,maxlogs),
+                            t=self.newick_tree,nodeData=self.nodeData,name=progname+'_'+fn,outdir=outdir,show=True)
         else:
             # input parameter 'split' selected to divide rendered '.png' files into separate files
             # get_children is only the top level items (breadth, no depth)
@@ -3036,7 +3052,8 @@ class Testflow(TestflowData):
                     testsuite = self.nodeData[node_id]['testsuite']
                     name = name + '_' + testsuite
                 node_tree = self.newick_tree.search_nodes(name=node.name)[0]
-                self.showMyTree(node_tree,self.nodeData,name=name,outdir=args.output_dir,show=False)
+                self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__),maxpngs=max(1,maxlogs),
+                                t=node_tree,nodeData=self.nodeData,name=name,outdir=outdir,show=False)
 
         for node in self.newick_tree.traverse('levelorder'):
             try:
@@ -3071,12 +3088,12 @@ class Testflow(TestflowData):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)')
-    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
-    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
+    parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)')
     args = parser.parse_args()
 
     tf = Testflow(tf_file=args.testflow_file,debug=args.debug,split=args.split,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)

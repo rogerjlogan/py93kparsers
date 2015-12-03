@@ -11,7 +11,7 @@ import csv
 import time
 import logging
 from pprint import *
-from common import humanize_time,init_logging,myOpen,replace
+from common import *
 import argparse
 _start_time = time.time()
 log = None
@@ -289,12 +289,12 @@ class PbistPats(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-mpb','--MEM_BIST_MPB',required=True, help='Path to FULL bist MPB file that you want to split')
     parser.add_argument('-csv','--memBistCtlr_csv',required=True, help='Path to memBistCtlr.csv file')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
-    parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
-    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
     if args.debug:

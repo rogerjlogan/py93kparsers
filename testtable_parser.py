@@ -8,10 +8,9 @@ import csv
 import argparse
 import logging
 import sys
-from common import *
 from pprint import *
 import time
-from common import humanize_time,init_logging,take
+from common import *
 from string import *
 _start_time = time.time()
 log = None
@@ -507,12 +506,12 @@ class TestTable(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
-    parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
+    parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
     args = parser.parse_args()
 
     tt = TestTable(pathfn=args.testtable_file,renum=args.renumber,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)

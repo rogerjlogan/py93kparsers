@@ -283,19 +283,15 @@ def gather_all_testsuites_bins():
                         unique_sbins = list(set(testsuite_all_sbins[tf_testsuite]['cat_sbins'] + sbins))
                         testsuite_all_sbins[tf_testsuite]['cat_sbins'] = unique_sbins
 
-def create_binning_csv(outdir,fn):
-    if not len(outdir):
-        outdir = os.path.dirname(os.path.realpath(__file__))
-    if len(fn):
-        progname = fn+'_'
-    else:
-        progname = ''
-    basename = progname + os.path.basename(sys.modules[__name__].__file__).split('.')[0]
-    csvname = basename + '.csv'
-    csv_file = os.path.join(outdir, csvname)
+def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__),outdir='',fn='',maxcsvs=1):
 
-    # csv_file = os.path.join(outdir,fn+'_binning.csv')
-    # pprint(testsuite_all_sbins)
+    csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=fn,outdir=outdir,maxlogs=maxcsvs,ext='.csv')
+    for msg in warn_msg:
+        print 'WARNING!!! ',msg
+        log.warning(msg)
+    for msg in info_msg:
+        log.info(msg)
+
     msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column, "X_" indicates that the '.format(csv_file)
     msg += 'bin is not reachable in the testflow "downstream".\n'
     msg += '\tIn other words, there is no multibin TO THE RIGHT of the Testsuite (fail branches, etc) in the testflow.\n'
@@ -317,18 +313,18 @@ def create_binning_csv(outdir,fn):
 def main():
     global log,testflow,testflow_file,testtable,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
+    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-tf','--testflow_file',required=False,default='', help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
                         WARNING: THIS GOES WITH -tt (--testtable_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tt','--testtable_file',required=False,default='', help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)\
                         WARNING: THIS GOES WITH -tt (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testflow_file) OR WITH -tp (--testprog_file)')
-    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
-    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
-    parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
-    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
     if args.debug:
@@ -346,7 +342,7 @@ def main():
             err = 'INPUT ERROR!!! testprog_file (-tp) already provided.  Cannot provide testflow_file (-tf) and/or testtable_file (-tt) also! Exiting ...'
             log.error(err)
             sys.exit(err)
-        tp = ProgFile(pathfn=args.progfile,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
+        tp = ProgFile(pathfn=args.testprog_file,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
         testflow_file = os.path.join(tp.progdir,'testflow',tp.contents['Testflow'])
         testtable_file = os.path.join(tp.progdir,'testtable',tp.contents['Testtable'])
     elif len(args.testflow_file) and len(args.testtable_file):
@@ -357,8 +353,8 @@ def main():
         log.error(err)
         sys.exit(err)
 
-    testflow = Testflow(tf_file=testflow_file,debug=args.debug,split=args.split,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
-    testtable = TestTable(testtable_file,args.renumber)
+    testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
+    testtable = TestTable(testtable_file,args.renumber,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
 
     identify_ti_csv_files(testtable.special_testtables)
 
@@ -370,7 +366,7 @@ def main():
     parse_special_csv(categories_file,'categories')
 
     gather_all_testsuites_bins()
-    create_binning_csv(args.output_dir,args.name)
+    create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file__),outdir=args.output_dir,fn=args.name,maxcsvs=max(1,args.maxlogs))
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('bin_groups:\n' + pformat(bin_groups,indent=4))

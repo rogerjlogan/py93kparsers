@@ -10,7 +10,7 @@ import re
 import argparse
 from pprint import pprint
 import time
-from common import humanize_time,init_logging
+from common import *
 log = None
 
 _start_time = time.time()
@@ -87,11 +87,11 @@ class ProgFile(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
-    parser.add_argument('-tp','--progfile',required=True, help='Path to testprog file')
-    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
+    parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
+    parser.add_argument('-tp','--progfile',required=True, help='Path to testprog file')
     args = parser.parse_args()
 
     tp = ProgFile(pathfn=args.progfile,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)

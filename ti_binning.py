@@ -12,6 +12,7 @@ from testtable_parser import TestTable
 from testtable_parser import VALID_LIM_HEADERS
 import time
 _start_time = time.time()
+log = None
 
 __author__ = 'Roger'
 
@@ -301,7 +302,7 @@ def create_binning_csv(outdir,fn):
     msg += '\tThe "multi_sbins" column only applies to standard testtables (limit files) which bin only with multibins in the testflow'
     print msg
     log.info(msg)
-    headers = ['node_id','Testsuite','stop_sbins','category_sbins','multi_sbins','bypassed']
+    headers = ['node_id','Testsuite','bypassed','stop_sbins','category_sbins','multi_sbins']
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
@@ -314,7 +315,7 @@ def create_binning_csv(outdir,fn):
                              'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def main():
-    global testflow,testflow_file,testtable,bin_groups_exist
+    global log,testflow,testflow_file,testtable,bin_groups_exist
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--testflow_file',required=False,default='', help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
                         WARNING: THIS GOES WITH -tt (--testtable_file), BUT NOT WITH -tp (--testprog_file)')
@@ -323,21 +324,29 @@ def main():
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testflow_file) OR WITH -tp (--testprog_file)')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
-    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
+    if args.debug:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+
+    logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                      outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
+
+    log = logging.getLogger(logger_name)
 
     if len(args.testprog_file):
         if len(args.testflow_file) or len(args.testtable_file):
             err = 'INPUT ERROR!!! testprog_file (-tp) already provided.  Cannot provide testflow_file (-tf) and/or testtable_file (-tt) also! Exiting ...'
             log.error(err)
             sys.exit(err)
-        tp = ProgFile(args.testprog_file)
+        tp = ProgFile(pathfn=args.progfile,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
         testflow_file = os.path.join(tp.progdir,'testflow',tp.contents['Testflow'])
         testtable_file = os.path.join(tp.progdir,'testtable',tp.contents['Testtable'])
     elif len(args.testflow_file) and len(args.testtable_file):
@@ -348,7 +357,7 @@ def main():
         log.error(err)
         sys.exit(err)
 
-    testflow = Testflow(testflow_file,args.debug,args.split,args.name,args.output_dir)
+    testflow = Testflow(tf_file=testflow_file,debug=args.debug,split=args.split,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
     testtable = TestTable(testtable_file,args.renumber)
 
     identify_ti_csv_files(testtable.special_testtables)

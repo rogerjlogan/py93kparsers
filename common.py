@@ -1,7 +1,7 @@
 import sys
 import os
 from pprint import *
-import logging as log
+import logging
 import gzip
 from itertools import islice
 
@@ -89,31 +89,22 @@ def print2file(ostring, ofile="debug.out"):
     pprint(ostring,f, indent=4)
     f.close()
 
-def init_logging(scriptname='default.log', args=None):
-    """
-    :param args: argparse object with (at least) the following objects:
-        args.output_dir
-        args.debug
-        args.maxlogs
-    """
-    if not isinstance(vars(args),dict):
-        sys.exit('ERROR!!! "args" passed is not a argparse object.  Exiting ...')
+def init_logging(scriptname='default.log', outdir='', name='', maxlogs=1 ,level=logging.INFO):
 
-    outdir = ''
-    if args.maxlogs > 0:
-        warn_msg = []
-        info_msg = []
-        if not len(args.output_dir):
+    warn_msg = []
+    info_msg = []
+    if maxlogs > 0:
+        if not len(outdir):
             outdir = os.path.dirname(os.path.realpath(__file__))
         else:
-            if os.path.isfile(args.output_dir):
+            if os.path.isfile(outdir):
                 # let's not clobber the file
-                outdir = os.path.split(args.output_dir)[0]
-                msg = 'output_dir: ' + args.output_dir + ' is a file! Creating directory in ' + outdir
+                outdir = os.path.split(outdir)[0]
+                msg = 'output_dir: ' + outdir + ' is a file! Creating directory in ' + outdir
                 warn_msg.append(msg)
                 print 'WARNING! : ' + msg
             else:
-                outdir = args.output_dir
+                outdir = outdir
                 if not os.path.isdir(outdir):
                     try:
                         msg = "Creating new directory: "+outdir
@@ -126,8 +117,8 @@ def init_logging(scriptname='default.log', args=None):
                         print err
                         raise IOError
 
-        if len(args.name):
-            progname = args.name+'_'
+        if len(name):
+            progname = name+'_'
         else:
             progname = ''
         basename = progname + scriptname.split('.')[0]
@@ -137,7 +128,7 @@ def init_logging(scriptname='default.log', args=None):
         counter = 0
         while os.path.isfile(log_pathfn):
             counter += 1
-            if counter >= args.maxlogs:
+            if counter >= maxlogs:
                 warn_msg.append('maxlogs reached! Consider moving/deleting previous logs. Clobbering ' + logname)
                 break
             else:
@@ -145,28 +136,25 @@ def init_logging(scriptname='default.log', args=None):
                 log_pathfn = os.path.join(outdir, logname)
 
         print '\nCreating log file:',log_pathfn
-        log.basicConfig(filename=log_pathfn, format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p', filemode='w')
+        logger_name = 'log_'+basename
+        l = logging.getLogger(logger_name)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
+        fileHandler = logging.FileHandler(log_pathfn, mode='w')
+        fileHandler.setFormatter(formatter)
+
+        l.setLevel(level)
+        l.addHandler(fileHandler)
+
+        log = logging.getLogger(logger_name)
+
         for msg in warn_msg:
             log.warning(msg)
         for msg in info_msg:
             log.info(msg)
     else:
-        log.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=log.INFO, datefmt='%m/%d/%Y %I:%M:%S %p')
-    if args.debug:
-        log.getLogger().setLevel('DEBUG')
-        log.debug('Setting log level to DEBUG (-v option was passed)')
-    else:
-        log.getLogger().setLevel('INFO')
-        log.info('Setting log level to INFO (add -v option to see more stuff logged)')
-        log.debug('Test string. You should NOT see this in the log file.')
+        logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=level, datefmt='%m/%d/%Y %I:%M:%S %p')
 
-    if isinstance(vars(args),dict):
-        for k,v in vars(args).iteritems():
-            if len(str(v).strip()):
-                log.debug('ARGUMENT PASSED: name(%s) = %s',k,v)
-
-    log.info('BEGIN ' + scriptname)
-    return outdir
+    return logger_name,outdir
 
 from tempfile import mkstemp
 from shutil import move

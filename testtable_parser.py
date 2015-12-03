@@ -6,7 +6,7 @@
 import re
 import csv
 import argparse
-import logging as log
+import logging
 import sys
 from common import *
 from pprint import *
@@ -14,6 +14,7 @@ import time
 from common import humanize_time,init_logging,take
 from string import *
 _start_time = time.time()
+log = None
 
 __author__ = 'Roger'
 
@@ -76,7 +77,16 @@ class TestTable(object):
         TestTable.__testnum += 1
         return str(TestTable.__testnum)
 
-    def __init__(self,pathfn,renum=False):
+    def __init__(self,pathfn,renum=False,debug=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__))):
+        global log
+        if debug:
+            log_level = logging.DEBUG
+        else:
+            log_level = logging.INFO
+        logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                          outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
+        log = logging.getLogger(logger_name)
+
         if renum:
             renum_msg = 'WARNING: You\'ve chosen to renumber ALL STANDARD testtables (limit files)?\n\t'
             renum_msg += 'DO YOU REALLY WANT TO RENUMBER "Test number" column IN PLACE WITH NO BACKUP\n\t'
@@ -500,14 +510,12 @@ if __name__ == "__main__":
     parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
-    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
-
-    tt = TestTable(args.testtable_file,args.renumber)
+    tt = TestTable(pathfn=args.testtable_file,renum=args.renumber,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('testtables:\n' + pformat(tt.testtables,indent=4))

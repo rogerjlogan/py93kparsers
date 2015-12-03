@@ -3,15 +3,15 @@
     First access script to get program file and it's dependencies.
 """
 
-import logging as log
+import logging
 import sys
 import os
 import re
 import argparse
-import pyparsing as pp
 from pprint import pprint
 import time
 from common import humanize_time,init_logging
+log = None
 
 _start_time = time.time()
 
@@ -47,7 +47,16 @@ class ProgFile(object):
     path, fn = '',''
     progdir = ''
 
-    def __init__(self, pathfn):
+    def __init__(self,pathfn,debug=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__))):
+        global log
+        if debug:
+            log_level = logging.DEBUG
+        else:
+            log_level = logging.INFO
+        logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                          outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
+        log = logging.getLogger(logger_name)
+
         self.path, self.fn = os.path.split(pathfn)
         self.progdir = self.path[:-len('testprog')]
         msg = 'Parsing testprog file: '+self.fn+' .....'
@@ -81,13 +90,11 @@ if __name__ == "__main__":
     parser.add_argument('-tp','--progfile',required=True, help='Path to testprog file')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
-    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
-
-    tp = ProgFile(args.progfile)
+    tp = ProgFile(pathfn=args.progfile,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

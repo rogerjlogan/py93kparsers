@@ -9,11 +9,12 @@ import gzip
 import shutil
 import csv
 import time
-import logging as log
+import logging
 from pprint import *
 from common import humanize_time,init_logging,myOpen,replace
 import argparse
 _start_time = time.time()
+log = None
 
 __author__ = 'Roger'
 
@@ -292,11 +293,19 @@ if __name__ == "__main__":
     parser.add_argument('-csv','--memBistCtlr_csv',required=True, help='Path to memBistCtlr.csv file')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=False,default='',help='Directory to place log file(s).')
-    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
-    outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
+    if args.debug:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+
+    logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                      outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
+
+    log = logging.getLogger(logger_name)
 
     PbistPats(args,outdir)
 

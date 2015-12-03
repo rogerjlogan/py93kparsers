@@ -29,16 +29,18 @@ import sys
 import re
 import argparse
 import pyparsing as pp
-import logging as log
+import logging
 from pprint import pprint,pformat
 import time
 from common import humanize_time,init_logging
 from ete2 import Tree
-
 _start_time = time.time()
+log = None
 
 __author__ = 'Roger Logan'
 __version__ = '1.0'
+
+SHOW_TIMING_LEVELS = False
 
 # import pydot
 #     # pydot.Edge('node_d', 'node_a', label="and back we go again", labelfontcolor="#009933", fontsize="10.0", color="blue")
@@ -211,6 +213,14 @@ class TestflowData(object):
     newickStr = ''
     newick_tree = None
     testsuite_data = {}
+
+    testsuite_TimLevPat = {
+        'timing' : {},
+        'levels' : {},
+        'pattern' : {}
+    }
+    """timing, levels, and pattern for EACH testsuite which is why it is a dict() of dict()s """
+
     bypassed_testsuites = []
     testsuite_nodeids = {}
 
@@ -308,7 +318,23 @@ class TestflowData(object):
                 rstr = rstr[:-1] + ')'
         if named:
             if self.type in ['RunAndBranchStatement','RunStatement']:
-                rstr += self.testsuite + '-' + str(self.node_id)
+                nhx = ''
+                if SHOW_TIMING_LEVELS:
+                    found = False
+                    if len(self.testsuite_TimLevPat['timing'][self.testsuite].strip()):
+                        found = True
+                        tim_str = '"'+self.testsuite_TimLevPat['timing'][self.testsuite].replace('"','')+'"'
+                        nhx += ':timing='+tim_str
+                    if len(self.testsuite_TimLevPat['levels'][self.testsuite].strip()):
+                        found = True
+                        lev_str = '"'+self.testsuite_TimLevPat['levels'][self.testsuite].replace('"','')+'"'
+                        nhx += ':levels='+lev_str
+                    if len(self.testsuite_TimLevPat['pattern'][self.testsuite].strip()):
+                        found = True
+                        nhx += ':pattern='+self.testsuite_TimLevPat['pattern'][self.testsuite]
+                    if found:
+                        nhx = '[&&NHX' + nhx + ']'
+                rstr += self.testsuite + '-' + str(self.node_id)+nhx
             elif self.type == 'GroupStatement':
                 rstr += '<'+self.type.replace('Statement','').upper() + ' ' + self.gr_label + '>-' + str(self.node_id)
             elif self.type == 'StopBinStatement':
@@ -318,7 +344,6 @@ class TestflowData(object):
         else:
             rstr += str(self.node_id)
         return rstr
-
 
 # FROM TestflowParser.cpp: OptFileHeader = !str_p("hp93000,testflow,0.1");
 OptFileHeader = (pp.Optional(pp.Keyword(TESTFLOW_OPTFILE_HEADER)))("OptFileHeader")
@@ -1157,12 +1182,9 @@ def parse_testsuite_def(ts_name,ts_def):
     """
     Used by both ParseTestsuiteSection and ParseSpecialTestsuiteSection
 
-    :param ts_name: testsuite name used for dictionary key of testsuites{}
-        :type ts_name: str
-    :param ts_def: tokens found within testsuite definitions
-        :type ts_def: object (pyparsing.ParseResults)
-    :return: testsuites: container for all of the testsuite data
-        :rtype: dict
+    :param ts_name: testsuite name (str) used for dictionary key of testsuites{}
+    :param ts_def: tokens (pyparsing.ParseResults) found within testsuite definitions
+    :return: testsuites: dict() container for all of the testsuite data
 
         Example:
             testsuites =
@@ -1325,6 +1347,53 @@ class ParseTestsuiteSection(TestflowData):
             ts_name = tok.TestsuiteName[0]
             ts_def = tok.TestsuiteDefinition
             self.testsuite_data.update(parse_testsuite_def(ts_name,ts_def))
+
+            if SHOW_TIMING_LEVELS:
+                timing = ['']*3
+                levels = ['']*3
+                tim_found = False
+                lev_found = False
+
+                # timing info
+                if "TestsuiteTimEquSet" in ts_def:
+                    timing[0] = ts_def.TestsuiteTimEquSet[0].replace(',','-')
+                    tim_found = True
+                if "TestsuiteTimSpecSet" in ts_def:
+                    timing[1] = ts_def.TestsuiteTimSpecSet[0].replace(',','-')
+                    tim_found = True
+                if "TestsuiteTimSet" in ts_def:
+                    timing[2] = ts_def.TestsuiteTimSet[0].replace(',','-')
+                    tim_found = True
+                if tim_found:
+                    tim_str = ' '.join(timing).strip()
+                else:
+                    tim_str = ''
+
+                # levels info
+                if "TestsuiteLevEquSet" in ts_def:
+                    levels[0] = ts_def.TestsuiteLevEquSet[0].replace(',','-')
+                    lev_found = True
+                if "TestsuiteLevSpecSet" in ts_def:
+                    levels[1] = ts_def.TestsuiteLevSpecSet[0].replace(',','-')
+                    lev_found = True
+                if "TestsuiteLevSet" in ts_def:
+                    levels[2] = ts_def.TestsuiteLevSet[0].replace(',','-')
+                    lev_found = True
+                if lev_found:
+                    lev_str = ' '.join(levels).strip()
+                else:
+                    lev_str = ''
+
+                # pattern info
+                if "TestsuiteSequencerLabel" in ts_def:
+                    pat_str = ts_def.TestsuiteSequencerLabel[0].replace(',','-')
+                else:
+                    pat_str = ''
+
+                self.testsuite_TimLevPat['timing'][ts_name] = tim_str
+                self.testsuite_TimLevPat['levels'][ts_name] = lev_str
+                self.testsuite_TimLevPat['pattern'][ts_name] = pat_str
+
 
     def __str__(self):
         return create_TestsuiteSection(self.testsuite_data)
@@ -2879,6 +2948,24 @@ class Testflow(TestflowData):
         def my_layout(node):
             # Add name label to all nodes
             faces.add_face_to_node(AttrFace("name"), node, column=0, position="branch-right")
+            if hasattr(node,'timing'):
+                timing = faces.TextFace(node.timing)
+                faces.add_face_to_node(timing, node, column=1, aligned=True)
+                timing.margin_left = 10
+                timing.margin_right = 10
+            if hasattr(node,'levels'):
+                levels = faces.TextFace(node.levels)
+                faces.add_face_to_node(levels, node, column=2, aligned=True)
+                levels.margin_left = 10
+                levels.margin_right = 10
+            # if hasattr(node,'method'):
+            #     method = faces.TextFace(node.method)
+            #     faces.add_face_to_node(method, node, column=3, aligned=True)
+            #     method.margin_left = 10
+            # if hasattr(node,'pattern'):
+            #     pattern = faces.TextFace(node.pattern)
+            #     faces.add_face_to_node(pattern, node, column=4, aligned=True)
+            #     pattern.margin_left = 10
 
         ts = TreeStyle()
         ts.show_leaf_name = False
@@ -2901,7 +2988,16 @@ class Testflow(TestflowData):
         if show and os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
             t.show(tree_style=ts)
 
-    def __init__(self,tf_file,debug=False,split=False,progname='',outdir=os.path.dirname(os.path.realpath(__file__))):
+    def __init__(self,tf_file,debug=False,split=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__))):
+        global log
+        if debug:
+            log_level = logging.DEBUG
+        else:
+            log_level = logging.INFO
+        logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                          outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
+        log = logging.getLogger(logger_name)
+
         contents = get_file_contents(tf_file)
 
         tp_path, fn = os.path.split(tf_file)
@@ -2977,15 +3073,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-tf','--testflow_file',required=False, help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)')
     parser.add_argument('-out','--output_dir',required=False,default='', help='Directory to place log file(s).')
-    parser.add_argument('-n','--name',required=False,default='',help='Optional name used for output files/logs.')
+    parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=10,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
     args = parser.parse_args()
 
-    init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),args=args)
-
-    tf = Testflow(args.testflow_file,args.debug,args.split,args.name,args.output_dir)
+    tf = Testflow(tf_file=args.testflow_file,debug=args.debug,split=args.split,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
 
     log.debug(tf.nodeData)
     log.debug(tf.nodeMap)

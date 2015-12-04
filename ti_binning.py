@@ -35,13 +35,11 @@ SBIN_NUM_COLUMN_NAME = 'SW Bin Number'
 CONDITION_COLUMN_NAME = 'Condition'
 
 TESTSUITE_COLUMN_NAME = 'Test name'
+"""really stupid that this is called 'Test name' so wanted a global constant to switch later easily"""
 
 CATEGORY_VALID_AND = ['S_ALL','AND']
 
 CATEGORY_VALID_OR = ['S_ANY','OR']
-
-MEMORYREPAIRED = 'MEMORYREPAIRED'
-"""Defined like this in case the name of this virtual test ever changes"""
 
 testflow = None
 testflow_file = None
@@ -53,6 +51,7 @@ bin_csv_file = None
 
 # control variables below here (boolean)
 
+binning_done = False
 bin_groups_exist = False
 bin_groups_done = False
 speed_sort_groups_done = False
@@ -84,6 +83,12 @@ testsuite_all_sbins = {}
 
 ignore_suites = []
 
+binning = {}
+
+flow_audit = {}
+
+bin_audit = {}
+
 def get_category_testname(test, sbin):
     global category_tests
 
@@ -92,10 +97,11 @@ def get_category_testname(test, sbin):
     elif test[0] == '-':
         good = False
     else:
-        err = '\nERROR!!! Unknown polarity in categories!\n'
+        err = 'Unknown polarity in categories!\n'
         err += 'Test: ' + test + '\n'
         err += 'sbin: ' + sbin + '\n'
         err += 'Exiting ...\n'
+        print 'ERROR!!!',err;log.error(err)
         sys.exit(err)
 
     if '!' in test:
@@ -108,8 +114,7 @@ def get_category_testname(test, sbin):
     if test not in category_tests:
         category_tests[test] = {}
     if sbin in category_tests[test]:
-        # err = '\nCRITICAL ERROR!!! Duplicate test/bin combination in Binning Categories!\n'
-        err = '\nPOSSIBLE ERRROR !!! Duplicate test/bin combination in Binning Categories!\n'
+        err = 'POSSIBLE ERRROR !!! Duplicate test/bin combination in Binning Categories!\n'
         err += 'Test: ' + test + '\n'
         err += 'sbin: ' + sbin + '\n'
         # err += 'Exiting ...\n'
@@ -123,15 +128,19 @@ def get_category_testname(test, sbin):
     return test
 
 def parse_special_csv(pathfn, csv_type=None):
-    global bin_groups_done,speed_sort_groups_done,test_name_type_done
+    global binning_done,bin_groups_exist,bin_groups_done,speed_sort_groups_done,test_name_type_done
     global bin_groups,category_defs,categories_extra_tests,testflow_extra_tests
 
     # we gotta make sure we parse speed/bin groups and insertions first before categories
     if csv_type == 'categories':
-        if (bin_groups_exist and not bin_groups_done) or not speed_sort_groups_done or not test_name_type_done:
-            print 'bin_groups_exist:',bin_groups_exist,'bin_groups_done:',bin_groups_done
-            print 'speed_sort_groups_done:',speed_sort_groups_done,'test_name_type_done:',test_name_type_done
-            sys.exit('ERROR! Need to process Binning Groups(if exists), Speed Sort Groups, and Test Name Types *BEFORE* processing Categories!  Exiting ...')
+        if not binning_done or (bin_groups_exist and not bin_groups_done) or not speed_sort_groups_done or not test_name_type_done:
+            err = 'binning_done={}, '.format(binning_done)
+            err += 'bin_groups_exist={}, bin_groups_done={}\n'.format(bin_groups_exist,bin_groups_done)
+            err += 'speed_sort_groups_done={}, test_name_type_done={}\n'.format(speed_sort_groups_done,test_name_type_done)
+            print err; log.debug(err)
+            err = 'Need to process Binning (bin_csv), Bin Groups(if exists), Speed Sort Groups, and Test Name Types *BEFORE* processing Categories!  Exiting ...'
+            print 'ERROR!!!',err; log.critical(err)
+            sys.exit(err)
 
     with open(pathfn) as csvFile:
         tp_path, fn = os.path.split(pathfn)
@@ -139,10 +148,29 @@ def parse_special_csv(pathfn, csv_type=None):
         print msg
         log.info(msg)
 
-        # no error yet, just preparing for the worst (is that a glass half empty thing?)
-        err = '\nERROR!!! Houston, we have a problem!\n'
+        if csv_type == 'binning':
+            for row in csv.DictReader(csvFile):
+                sbin_num = row['Bin_s_num'].strip()
+                sbin_name = row['Bin_s_name'].strip()
+                hbin_num  = row['Bin_h_num'].strip()
+                hbin_name = row['Bin_h_name'].strip()
+                try:
+                    # if it can't be converted to an int, we don't care about this row
+                    int(sbin_num)
+                except:
+                    continue
+                if sbin_num not in binning:
+                    binning[sbin_num] = {
+                        'Bin_s_name' : sbin_name,
+                        'Bin_h_num' : hbin_num,
+                        'Bin_h_name' : hbin_name
+                    }
+                else:
+                    err = 'Duplicate Softbin Number: "{}" found in: "{}"'.format(sbin_num,fn)
+                    log.error(err)
+            binning_done = True
 
-        if csv_type == 'bin_groups':
+        elif csv_type == 'bin_groups':
             # using csv.reader() for slice indexing
             for i,row in enumerate(csv.reader(csvFile)):
                 if 0 == i or '#' == row[0][0]:
@@ -170,6 +198,9 @@ def parse_special_csv(pathfn, csv_type=None):
             # using csv.DictReader() for key indexing
             for row in csv.DictReader(csvFile):
                 sbin = row[SBIN_NUM_COLUMN_NAME]
+                if sbin not in binning:
+                    err = 'Softbin Number: "{}" found in: "{}" but not in: "{}"'.format(sbin,fn,bin_csv_file)
+                    log.error(err)
                 if row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_AND:
                     condition = 'and'
                 else: # row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_OR:
@@ -183,23 +214,33 @@ def parse_special_csv(pathfn, csv_type=None):
                     }
                 )
 
-            # calculate set differences (exclude MEMORYREPAIRED which is a virtual test
-            categories_extra_tests = set(category_tests.keys() + [MEMORYREPAIRED]) - set(testflow.testsuite_data.keys() + bin_groups.keys())
+            # calculate set differences
+            categories_extra_tests = set(category_tests.keys()) - set(testflow.testsuite_data.keys() + bin_groups.keys())
+            categories_extra_tests = categories_extra_tests - set(ignore_suites)
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
+            testflow_extra_tests = testflow_extra_tests - set(ignore_suites)
 
             if len(categories_extra_tests):
-                log.warning('Extra tests in '+os.path.basename(categories_file)+' that do not exist in '+os.path.basename(testflow_file) + ' or '+os.path.basename(bin_groups_file))
-                log.debug(pformat(categories_extra_tests,indent=4))
+                cat_extra_str = '\n\t'.join(categories_extra_tests)
+                warn = 'Extra tests in: "{}" that do not exist in: "{}" OR in "{}"\n\t{}'.format(os.path.basename(categories_file),
+                                                                                                 os.path.basename(testflow_file),
+                                                                                                 os.path.basename(bin_groups_file),
+                                                                                                 cat_extra_str)
+                log.warning(warn)
             if len(testflow_extra_tests):
-                log.warning('Extra tests in '+os.path.basename(testflow_file) + ' that do not exist in '+os.path.basename(categories_file))
-                log.debug(pformat(testflow_extra_tests,indent=4))
+                tf_extra_str = '\n\t'.join(testflow_extra_tests)
+                warn = 'Extra tests in: "{}" that do not exist in: "{}"\n\t{}'.format(os.path.basename(testflow_file),
+                                                                                      os.path.basename(categories_file),
+                                                                                      tf_extra_str)
+                log.warning(warn)
 
         else:
-            err += 'Unknown csv_type found!\n'
+            err = 'Unknown csv_type found!\n'
             err += 'File: '+fn+'\n'
             err += 'csv_type: '+csv_type+'\n'
             err += 'valid csv_types: '+csv_type+'\n'
-            err += 'Exiting ...'
+            err += 'Skipping ...'
+            print 'ERROR!!!',err; log.critical(err)
             sys.exit(err)
 
 def identify_ti_csv_files(special_testtables):
@@ -278,7 +319,6 @@ def gather_all_testsuites_bins():
                 groups = [x for x in bin_groups if tf_testsuite in bin_groups[x]]
                 if len(groups) > 1:
                     warn = 'POSSIBLE ERROR!!! Testflow Testsuite: "{}" in more than one Category Group: "{}"'.format(tf_testsuite,','.join(groups))
-                    print warn
                     log.warning(warn)
                 for group in groups:
                     if group in category_tests:
@@ -295,10 +335,10 @@ def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file_
     for msg in info_msg:
         log.info(msg)
 
-    msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column, "X_" indicates that the '.format(csv_file)
-    msg += 'bin is not reachable in the testflow "downstream".\n'
+    msg = 'Creating {}...\n\tNOTE: For "multi_sbins" column in "{}"...\n'.format(csv_file,os.path.basename(csv_file))
+    msg += '\t"X_" indicates that the bin is not reachable in the testflow "downstream".\n'
     msg += '\tIn other words, there is no multibin TO THE RIGHT of the Testsuite (fail branches, etc) in the testflow.\n'
-    msg += '\tThe "multi_sbins" column only applies to standard testtables (limit files) which bin only with multibins in the testflow'
+    msg += '\tThe "multi_sbins" column only applies to standard testtables (limit files) which can bin only with a multibin in the testflow'
     print msg
     log.info(msg)
     headers = ['node_id','Testsuite','bypassed','stop_sbins','category_sbins','multi_sbins']
@@ -342,6 +382,8 @@ def main():
                                       outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
 
     log = logging.getLogger(logger_name)
+    log.warning=callcounted(log.warning)
+    log.error=callcounted(log.error)
     msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
     print msg
     log.info(msg)
@@ -354,7 +396,8 @@ def main():
             err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_suites)
             print err
             log.error(err)
-        msg = 'IGNORING THE FOLLOWING TESTSUITES:\n'+pformat(ignore_suites, indent=4)
+        ignore_str = '\n\t'.join(ignore_suites)
+        msg = 'IGNORING THE FOLLOWING TESTSUITES:\n\t'+ignore_str
         # print msg
         log.info(msg)
 
@@ -383,7 +426,9 @@ def main():
                           outdir=args.output_dir, ignore_csv_files=[args.bin_csv])
 
     identify_ti_csv_files(testtable.special_testtables)
+    binning_file = os.path.join(os.path.dirname(categories_file),bin_csv_file)
 
+    parse_special_csv(binning_file,'binning')
     if bin_groups_file is not None:
         parse_special_csv(bin_groups_file,'bin_groups')
         bin_groups_exist = True
@@ -396,6 +441,7 @@ def main():
                        maxlogs=max(1, args.maxlogs))
 
     # For debug and future development, list this module's data containers and their contents
+    log.debug('binning:\n' + pformat(binning,indent=4))
     log.debug('bin_groups:\n' + pformat(bin_groups,indent=4))
     log.debug('speed_sort_groups:\n' + pformat(speed_sort_groups,indent=4))
     log.debug('test_name_type:\n' + pformat(test_name_type,indent=4))
@@ -403,6 +449,14 @@ def main():
     log.debug('category_tests:\n' + pformat(category_tests,indent=4))
     log.debug('categories_extra_tests:\n' + pformat(categories_extra_tests,indent=4))
     log.debug('testflow_extra_tests:\n' + pformat(testflow_extra_tests,indent=4))
+
+    msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
+    print msg
+    log.info(msg)
+    msg = 'Number of ERRORS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.error.counter)
+    print msg
+    log.info(msg)
+
 
 if __name__ == "__main__":
     main()

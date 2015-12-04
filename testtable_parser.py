@@ -86,6 +86,8 @@ class TestTable(object):
         logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
                                           outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
         log = logging.getLogger(logger_name)
+        log.warning=callcounted(log.warning)
+        log.error=callcounted(log.error)
         msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
         # print msg
         log.info(msg)
@@ -126,6 +128,13 @@ class TestTable(object):
             sys.exit(err)
 
         self.log_errors()
+
+        msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
+        print msg
+        log.info(msg)
+        msg = 'Number of ERRORS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.error.counter)
+        print msg
+        log.info(msg)
 
     def renum_test_numbers(self,pathfn):
         fn = os.path.split(pathfn)[1]

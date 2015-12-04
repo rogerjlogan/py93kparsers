@@ -56,6 +56,8 @@ class ProgFile(object):
         logger_name,outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
                                           outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
         log = logging.getLogger(logger_name)
+        log.warning=callcounted(log.warning)
+        log.error=callcounted(log.error)
         msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
         print msg
         log.info(msg)
@@ -83,6 +85,13 @@ class ProgFile(object):
             sys.exit(err)
 
         log.info(pformat(self.contents,indent=4))
+
+        msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
+        print msg
+        log.info(msg)
+        msg = 'Number of ERRORS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.error.counter)
+        print msg
+        log.info(msg)
 
     def __str__(self):
         rstr = TESTPROG_OPTFILE_HEADER + '\n'

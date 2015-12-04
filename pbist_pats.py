@@ -306,11 +306,20 @@ if __name__ == "__main__":
                                       outdir=args.output_dir, name=args.name, maxlogs=args.maxlogs ,level=log_level)
 
     log = logging.getLogger(logger_name)
+    log.warning=callcounted(log.warning)
+    log.error=callcounted(log.error)
     msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
     print msg
     log.info(msg)
 
     PbistPats(args,outdir)
+
+    msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
+    print msg
+    log.info(msg)
+    msg = 'Number of ERRORS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.error.counter)
+    print msg
+    log.info(msg)
 
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'

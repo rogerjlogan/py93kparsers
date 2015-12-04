@@ -77,7 +77,7 @@ class TestTable(object):
         return str(TestTable.__testnum)
 
     def __init__(self, pathfn, renum=False, debug=False, progname='', maxlogs=1,
-                 outdir=os.path.dirname(os.path.realpath(__file__)), ignoretables=[]):
+                 outdir=os.path.dirname(os.path.realpath(__file__)), ignore_csv_files=[]):
         global log
         if debug:
             log_level = logging.DEBUG
@@ -115,7 +115,11 @@ class TestTable(object):
                 obj = re.search(limPat,line)
                 if obj:
                     fn = os.path.join(self.path,obj.group('limit_file').strip())
-                    self.parse_testtable(fn,renum)
+                    if os.path.basename(fn) not in ignore_csv_files:
+                        self.parse_testtable(fn,renum)
+                    else:
+                        msg = 'Skipping file: '+fn
+                        log.info(msg)
         if not hdr_found:
             err = 'ERROR!!! OptFileHeader ('+TESTTABLE_OPTFILE_HEADER+') not found'
             log.critical(err)
@@ -516,10 +520,24 @@ if __name__ == "__main__":
     parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
+    parser.add_argument('-ignore','--ignore_tables',required=False, help='Ignore tables (csv files). Place testtables (\'\\n\' separated) in this text file to suppress parsing')
     args = parser.parse_args()
 
+    ignore_tables = []
+    if args.ignore_tables is not None:
+        try:
+            with open(args.ignore_tables, 'r') as f:
+                ignore_tables = [x.strip() for x in f.readlines()]
+        except:
+            err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_tables)
+            print err
+            log.error(err)
+        msg = 'IGNORING THE FOLLOWING TESTTABLES:\n'+pformat(ignore_tables, indent=4)
+        # print msg
+        log.info(msg)
+
     tt = TestTable(pathfn=args.testtable_file, renum=args.renumber, debug=args.debug, progname=args.name,
-                   maxlogs=args.maxlogs, outdir=args.output_dir, ignoretables=[])
+                   maxlogs=args.maxlogs, outdir=args.output_dir, ignore_csv_files=ignore_tables)
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('testtables:\n' + pformat(tt.testtables,indent=4))

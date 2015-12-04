@@ -82,6 +82,8 @@ testflow_extra_tests = []
 
 testsuite_all_sbins = {}
 
+ignore_suites = []
+
 def get_category_testname(test, sbin):
     global category_tests
 
@@ -304,15 +306,16 @@ def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file_
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for testsuite in testsuite_all_sbins:
-            writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
-                             'Testsuite' : testsuite,
-                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
-                             'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
-                             'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
-                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
+            if testsuite not in ignore_suites:
+                writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
+                                 'Testsuite' : testsuite,
+                                 'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
+                                 'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
+                                 'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
+                                 'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def main():
-    global log,ignore_testsuites,testflow,testflow_file,testtable,bin_groups_exist,bin_csv_file
+    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,bin_csv_file
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
@@ -326,7 +329,7 @@ def main():
                         WARNING: THIS GOES WITH -tf (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
-    parser.add_argument('-ignore','--ignore_file',required=False, help='Path to TESTSUITE ignore file')
+    parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
     parser.add_argument('-bin','--bin_csv',required=True, help='Path to bin csv file (Example: BinningKepler.csv')
     args = parser.parse_args()
 
@@ -343,17 +346,17 @@ def main():
     print msg
     log.info(msg)
 
-    if args.ignore_file is not None:
+    if args.ignore_suites is not None:
         try:
-            with open(args.ignore_file, 'r') as f:
-                ignore_testsuites = [x.strip() for x in f.readlines()]
+            with open(args.ignore_suites, 'r') as f:
+                ignore_suites = [x.strip() for x in f.readlines()]
         except:
-            err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_file)
+            err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_suites)
             print err
             log.error(err)
-    msg = 'IGNORING THE FOLLOWING TESTSUITES:\n'+pformat(ignore_testsuites,indent=4)
-    # print msg
-    log.info(msg)
+        msg = 'IGNORING THE FOLLOWING TESTSUITES:\n'+pformat(ignore_suites, indent=4)
+        # print msg
+        log.info(msg)
 
     if len(args.testprog_file):
         if len(args.testflow_file) or len(args.testtable_file):
@@ -377,7 +380,7 @@ def main():
     testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
                         maxlogs=args.maxlogs,outdir=args.output_dir)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
-                          outdir=args.output_dir,ignoretables=[args.bin_csv])
+                          outdir=args.output_dir, ignore_csv_files=[args.bin_csv])
 
     identify_ti_csv_files(testtable.special_testtables)
 

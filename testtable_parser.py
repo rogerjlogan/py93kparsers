@@ -70,16 +70,14 @@ class TestTable(object):
 
     testsuite_sbins = {}
 
-    ignore_testsuites = []
-
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
         TestTable.__testnum += 1
         return str(TestTable.__testnum)
 
-    def __init__(self,pathfn,renum=False,debug=False,progname='',maxlogs=1,
-                 outdir=os.path.dirname(os.path.realpath(__file__)),ignorefile=None):
+    def __init__(self, pathfn, renum=False, debug=False, progname='', maxlogs=1,
+                 outdir=os.path.dirname(os.path.realpath(__file__)), ignoretables=[]):
         global log
         if debug:
             log_level = logging.DEBUG
@@ -89,7 +87,7 @@ class TestTable(object):
                                           outdir=outdir, name=progname, maxlogs=maxlogs ,level=log_level)
         log = logging.getLogger(logger_name)
         msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
-        print msg
+        # print msg
         log.info(msg)
 
         if renum:
@@ -518,11 +516,10 @@ if __name__ == "__main__":
     parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
     parser.add_argument('-tt','--testtable_file',required=True, help='Path to testtable master file')
-    parser.add_argument('-ignore','--ignore_file',required=False, help='Path to TESTSUITE ignore file')
     args = parser.parse_args()
 
-    tt = TestTable(pathfn=args.testtable_file,renum=args.renumber,debug=args.debug,progname=args.name,
-                   maxlogs=args.maxlogs,outdir=args.output_dir,ignorefile=args.ignore_file)
+    tt = TestTable(pathfn=args.testtable_file, renum=args.renumber, debug=args.debug, progname=args.name,
+                   maxlogs=args.maxlogs, outdir=args.output_dir, ignoretables=[])
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('testtables:\n' + pformat(tt.testtables,indent=4))

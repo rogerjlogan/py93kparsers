@@ -95,13 +95,14 @@ def get_valid_dir(name,outdir=''):
     info_msg = []
 
     if len(outdir) and not os.path.isdir(outdir):
-        warn = '%s is NOT a valid directory'
+        warn = '%s is NOT a valid directory'.format(outdir)
         print 'WARNING!!! '+warn
         warn_msg.append(warn)
         outdir = ''
 
     if not len(outdir):
         outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),name)
+
     if os.path.isfile(outdir):
         # let's not clobber the file
         outdir = os.path.split(outdir)[0]
@@ -137,7 +138,7 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
     while os.path.isfile(pathfn):
         counter += 1
         if counter >= maxlogs:
-            warn_msg.append('maxlogs reached! Consider moving/deleting previous files (logs,png\'s,csv\'s,etc). Clobbering ' + fn)
+            info_msg.append('maxlogs={} (default=1) Consider moving/deleting previous files (logs,png\'s,csv\'s,etc) between runs. Overwriting {}'.format(maxlogs,fn))
             break
         else:
             fn = basename + '.' + str(counter) + ext

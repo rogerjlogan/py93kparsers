@@ -49,6 +49,7 @@ testtable = None
 categories_file = None
 test_name_type_file = None
 speed_sort_groups_file = None
+bin_csv_file = None
 
 # control variables below here (boolean)
 
@@ -311,7 +312,7 @@ def create_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__file_
                              'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def main():
-    global log,testflow,testflow_file,testtable,bin_groups_exist
+    global log,ignore_testsuites,testflow,testflow_file,testtable,bin_groups_exist,bin_csv_file
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
@@ -322,9 +323,11 @@ def main():
     parser.add_argument('-tf','--testflow_file',required=False,default='', help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
                         WARNING: THIS GOES WITH -tt (--testtable_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tt','--testtable_file',required=False,default='', help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)\
-                        WARNING: THIS GOES WITH -tt (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
+                        WARNING: THIS GOES WITH -tf (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
-                        WARNING: THIS DOES NOT GO WITH -tt (--testflow_file) OR WITH -tp (--testprog_file)')
+                        WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
+    parser.add_argument('-ignore','--ignore_file',required=False, help='Path to TESTSUITE ignore file')
+    parser.add_argument('-bin','--bin_csv',required=True, help='Path to bin csv file (Example: BinningKepler.csv')
     args = parser.parse_args()
 
     if args.debug:
@@ -338,6 +341,18 @@ def main():
     log = logging.getLogger(logger_name)
     msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
     print msg
+    log.info(msg)
+
+    if args.ignore_file is not None:
+        try:
+            with open(args.ignore_file, 'r') as f:
+                ignore_testsuites = [x.strip() for x in f.readlines()]
+        except:
+            err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_file)
+            print err
+            log.error(err)
+    msg = 'IGNORING THE FOLLOWING TESTSUITES:\n'+pformat(ignore_testsuites,indent=4)
+    # print msg
     log.info(msg)
 
     if len(args.testprog_file):
@@ -356,8 +371,13 @@ def main():
         log.error(err)
         sys.exit(err)
 
-    testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
-    testtable = TestTable(testtable_file,args.renumber,debug=args.debug,progname=args.name,maxlogs=args.maxlogs,outdir=args.output_dir)
+    # silently ignoring path (in case the user was being silly).  We already have the path
+    bin_csv_file = os.path.basename(args.bin_csv)
+
+    testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
+                        maxlogs=args.maxlogs,outdir=args.output_dir)
+    testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
+                          outdir=args.output_dir,ignoretables=[args.bin_csv])
 
     identify_ti_csv_files(testtable.special_testtables)
 

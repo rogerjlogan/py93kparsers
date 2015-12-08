@@ -3114,6 +3114,8 @@ if __name__ == '__main__':
     log.debug(tf.variables)
     log.debug(tf.implicit_declarations)
 
+    log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
+
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'
     log.info(msg)

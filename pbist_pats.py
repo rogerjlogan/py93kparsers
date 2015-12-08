@@ -314,6 +314,8 @@ if __name__ == "__main__":
 
     PbistPats(args,outdir)
 
+
+    log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
     msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
     print msg
     log.info(msg)

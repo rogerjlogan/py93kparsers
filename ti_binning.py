@@ -219,9 +219,14 @@ def parse_special_csv(pathfn, csv_type=None):
             # using csv.DictReader() for key indexing
             for row in csv.DictReader(csvFile):
                 sbin = row[SBIN_NUM_COLUMN_NAME]
-                if sbin not in ti_binning:
+                not_empty_row = any([True if len(row[x]) and x not in [SBIN_NUM_COLUMN_NAME, CONDITION_COLUMN_NAME] else False for x in row.keys()])
+                if sbin not in ti_binning and not_empty_row:
                     err = 'Softbin Number: "{}" found in: "{}" but not in: "{}"'.format(sbin,fn,binning_csv_file)
                     log.error(err)
+                    log.debug(row)
+                    log.debug(not_empty_row)
+                    log.debug(pformat([True if len(row[x]) and x not in [SBIN_NUM_COLUMN_NAME, CONDITION_COLUMN_NAME] else False for x in row.keys()]))
+                    sys.exit(SBIN_NUM_COLUMN_NAME+':'+err)
                 if row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_AND:
                     condition = 'and'
                 else: # row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_OR:
@@ -429,17 +434,17 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
         for nid,suite,sbin,sname,hbin,hname,bintype in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
             if suite not in all_suites:
                 all_suites.append(suite)
+                suite2show = suite
             else:
-                suite += '-DUPLICATE'
+                suite2show = suite+'-DUPLICATE'
             if tt2c_valid:
                 if suite in test_name_type:
                     tt2c = test_name_type[suite][test_type_to_check]
                 else:
-                    tt2c = 'NOT IN "{}"'.format(os.path.basename(test_name_type_file))
-                    err = 'Suite: "{}" not listed in "{}"'.format(suite,test_name_type_file)
-                    log.error(err)
+                    tt2c = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
+                    log.warning(tt2c+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
                 writer.writerow({'node_id' : nid.lstrip('0'),
-                                 'SuiteName' : suite,
+                                 'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName': sname,
                                  'HardBinName': hname,
@@ -448,7 +453,7 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                                  'TestTypeCheckValue': tt2c})
             else:
                 writer.writerow({'node_id' : nid.lstrip('0'),
-                                 'SuiteName' : suite,
+                                 'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName': sname,
                                  'HardBinName': hname,
@@ -652,6 +657,7 @@ def main():
     log = logging.getLogger(logger_name)
     log.warning=callcounted(log.warning)
     log.error=callcounted(log.error)
+
     msg = 'Running ' + os.path.basename(sys.modules[__name__].__file__) + '...'
     print msg
     log.info(msg)
@@ -735,6 +741,7 @@ def main():
     log.debug('testflow_binning:\n' + pformat(testflow_binning, indent=4))
     log.debug('testflow_bin_defs:\n' + pformat(testflow_bin_defs, indent=4))
 
+    log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
     msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
     print msg
     log.info(msg)
@@ -745,6 +752,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
     time = time.time()-_start_time
     msg = 'Script took ' + str(round(time,3)) + ' seconds (' + humanize_time(time) + ')'
     log.info(msg)

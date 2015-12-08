@@ -214,6 +214,9 @@ class TestflowData(object):
     newick_tree = None
     testsuite_data = {}
 
+    hbin_descriptions = {}
+    """dict of hwBin(key) and description(value) for stop bins which have no hwBinDescription"""
+
     testsuite_TimLevPat = {
         'timing' : {},
         'levels' : {},
@@ -2603,9 +2606,6 @@ class ParseHardwareBinSection(TestflowData):
 
         self.section_name = "hardware_bin_descriptions"
         """str name of section"""
-
-        self.hbin_descriptions = {}
-        """dict of hwBin(key) and description(value)"""
 
         for tok in toks:
             self.hbin_descriptions[tok[0]] = tok[1]

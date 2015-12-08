@@ -95,7 +95,7 @@ def get_valid_dir(name,outdir=''):
     info_msg = []
 
     if len(outdir) and not os.path.isdir(outdir):
-        warn = '%s is NOT a valid directory'.format(outdir)
+        warn = '{} is NOT a valid directory'.format(outdir)
         print 'WARNING!!! '+warn
         warn_msg.append(warn)
         outdir = ''
@@ -233,3 +233,26 @@ class callcounted(object):
     def __call__(self,*args,**kwargs):
         self.counter+=1
         return self.method(*args,**kwargs)
+
+from sys import maxint
+import re
+
+# optional '-' to support negative numbers
+_num_re = re.compile(r'-?\d+')
+# number of chars in the largest possible int
+_maxint_digits = len(str(maxint))
+# format for zero padding positive integers
+_zero_pad_int_fmt = '{{0:0{0}d}}'.format(_maxint_digits)
+# / is 0 - 1, so that negative numbers will come before positive
+_zero_pad_neg_int_fmt = '/{{0:0{0}d}}'.format(_maxint_digits)
+
+
+def _zero_pad(match):
+    n = int(match.group(0))
+    # if n is negative, we'll use the negative format and flip the number using
+    # maxint so that -2 comes before -1, ...
+    return _zero_pad_int_fmt.format(n) \
+        if n > -1 else _zero_pad_neg_int_fmt.format(n + maxint)
+
+def zero_pad_numbers(s):
+    return _num_re.sub(_zero_pad, s)

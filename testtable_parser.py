@@ -70,6 +70,8 @@ class TestTable(object):
 
     testsuite_sbins = {}
 
+    binning = {}
+
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
@@ -273,6 +275,26 @@ class TestTable(object):
                     Bin_s_name = row['Bin_s_name'].strip()
                     Bin_h_num  = row['Bin_h_num'].strip()
                     Bin_h_name = row['Bin_h_name'].strip()
+
+                    try:
+                        # if it can't be converted to an int, we don't care about this row
+                        int(Bin_s_num)
+                    except:
+                        continue
+                    if Bin_s_num not in self.binning:
+                        self.binning[Bin_s_num] = {
+                            'Bin_s_name' : Bin_s_name,
+                            'Bin_h_num' : Bin_h_num,
+                            'Bin_h_name' : Bin_h_name
+                        }
+                    else:
+                        prev = ('SBIN='+Bin_s_num,self.binning[Bin_s_num]['Bin_s_name'],
+                                'HBIN='+self.binning[Bin_s_num]['Bin_h_num'],self.binning[Bin_s_num]['Bin_h_name'])
+                        curr = ('SBIN='+Bin_s_num,Bin_s_name,
+                                'HBIN='+Bin_h_num,Bin_h_name)
+                        if prev != curr:
+                            err = 'Duplicate Softbin Number found in: "{}".... \n\t{}\n\t{}'.format(fn,prev,curr)
+                            log.error(err)
 
                     if Bin_s_num not in self.testsuite_sbins[testsuite]:
                         self.testsuite_sbins[testsuite].append(Bin_s_num)

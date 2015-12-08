@@ -47,7 +47,9 @@ testtable = None
 categories_file = None
 test_name_type_file = None
 speed_sort_groups_file = None
-bin_csv_file = None
+binning_csv_file = None
+
+test_type_to_check = ''
 
 # control variables below here (boolean)
 
@@ -57,6 +59,7 @@ bin_groups_done = False
 speed_sort_groups_done = False
 test_name_type_done = False
 bin_groups_file = False
+tt2c_valid = False
 
 # data collection variables below here
 
@@ -131,7 +134,7 @@ def get_category_testname(test, sbin):
 
 def parse_special_csv(pathfn, csv_type=None):
     global ti_binning_done,bin_groups_exist,bin_groups_done,speed_sort_groups_done,test_name_type_done
-    global bin_groups,category_defs,categories_extra_tests,testflow_extra_tests
+    global bin_groups,category_defs,categories_extra_tests,testflow_extra_tests,test_name_type,tt2c_valid
 
     # we gotta make sure we parse speed/bin groups and insertions first before categories
     if csv_type == 'categories':
@@ -140,7 +143,7 @@ def parse_special_csv(pathfn, csv_type=None):
             err += 'bin_groups_exist={}, bin_groups_done={}\n'.format(bin_groups_exist,bin_groups_done)
             err += 'speed_sort_groups_done={}, test_name_type_done={}\n'.format(speed_sort_groups_done,test_name_type_done)
             print err; log.debug(err)
-            err = 'Need to process Binning (bin_csv), Bin Groups(if exists), Speed Sort Groups, and Test Name Types *BEFORE* processing Categories!  Exiting ...'
+            err = 'Need to process Binning (binning_csv), Bin Groups(if exists), Speed Sort Groups, and Test Name Types *BEFORE* processing Categories!  Exiting ...'
             print 'ERROR!!!',err; log.critical(err)
             sys.exit(err)
 
@@ -200,6 +203,16 @@ def parse_special_csv(pathfn, csv_type=None):
             # using csv.DictReader() for key indexing
             for row in csv.DictReader(csvFile):
                 test_name_type[row[TESTSUITE_COLUMN_NAME]] = {x:row[x] for x in row.keys() if x not in VALID_LIM_HEADERS}
+            if len(test_type_to_check):
+                valid_testtypes = [x.strip('"') for x in testflow.variables['@TITESTTYPE_valid'].split(',')]
+                if test_type_to_check not in valid_testtypes:
+                    err = 'TestType To Check you gave (-tt2c) not valid in Testflow: "{}". Skipping check ...\n\t(@TITESTTYPE_valid = "{}").'\
+                        .format(test_type_to_check,', '.join(valid_testtypes))
+                    print 'ERROR!!! '+err
+                    log.error(err)
+                else:
+                    # setting a flag for later parsing
+                    tt2c_valid = True
             test_name_type_done = True
 
         elif csv_type == 'categories':
@@ -207,7 +220,7 @@ def parse_special_csv(pathfn, csv_type=None):
             for row in csv.DictReader(csvFile):
                 sbin = row[SBIN_NUM_COLUMN_NAME]
                 if sbin not in ti_binning:
-                    err = 'Softbin Number: "{}" found in: "{}" but not in: "{}"'.format(sbin,fn,bin_csv_file)
+                    err = 'Softbin Number: "{}" found in: "{}" but not in: "{}"'.format(sbin,fn,binning_csv_file)
                     log.error(err)
                 if row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_AND:
                     condition = 'and'
@@ -266,7 +279,7 @@ def identify_ti_csv_files(special_testtables):
             elif 'SpeedSortGroups' in headers:
                 speed_sort_groups_file = pathfn
                 log.info('Found speed_sort_groups_file: %s',fn)
-            elif 'Test name' in headers and any([True if x in testflow.variables['@TITESTTYPE_valid'] else False for x in headers]):
+            elif 'Test name' in headers and any([True if x in [t.strip('"') for t in testflow.variables['@TITESTTYPE_valid'].split(',')] else False for x in headers]):
                 test_name_type_file = pathfn
                 log.info('Found test_name_type_file: %s',fn)
             elif 'Group' in headers and 'testname0' in headers:
@@ -405,7 +418,10 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
             else:
                 unsorted_rows.append((nid,ts,'MISSING BIN','---','---','---','---'))
 
-    headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','Source']
+    if tt2c_valid:
+        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','TestTypeCheckValue']
+    else:
+        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource']
     all_suites = []
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
@@ -415,13 +431,29 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                 all_suites.append(suite)
             else:
                 suite += '-DUPLICATE'
-            writer.writerow({'node_id' : nid.lstrip('0'),
-                             'SuiteName' : suite,
-                             'SoftBinNum' : sbin.lstrip('0'),
-                             'SoftBinName': sname,
-                             'HardBinName': hname,
-                             'BinNumber': hbin.lstrip('0'),
-                             'Source': bintype})
+            if tt2c_valid:
+                if suite in test_name_type:
+                    tt2c = test_name_type[suite][test_type_to_check]
+                else:
+                    tt2c = 'NOT IN "{}"'.format(os.path.basename(test_name_type_file))
+                    err = 'Suite: "{}" not listed in "{}"'.format(suite,test_name_type_file)
+                    log.error(err)
+                writer.writerow({'node_id' : nid.lstrip('0'),
+                                 'SuiteName' : suite,
+                                 'SoftBinNum' : sbin.lstrip('0'),
+                                 'SoftBinName': sname,
+                                 'HardBinName': hname,
+                                 'BinNumber': hbin.lstrip('0'),
+                                 'BinSource': bintype,
+                                 'TestTypeCheckValue': tt2c})
+            else:
+                writer.writerow({'node_id' : nid.lstrip('0'),
+                                 'SuiteName' : suite,
+                                 'SoftBinNum' : sbin.lstrip('0'),
+                                 'SoftBinName': sname,
+                                 'HardBinName': hname,
+                                 'BinNumber': hbin.lstrip('0'),
+                                 'BinSource': bintype})
 
 
 def create_softbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
@@ -476,6 +508,26 @@ def create_hardbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__
             writer.writerow({'HardBinName': hname,
                              'HardBinNumber': hbin.lstrip('0')})
 
+def create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
+    csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
+    for msg in warn_msg:
+        print 'WARNING!!! ',msg
+        log.warning(msg)
+    for msg in info_msg:
+        log.info(msg)
+
+    found = False
+    headers = ['Missing Suites in Testflow',test_type_to_check]
+    with open(csv_file,'wb') as csvFile:
+        writer = csv.DictWriter(csvFile,fieldnames=headers)
+        writer.writeheader()
+        for ts in test_name_type:
+            if ts not in testflow.testsuite_nodeids and '1' == test_name_type[ts][test_type_to_check]:
+                found = True
+                writer.writerow({'Missing Suites in Testflow': ts,
+                                 test_type_to_check: test_name_type[ts][test_type_to_check]})
+    if not found:
+        os.remove(csv_file)
 
 def find_actual_bindefs():
     global testflow_bin_defs
@@ -569,7 +621,7 @@ def find_actual_binning():
     find_actual_bindefs()
 
 def main():
-    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,bin_csv_file
+    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
@@ -584,7 +636,9 @@ def main():
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
-    parser.add_argument('-bin','--bin_csv',required=True, help='Path to bin csv file (Example: BinningKepler.csv')
+    parser.add_argument('-bin','--binning_csv',required=True, help='Path to bining csv file (Example: BinningKepler.csv')
+    parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='check this test type against binning groups')
+
     args = parser.parse_args()
 
     if args.debug:
@@ -631,24 +685,27 @@ def main():
         log.error(err)
         sys.exit(err)
 
+    # need this global for easy access
+    test_type_to_check = args.test_type_to_check
+
     # silently ignoring path (in case the user was being silly).  We already have the path
-    bin_csv_file = os.path.basename(args.bin_csv)
+    binning_csv_file = os.path.basename(args.binning_csv)
 
     testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
                         maxlogs=args.maxlogs,outdir=args.output_dir)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
-                          outdir=args.output_dir, ignore_csv_files=[args.bin_csv])
+                          outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
 
     identify_ti_csv_files(testtable.special_testtables)
-    ti_binning_file = os.path.join(os.path.dirname(categories_file),bin_csv_file)
+    ti_binning_file = os.path.join(os.path.dirname(categories_file),binning_csv_file)
 
-    parse_special_csv(ti_binning_file,'ti_binning')
+    parse_special_csv(ti_binning_file,csv_type='ti_binning')
     if bin_groups_file is not None:
-        parse_special_csv(bin_groups_file,'bin_groups')
+        parse_special_csv(bin_groups_file,csv_type='bin_groups')
         bin_groups_exist = True
-    parse_special_csv(speed_sort_groups_file,'speed_sort_groups')
-    parse_special_csv(test_name_type_file,'test_name_type')
-    parse_special_csv(categories_file,'categories')
+    parse_special_csv(speed_sort_groups_file,csv_type='speed_sort_groups')
+    parse_special_csv(test_name_type_file,csv_type='test_name_type')
+    parse_special_csv(categories_file,csv_type='categories')
 
     gather_all_testsuites_bins()
     find_actual_binning()
@@ -661,6 +718,10 @@ def main():
                             fn=args.name+'_ActualSoftBinDefs', maxlogs=max(1, args.maxlogs))
     create_hardbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
                             fn=args.name+'_ActualHarBinDefs', maxlogs=max(1, args.maxlogs))
+
+    if tt2c_valid:
+        create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
+                                     fn=args.name+'_TestTypeMissingSuites_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('ti_binning:\n' + pformat(ti_binning,indent=4))

@@ -225,8 +225,6 @@ def parse_special_csv(pathfn, csv_type=None):
                     log.error(err)
                     log.debug(row)
                     log.debug(not_empty_row)
-                    log.debug(pformat([True if len(row[x]) and x not in [SBIN_NUM_COLUMN_NAME, CONDITION_COLUMN_NAME] else False for x in row.keys()]))
-                    sys.exit(SBIN_NUM_COLUMN_NAME+':'+err)
                 if row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_AND:
                     condition = 'and'
                 else: # row[CONDITION_COLUMN_NAME] in CATEGORY_VALID_OR:
@@ -421,7 +419,7 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                     hbin = re.sub('\d+', lambda x:x.group().zfill(20), v['Bin_h_num'])
                     unsorted_rows.append((nid,ts,v['Bin_s_num'],v['Bin_s_name'],hbin,v['Bin_h_name'],v['bintype']))
             else:
-                unsorted_rows.append((nid,ts,'MISSING BIN','---','---','---','---'))
+                unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---'))
 
     if tt2c_valid:
         headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','TestTypeCheckValue']
@@ -443,7 +441,7 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                 else:
                     tt2c = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
                     log.warning(tt2c+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
-                writer.writerow({'node_id' : nid.lstrip('0'),
+                writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName': sname,
@@ -452,7 +450,7 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                                  'BinSource': bintype,
                                  'TestTypeCheckValue': tt2c})
             else:
-                writer.writerow({'node_id' : nid.lstrip('0'),
+                writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName': sname,
@@ -476,7 +474,7 @@ def create_softbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__
             for v in values:
                 unsorted_sbin_rows.append((sbin,v['Bin_s_name'],v['Bin_h_num'],v['Bin_h_name']))
         else:
-            unsorted_sbin_rows.append((sbin,'MISSING BIN','---','---'))
+            unsorted_sbin_rows.append((sbin,'MISSING BIN INFO','---','---'))
 
     headers = ['SoftBinNumber','SoftBinName','HardBinName','HardBinNumber']
     with open(csv_file,'wb') as csvFile:
@@ -613,13 +611,22 @@ def find_actual_binning():
         if not len(bintype) and len(v['cat_sbins']):
             bintype = 'cat'
             for sbin in v['cat_sbins']:
-                bin_info[ts].append({
-                    'Bin_s_num' : sbin,
-                    'Bin_s_name' : ti_binning[sbin]['Bin_s_name'],
-                    'Bin_h_num' : ti_binning[sbin]['Bin_h_num'],
-                    'Bin_h_name' : ti_binning[sbin]['Bin_h_name'],
-                    'bintype' : bintype
-                })
+                if sbin in ti_binning:
+                    bin_info[ts].append({
+                        'Bin_s_num' : sbin,
+                        'Bin_s_name' : ti_binning[sbin]['Bin_s_name'],
+                        'Bin_h_num' : ti_binning[sbin]['Bin_h_num'],
+                        'Bin_h_name' : ti_binning[sbin]['Bin_h_name'],
+                        'bintype' : bintype
+                    })
+                else:
+                    bin_info[ts].append({
+                        'Bin_s_num' : sbin,
+                        'Bin_s_name' : 'MISSING BIN INFO',
+                        'Bin_h_num' : '---',
+                        'Bin_h_name' : '---',
+                        'bintype' : bintype
+                    })
 
         if len(bintype) and len(bin_info[ts]):
             testflow_binning[ts] = bin_info[ts]
@@ -645,6 +652,10 @@ def main():
     parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='check this test type against binning groups')
 
     args = parser.parse_args()
+
+    if not os.path.isdir(args.output_dir):
+        err = '{} is NOT a valid directory!'.format(args.output_dir)
+        sys.exit(err)
 
     if args.debug:
         log_level = logging.DEBUG

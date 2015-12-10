@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 """
-    This module parses the TI special bin csv files.
+The script needs to know:
+Where your Testflow file (may or may not be mfh) is located.
+Where your Testtables file (MUST be mfh) is located.
+
+So, you can provide:
+A. Path to Testflow file AND Testtable (limit mfh) file
+
+	OR ...
+
+B. Path to your Testprog file which indicates your Testflow file and Testtable (limit mfh) file.
+
+Do not try to provide a mixture of both A and B
+
+It is also recommended that you provide a name, especially if you want to track revisions of your program (i.e. kepler_pg2)
+
 """
 
 import csv
@@ -422,19 +436,34 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                 unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---'))
 
     if tt2c_valid:
-        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','TestTypeCheckValue']
+        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource',test_type_to_check]
     else:
         headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource']
-    all_suites = []
+    all_nonmulti_suites = []
+    all_multi_suites = {}
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for nid,suite,sbin,sname,hbin,hname,bintype in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
-            if suite not in all_suites:
-                all_suites.append(suite)
-                suite2show = suite
+            end = ''
+            if suite not in all_nonmulti_suites:
+                all_nonmulti_suites.append(suite)
             else:
-                suite2show = suite+'-DUPLICATE'
+                end = '-DUPLICATE'
+
+            # if bintype == 'multi':
+            #     if suite not in all_multi_suites:
+            #         all_multi_suites[suite] = []
+            #     binkey = (str(int(sbin)),sname,str(int(hbin)),hname)
+            #
+            #     if binkey in testtable.binning2testname:
+            #         for test in testtable.binning2testname[binkey]:
+            #             if test not in all_multi_suites[suite]:
+            #                 end += ':'+test
+            #                 all_multi_suites[suite].append(test)
+
+
+            suite2show = suite+end
             if tt2c_valid:
                 if suite in test_name_type:
                     tt2c = test_name_type[suite][test_type_to_check]
@@ -443,20 +472,21 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                     log.warning(tt2c+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
+
                                  'SoftBinNum' : sbin.lstrip('0'),
-                                 'SoftBinName': sname,
-                                 'HardBinName': hname,
-                                 'BinNumber': hbin.lstrip('0'),
-                                 'BinSource': bintype,
-                                 'TestTypeCheckValue': tt2c})
+                                 'SoftBinName' : sname,
+                                 'HardBinName' : hname,
+                                 'BinNumber' : hbin.lstrip('0'),
+                                 'BinSource' : bintype,
+                                 test_type_to_check : tt2c})
             else:
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
-                                 'SoftBinName': sname,
-                                 'HardBinName': hname,
-                                 'BinNumber': hbin.lstrip('0'),
-                                 'BinSource': bintype})
+                                 'SoftBinName' : sname,
+                                 'HardBinName' : hname,
+                                 'BinNumber' : hbin.lstrip('0'),
+                                 'BinSource' : bintype})
 
 
 def create_softbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
@@ -636,20 +666,20 @@ def main():
     global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
-    parser.add_argument('-d','--debug',action='store_true',help='print a lot of debug stuff to dlog')
+    parser.add_argument('-d','--debug',action='store_true',help='Print a lot of debug stuff to dlog')
     parser.add_argument('-out','--output_dir',required=True,default='', help='Directory to place output files/logs.')
     parser.add_argument('-max','--maxlogs',type=int,default=1,required=False, help='(0=OFF:log data to stdout). Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-r','--renumber',action='store_true',help='Re-number "Test number" column across all STANDARD csv testtables')
-    parser.add_argument('-s','--split',action='store_true',help='split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
-    parser.add_argument('-tf','--testflow_file',required=False,default='', help='name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
+    parser.add_argument('-s','--split',action='store_true',help='Split image files into top level groups (USE THIS OPTION FOR REALLY LARGE TESTFLOW FILES!')
+    parser.add_argument('-tf','--testflow_file',required=False,default='', help='Name of testflow file (Example: Final_RPC_flow(.tf or .mfh)\
                         WARNING: THIS GOES WITH -tt (--testtable_file), BUT NOT WITH -tp (--testprog_file)')
-    parser.add_argument('-tt','--testtable_file',required=False,default='', help='name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)\
+    parser.add_argument('-tt','--testtable_file',required=False,default='', help='Name of testtable file type csv file (Example: Kepler_TestNameTypeList.csv)\
                         WARNING: THIS GOES WITH -tf (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
-    parser.add_argument('-tp','--testprog_file',required=False,default='', help='name of testprog file (Example: F791857_Final_RPC.tpg)\
+    parser.add_argument('-tp','--testprog_file',required=False,default='', help='Name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
-    parser.add_argument('-bin','--binning_csv',required=True, help='Path to bining csv file (Example: BinningKepler.csv')
-    parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='check this test type against binning groups')
+    parser.add_argument('-bin','--binning_csv',required=True, help='Path to binning csv file (Example: BinningKepler.csv')
+    parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups')
 
     args = parser.parse_args()
 

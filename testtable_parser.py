@@ -72,6 +72,8 @@ class TestTable(object):
 
     binning = {}
 
+    binning2testname = {}
+
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
@@ -295,6 +297,13 @@ class TestTable(object):
                         if prev != curr:
                             err = 'Duplicate Softbin Number found in: "{}".... \n\t{}\n\t{}'.format(fn,prev,curr)
                             log.error(err)
+
+                    binkey = (Bin_s_num,Bin_s_name,Bin_h_num,Bin_h_name)
+                    # if Bin_s_num == '995':
+                    #     print 'binkey:',binkey
+                    if binkey not in self.binning2testname:
+                        self.binning2testname[binkey] = []
+                    self.binning2testname[binkey].append(testname)
 
                     if Bin_s_num not in self.testsuite_sbins[testsuite]:
                         self.testsuite_sbins[testsuite].append(Bin_s_num)

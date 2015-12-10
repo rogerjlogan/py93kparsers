@@ -42,6 +42,9 @@ __version__ = '1.0'
 
 SHOW_TIMING_LEVELS = False
 
+PARTIAL_BINNING_METHOD = None
+"""V93000 doesn't use partial binning natively.  So, we need a way to identify a method that would flag a testsuite as a partial bin method testsuite"""
+
 # import pydot
 #     # pydot.Edge('node_d', 'node_a', label="and back we go again", labelfontcolor="#009933", fontsize="10.0", color="blue")
 #     graph = pydot.Dot(graph_type='digraph',font='verdana')
@@ -256,6 +259,12 @@ class TestflowData(object):
 
     Testmethods = {}
 
+    is_partial_tm = {}
+    """key=tm_id,value=bool"""
+
+    is_partial_suite = {}
+    """key=node_id,value=testsuite ... taken from is_partial_tm"""
+
     @staticmethod
     def getNodeId():
         """Get unique id"""
@@ -284,6 +293,11 @@ class TestflowData(object):
                     self.nodeData[self.node_id][self.testsuite]['Userprocedures'] = self.Userprocedures[tm_id]
                 if tm_id in self.Testmethods:
                     self.nodeData[self.node_id][self.testsuite]['Testmethods'] = self.Testmethods[tm_id]
+
+                # not really part of the node data, but to me, it made sense to save off this here
+                if tm_id in self.is_partial_tm:
+                    self.is_partial_suite[self.node_id] = self.is_partial_tm[tm_id]
+
         nested_data[self.node_id]['data'] = self.nodeData[self.node_id]
         if len(self.true_branch):
             nested_data[self.node_id]['true'] = []
@@ -992,9 +1006,12 @@ class ParseTestmethodSection(TestflowData):
 
         for tok in toks:
             tm_id = tok.tm_id
+            self.is_partial_tm[tm_id] = False
             if tm_id not in self.Testmethods:
                 self.Testmethods[tm_id] = {}
                 self.Testmethods[tm_id]["Class"] = tok.Class
+                if tok.Class.strip(' "') == PARTIAL_BINNING_METHOD:
+                    self.is_partial_tm[tm_id] = True
                 if not self.isUTMBased:
                     self.Testmethods[tm_id]["methodId"] = tok.methodId
                     self.Testmethods[tm_id]["parameter"] = tok.parameter
@@ -1442,7 +1459,6 @@ class ParseRunStatement(TestflowData):
         self.testsuite = toks.testsuite
 
         self.toks = toks
-
 
         self.nodeData[self.node_id] = {
             'type' : self.type,
@@ -3001,8 +3017,8 @@ class Testflow(TestflowData):
         if show and os.path.basename(sys.modules['__main__'].__file__) == os.path.basename(__file__):
             t.show(tree_style=ts)
 
-    def __init__(self,tf_file,debug=False,split=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__))):
-        global log
+    def __init__(self,tf_file,debug=False,split=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__)),partial_bin_method=None):
+        global log,PARTIAL_BINNING_METHOD
         if debug:
             log_level = logging.DEBUG
         else:
@@ -3023,6 +3039,7 @@ class Testflow(TestflowData):
         print msg
         log.info(msg)
 
+        PARTIAL_BINNING_METHOD = partial_bin_method.strip(' "')
         self.tf = Start.parseString(contents,1)[0]
 
         self.nodeMap = self.tf.TestflowSection.getNodeMap()

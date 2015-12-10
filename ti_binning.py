@@ -32,6 +32,8 @@ __author__ = 'Roger'
 
 # global constants below here in CAPS
 
+PARTIAL_BINNING_METHOD = 'ti_tml.Misc.Binning'
+
 BINNING_CONDITION = 1
 """Index for Condition field in Binning Categories (CSV) file"""
 
@@ -326,12 +328,30 @@ def gather_all_testsuites_bins():
                     'multi_sbins' : [],
                     'cat_sbins' : []
                 }
+
+            # let's first determine if any descendents are partial binning test method suites
+            has_partial_bin_suite_below = False
             for desc in descendants:
                 try:
                     desc_id = int(desc.split('-')[-1])
                 except:
                     # can't make int out of id, which means it can't be a bin anyways... skip
                     continue
+                if testflow.nodeData[desc_id]['type'] in ['RunStatement','RunAndBranchStatement'] and testflow.is_partial_suite[desc_id]:
+                    # okay, let's set the log,flag and jump out of loop
+                    log.info('Suite: "%s" has a downstream Partial Binning Testmethod Testsuite.\n\tDownstream Suite: %s\n\tTestmethod: %s',
+                             tf_testsuite,testflow.nodeData[desc_id]['testsuite'],PARTIAL_BINNING_METHOD)
+                    has_partial_bin_suite_below = True
+                    break
+
+            # let's loop again, this time looking for stop or multi bins
+            for desc in descendants:
+                try:
+                    desc_id = int(desc.split('-')[-1])
+                except:
+                    # can't make int out of id, which means it can't be a bin anyways... skip
+                    continue
+
                 if testflow.nodeData[desc_id]['type'] == 'StopBinStatement':
                     Bin_s_num = testflow.nodeData[desc_id]['swBin'].replace('"','')
                     if Bin_s_num not in hard_bins:
@@ -361,7 +381,7 @@ def gather_all_testsuites_bins():
                 if testflow.nodeData[desc_id]['type'] == 'MultiBinStatement':
                     testtable_binnable = True
 
-            if tf_testsuite in testtable.testsuite_sbins:
+            if tf_testsuite in testtable.testsuite_sbins and not has_partial_bin_suite_below:
                 if not testtable_binnable:
                     sbins = ['X_'+x for x in testtable.testsuite_sbins[tf_testsuite]]
                 else:
@@ -424,64 +444,68 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
 
     # need this section to create a list of tuples that can be sorted later (next section of code)
     unsorted_rows = []
+    all_suites = []
+    duplicate_suites = []
     for ts,values in testflow_binning.iteritems():
-        if ts not in ignore_suites:
-            nid = testflow.testsuite_nodeids[ts]
-            nid = re.sub('\d+', lambda x:x.group().zfill(20), str(nid))
-            if len(values):
-                for v in values:
-                    hbin = re.sub('\d+', lambda x:x.group().zfill(20), v['Bin_h_num'])
-                    unsorted_rows.append((nid,ts,v['Bin_s_num'],v['Bin_s_name'],hbin,v['Bin_h_name'],v['bintype']))
-            else:
-                unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---'))
+        nid = testflow.testsuite_nodeids[ts]
+        nid = re.sub('\d+', lambda x:x.group().zfill(20), str(nid))
+        if len(values):
+            for v in values:
+                hbin = re.sub('\d+', lambda x:x.group().zfill(20), v['Bin_h_num'])
+                unsorted_rows.append((nid,ts,v['Bin_s_num'],v['Bin_s_name'],hbin,v['Bin_h_name'],v['bintype']))
+                if ts not in all_suites:
+                    all_suites.append(ts)
+                else:
+                    duplicate_suites.append(ts)
+        else:
+            unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---'))
 
     if tt2c_valid:
-        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource',test_type_to_check]
+        headers = ['node_id','SuiteName','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource',os.path.basename(test_name_type_file)+' : '+test_type_to_check]
     else:
-        headers = ['node_id','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource']
-    all_nonmulti_suites = []
-    all_multi_suites = {}
+        headers = ['node_id','SuiteName','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource']
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for nid,suite,sbin,sname,hbin,hname,bintype in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
             end = ''
-            if suite not in all_nonmulti_suites:
-                all_nonmulti_suites.append(suite)
+            if suite in duplicate_suites:
+                if bintype == 'multi':
+                    binkey = (str(int(sbin)),sname,str(int(hbin)),hname)
+                    if binkey in testtable.binning2testname:
+                        testlist = []
+                        for test in testtable.binning2testname[binkey]:
+                            if test not in testlist:
+                                testlist.append(test)
+                                end += ' : '+test
+                        end = end.lstrip(' : ')
+                else:
+                    end = 'DUPLICATE'
+            if len(end):
+                suite2show = suite + ' -- ' + end
             else:
-                end = '-DUPLICATE'
-
-            # if bintype == 'multi':
-            #     if suite not in all_multi_suites:
-            #         all_multi_suites[suite] = []
-            #     binkey = (str(int(sbin)),sname,str(int(hbin)),hname)
-            #
-            #     if binkey in testtable.binning2testname:
-            #         for test in testtable.binning2testname[binkey]:
-            #             if test not in all_multi_suites[suite]:
-            #                 end += ':'+test
-            #                 all_multi_suites[suite].append(test)
-
-
-            suite2show = suite+end
+                suite2show = suite
             if tt2c_valid:
                 if suite in test_name_type:
                     tt2c = test_name_type[suite][test_type_to_check]
                 else:
-                    tt2c = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
-                    log.warning(tt2c+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
+                    tt2c = 'MISSING TestNameType ENTRY'
+                    tt2c_log = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
+                    log.warning(tt2c_log+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
-
+                                 'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
                                  'BinNumber' : hbin.lstrip('0'),
                                  'BinSource' : bintype,
-                                 test_type_to_check : tt2c})
+                                 # os.path.basename(test_name_type_file)+' : '+test_type_to_check : tt2c})
+                                 os.path.basename(test_name_type_file)+' : '+test_type_to_check : tt2c})
             else:
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
+                                 'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
@@ -683,10 +707,6 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.isdir(args.output_dir):
-        err = '{} is NOT a valid directory!'.format(args.output_dir)
-        sys.exit(err)
-
     if args.debug:
         log_level = logging.DEBUG
     else:
@@ -739,7 +759,7 @@ def main():
     binning_csv_file = os.path.basename(args.binning_csv)
 
     testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
-                        maxlogs=args.maxlogs,outdir=args.output_dir)
+                        maxlogs=args.maxlogs,outdir=args.output_dir,partial_bin_method=PARTIAL_BINNING_METHOD)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
                           outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
 

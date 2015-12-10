@@ -94,12 +94,6 @@ def get_valid_dir(name,outdir=''):
     warn_msg = []
     info_msg = []
 
-    if len(outdir) and not os.path.isdir(outdir):
-        warn = '{} is NOT a valid directory'.format(outdir)
-        print 'WARNING!!! '+warn
-        warn_msg.append(warn)
-        outdir = ''
-
     if not len(outdir):
         outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),name)
 

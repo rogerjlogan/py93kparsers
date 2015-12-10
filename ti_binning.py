@@ -110,8 +110,10 @@ testflow_bin_defs = {}
 
 hard_bins = {}
 
+suites_w_exclamation = []
+
 def get_category_testname(test, sbin):
-    global category_tests
+    global category_tests,suites_w_exclamation
 
     if test[0] == '+':
         good = True
@@ -128,6 +130,7 @@ def get_category_testname(test, sbin):
     if '!' in test:
         ignore = True
         test = test[2:]
+        suites_w_exclamation.append(test)
     else:
         ignore = False
         test = test[1:]
@@ -434,7 +437,6 @@ def create_ti_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                                  'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
-
     csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
     for msg in warn_msg:
         print 'WARNING!!! ',msg
@@ -487,7 +489,11 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                 suite2show = suite
             if tt2c_valid:
                 if suite in test_name_type:
-                    tt2c = test_name_type[suite][test_type_to_check]
+                    if bintype == 'cat' and category_tests[suite][sbin]['ignore']:
+                        exclam = '!'
+                    else:
+                        exclam = ''
+                    tt2c = exclam+test_name_type[suite][test_type_to_check]
                 else:
                     tt2c = 'MISSING TestNameType ENTRY'
                     tt2c_log = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
@@ -579,7 +585,7 @@ def create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name_
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for ts in test_name_type:
-            if ts not in testflow.testsuite_nodeids and '1' == test_name_type[ts][test_type_to_check]:
+            if ts not in testflow.testsuite_nodeids and '1' == test_name_type[ts][test_type_to_check] and ts not in suites_w_exclamation:
                 found = True
                 writer.writerow({'Missing Suites in Testflow': ts,
                                  test_type_to_check: test_name_type[ts][test_type_to_check]})

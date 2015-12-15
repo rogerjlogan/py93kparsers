@@ -710,6 +710,7 @@ def main():
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
     parser.add_argument('-bin','--binning_csv',required=True, help='Path to binning csv file (Example: BinningKepler.csv')
     parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups')
+    parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
 
     args = parser.parse_args()
 
@@ -765,7 +766,7 @@ def main():
     binning_csv_file = os.path.basename(args.binning_csv)
 
     testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
-                        maxlogs=args.maxlogs,outdir=args.output_dir,partial_bin_method=PARTIAL_BINNING_METHOD)
+                        maxlogs=args.maxlogs,outdir=args.output_dir,partial_bin_method=PARTIAL_BINNING_METHOD,pic_type=args.pic_type)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
                           outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
 

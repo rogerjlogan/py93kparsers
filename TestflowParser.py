@@ -3052,7 +3052,7 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
-        flow_name = str(progname+'_'+fn).strip('_')
+        flow_name = str(progname+'_'+fn.split('.')[0]).strip('_')
         if pic_type == 'png':
             if not split:
                 self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__), maxlogs=max(1, maxlogs),

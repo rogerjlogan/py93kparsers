@@ -3052,9 +3052,9 @@ class Testflow(TestflowData):
 
         self.newick_tree = Tree(self.newickStr,format=1)
 
+        flow_name = str(progname+'_'+fn).strip('_')
         if pic_type == 'png':
             if not split:
-                flow_name = str(progname+'_'+fn).strip('_')
                 self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__), maxlogs=max(1, maxlogs),
                                 t=self.newick_tree, nodeMap=self.nodeMap, nodeData=self.nodeData, name=flow_name, outdir=outdir, show=True)
             else:
@@ -3081,6 +3081,15 @@ class Testflow(TestflowData):
             msg = '-pic option is set to "{}". No pic will be rendered!'.format(pic_type)
             print 'NOTE: '+msg
             log.info(msg)
+            nodepathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                                             name=flow_name,outdir=outdir,maxlogs=max(1,maxlogs),ext='.log')
+            for msg in warn_msg:
+                print 'WARNING!!! ',msg
+                log.warning(msg)
+            for msg in info_msg:
+                log.info(msg)
+            with open(nodepathfn,'wb') as f:
+                f.write(pformat(self.nodeMap,indent=4))
 
         for node in self.newick_tree.traverse('levelorder'):
             try:

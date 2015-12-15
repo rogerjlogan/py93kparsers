@@ -426,8 +426,9 @@ class TestTable(object):
         if len(self.sbin_name_err):
             errors = True
             header='\n***********************************************\n'\
-                  +'SBIN NAME TO NUMS ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT USE MORE THAN ONE !!!!\n'\
+                  +'Softbin NAME to Softbin NUMBERS errors listed below !!!!\n'\
+                  +'This is a ONE to MANY error !!!!\n'\
+                  +'Cannot use more than one !!!!\n'\
                   +'***********************************************\n'
             err_str = ''
             for thisname in self.sbin_name_err:
@@ -440,16 +441,18 @@ class TestTable(object):
                         testnames = ','.join(self.sbin_num_to_testname[thisnum])
                     err_str += thisnum + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
+            log.error(header+err_str)
         else:
-            header='\n***********************************************\n'\
-                  +'PASSED: SBIN NAME TO NUMS CHECK !!!!\n'\
-                  +'***********************************************\n'
-        log.error(header+err_str)
+            msg ='\n***********************************************\n'\
+                +'PASSED: Softbin NAME to Softbin NUMBERS check !!!!\n'\
+                +'***********************************************\n'
+            log.info(msg)
         if len(self.hbin_name_err):
             errors = True
             header='\n***********************************************\n'\
-                  +'HBIN NAME TO NUMS ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT USE MORE THAN ONE !!!!\n'\
+                  +'Hardbin NAME to Hardbin NUMBERS errors listed below !!!!\n'\
+                  +'This is a ONE to MANY error !!!!\n'\
+                  +'Cannot use more than one !!!!\n'\
                   +'***********************************************\n'
             err_str = ''
             for thisname in self.hbin_name_err:
@@ -462,16 +465,18 @@ class TestTable(object):
                         testnames = ','.join(self.hbin_num_to_testname[thisnum])
                     err_str += thisnum +'('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
+            log.error(header+err_str)
         else:
-            header='\n***********************************************\n'\
-                  +'PASSED: HBIN NAME TO NUMS CHECK !!!!\n'\
-                  +'***********************************************\n'
-        log.error(header+err_str)
+            msg ='\n***********************************************\n'\
+                +'PASSED: Hardbin NAME to Hardbin NUMBERS check !!!!\n'\
+                +'***********************************************\n'
+            log.info(msg)
         if len(self.sbin_num_err):
             errors = True
             header='\n***********************************************\n'\
-                  +'SBIN NUMS TO NAMES ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT USE MORE THAN ONE !!!!\n'\
+                  +'Softbin NUMBER to Softbin NAMES errors listed below !!!!\n'\
+                  +'This is a ONE to MANY error !!!!\n'\
+                  +'Cannot use more than one !!!!\n'\
                   +'***********************************************\n'
             err_str = ''
             for thisnum in self.sbin_num_err:
@@ -484,18 +489,19 @@ class TestTable(object):
                         testnames = ','.join([x for x in self.sbin_name_to_testname[thisname] if len(x)])
                     err_str += thisname + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
+            log.error(header+err_str)
         else:
-            header='\n***********************************************\n'\
-                  +'PASSED: SBIN NUMS TO NAMES CHECK !!!!\n'\
-                  +'***********************************************\n'
-        log.error(header+err_str)
+            msg ='\n***********************************************\n'\
+                +'PASSED: Softbin NUMBER to Softbin NAMES check !!!!\n'\
+                +'***********************************************\n'
+            log.info(msg)
         if len(self.hbin_num_err):
             errors = True
             header='\n***********************************************\n'\
-                  +'HBIN NUMS TO NAMES ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT USE MORE THAN ONE !!!!\n'\
+                  +'Hardbin NUMBER to Hardbin NAMES errors listed below !!!!\n'\
+                  +'This is a ONE to MANY error !!!!\n'\
+                  +'Cannot use more than one !!!!\n'\
                   +'***********************************************\n'
-            err_str = ''
             for thisnum in self.hbin_num_err:
                 err_str +='\tHBIN NUM: '+ljust(thisnum,MAXLENGTH_BINNUM,'.')+'.USES HBIN NAMES(testname(s)):\n\t\t\t\t\t\t\t\t'
                 for thisname in self.hbin_num_err[thisnum]:
@@ -506,16 +512,18 @@ class TestTable(object):
                         testnames = ','.join([x for x in self.hbin_name_to_testname[thisname] if len(x)])
                     err_str += thisname + '('+testnames+')\n\t\t\t\t\t\t\t\t'
                 err_str += '\n'
+            log.error(header+err_str)
         else:
-            header='\n***********************************************\n'\
-                  +'PASSED: HBIN NUMS TO NAMES CHECK !!!!\n'\
-                  +'***********************************************\n'
-        log.error(header+err_str)
+            msg ='\n***********************************************\n'\
+                +'PASSED: Hardbin NUMBER to Hardbin NAMES check !!!!\n'\
+                +'***********************************************\n'
+            log.info(msg)
         if len(self.binmap_err):
             errors = True
             header='\n***********************************************\n'\
-                  +'INCONSISTENT SBIN NAME/HBIN NAME MAPPING ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT MAP TO MORE THAN ONE !!!!\n'\
+                  +'Softbin NAME to Hardbin NAMES errors listed below !!!!\n'\
+                  +'This is a ONE to MANY error !!!!\n'\
+                  +'Cannot use more than one !!!!\n'\
                   +'***********************************************\n'
             err_str = ''
             for sbin in self.binmap_err:
@@ -528,16 +536,16 @@ class TestTable(object):
                     else:
                         testnames = ','.join([x for x in self.binmap_err_tests[thisname] if len(x)])
                     err_str += hbin + '('+testnames+')\n\t\t\t\t\t\t\t\t'
+            log.error(header+err_str)
         else:
-            header='\n***********************************************\n'\
-                  +'INCONSISTENT SBIN NAME/HBIN NAME MAPPING ERRORS LISTED BELOW !!!!\n'\
-                  +'CANNOT MAP TO MORE THAN ONE !!!!\n'\
-                  +'***********************************************\n'
-        log.error(header+err_str)
+            msg ='\n***********************************************\n'\
+                +'PASSED: Softbin NAME to Hardbin NAMES check !!!!\n'\
+                +'***********************************************\n'
+            log.info(msg)
         if not errors:
             header='\n***********************************************\n'\
-                  +'YAY !!! NO ERRRORS FOUND !\n'\
-                  +'SEE BIN REPORT BELOW\n'\
+                  +'Yay !!! No Errors found !\n'\
+                  +'See bin report below (NOTE: This bin report only applies to STANDARD limit files!)\n'\
                   +'***********************************************\n'
             ostr='|'+'-'*MAXLENGTH_BINNUM+'|-'+'-'*MAXLENGTH_BINNAME+'|-'+'-'*MAXLENGTH_BINNAME+'|-'+'-'*MAXLENGTH_BINNUM+'|\n'
             ostr+='|'+ljust('SBIN #',MAXLENGTH_BINNUM)+'| '
@@ -550,7 +558,7 @@ class TestTable(object):
                 ostr+=ljust(sbin_name,MAXLENGTH_BINNAME)+'| '
                 ostr+=ljust(hbin_name,MAXLENGTH_BINNAME)+'| '
                 ostr+=ljust(self.hbin_names[hbin_name],MAXLENGTH_BINNUM)+'|\n'
-            log.error(header+ostr)
+            log.info(header+ostr)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)

@@ -583,23 +583,26 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
     testsuite_superset = list(set(testflow_binning.keys()) | categories_extra_tests)
 
     failchecks = {}
-    failcheck_desc = ['set_pass || set_fail',                   # 0
-                      'InTestflow && !InCategories',            # 1
-                      'InTestflow && TT=0',                     # 2
-                      'InTestflow && bypass && !bang && TT=1',  # 3
-                      '!InTestflow && TT=1',                    # 4
-                      'InTestflow && !InTestTypes']            # 5
+    failcheck_desc = [
+        ('set_pass OR set_fail','ERROR: These testsuite flags CAN break Category binning.'), # 0
+        ('InTestflow AND Bypassed AND NOT Bang ("!") AND TT=1','ERROR: Major problem here.  Causes Bin 13.'), # 1
+        ('InTestflow AND NOT InCategories','ERROR: All Testsuites in this file use Category binning. (no stop bin or multi bin "downstream").'), # 2
+        ('NOT InTestflow AND TT=1','ERROR: This testsuite MUST be in your flow (TT=1) even if bypassed, but it\'s not. Why?'), # 3
+        ('InTestflow AND TT=0','ERROR: Potential test escape.  If this testsuite fails, you will not know.'), # 4
+        ('InTestflow AND NOT InTestTypes','WARNING: Defaults to "1" but you should probably add it to TestTypes to be explicit.') # 5
+    ]
 
     hdr_null = ['--------------------------------------']
-    hdr1 = ['CheckIndex','CheckDescription']
-    hdr2 = ['Suite','Bypass?','TestTypeValue','Bang?','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?','FailedChecks']
+    hdr1 = ['CheckIndex','CheckType','CheckDescription']
+    hdr2 = ['Suite','Bypassed?','TestTypeValue','Bang? ("!")','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?','FailedChecks']
 
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=hdr1)
         writer.writeheader()
         for i,check in enumerate(failcheck_desc):
             writer.writerow({'CheckIndex': i,
-                             'CheckDescription': check})
+                             'CheckType': check[0],
+                             'CheckDescription': check[1]})
         writer = csv.DictWriter(csvFile,fieldnames=hdr_null)
         writer.writeheader()
         writer = csv.DictWriter(csvFile,fieldnames=hdr2)
@@ -636,22 +639,22 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
             # Ok, let's start checking for problems
             if set_pass or set_fail:
                 failchecks[ts][0] = True
-            if InTestflow and not InCategories:
-                failchecks[ts][1] = True
-            if InTestflow and '0' == testtype_value:
-                failchecks[ts][2] = True
             if InTestflow and bypass and not bang and '1' == testtype_value:
-                failchecks[ts][3] = True
+                failchecks[ts][1] = True
+            if InTestflow and not InCategories:
+                failchecks[ts][2] = True
             if not InTestflow and '1' == testtype_value:
+                failchecks[ts][3] = True
+            if InTestflow and '0' == testtype_value:
                 failchecks[ts][4] = True
             if InTestflow and not InTestTypes:
                 failchecks[ts][5] = True
 
             if any(failchecks[ts]):
                 writer.writerow({'Suite': ts,
-                                 'Bypass?': 'Y' if bypass else '',
+                                 'Bypassed?': 'Y' if bypass else '',
                                  'TestTypeValue': testtype_value,
-                                 'Bang?':  'Y' if bang else '',
+                                 'Bang? ("!")':  'Y' if bang else '',
                                  'set_pass?':  'Y' if set_pass else '',
                                  'set_fail?':  'Y' if set_fail else '',
                                  'InTestflow?': 'Y' if InTestflow else '',

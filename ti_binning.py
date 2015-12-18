@@ -428,13 +428,14 @@ def create_ti_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for testsuite in testsuite_all_sbins:
-            if testsuite not in ignore_suites:
-                writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
-                                 'SuiteName' : testsuite,
-                                 'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
-                                 'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
-                                 'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
-                                 'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
+            if testsuite in ignore_suites:
+                continue
+            writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
+                             'SuiteName' : testsuite,
+                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
+                             'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
+                             'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
+                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
     csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
@@ -470,6 +471,8 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for nid,suite,sbin,sname,hbin,hname,bintype in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
+            if suite in ignore_suites:
+                continue
             end = ''
             if suite in duplicate_suites:
                 if bintype == 'multi':
@@ -594,7 +597,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
 
     hdr_null = ['--------------------------------------']
     hdr1 = ['CheckIndex','CheckType','CheckDescription']
-    hdr2 = ['node_id','Suite','FailedChecks','BinSource','Bypassed?','TestTypeValue','Bang? ("!")','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?']
+    hdr2 = ['node_id','Suite','FailedChecks','BinSource','Bypassed?','TestTypeValue : '+test_type_to_check,'Bang? ("!")','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?']
 
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=hdr1)
@@ -609,7 +612,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer.writeheader()
 
         for ts in testsuite_superset:
-            if ts in testflow.partial_suites:
+            if ts in testflow.partial_suites or ts in ignore_suites:
                  continue
             # initialize all checks to False(Pass)
             failchecks[ts] = [False]*100
@@ -657,7 +660,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                                  'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x]),
                                  'BinSource': 'cat',
                                  'Bypassed?': 'Y' if bypass else '',
-                                 'TestTypeValue': testtype_value,
+                                 'TestTypeValue : '+test_type_to_check : testtype_value,
                                  'Bang? ("!")':  'Y' if bang else '',
                                  'set_pass?':  'Y' if set_pass else '',
                                  'set_fail?':  'Y' if set_fail else '',
@@ -805,13 +808,18 @@ def main():
     log.info(msg)
 
     if args.ignore_suites is not None:
+        if os.path.isfile(args.ignore_suites):
+            ignore_file = args.ignore_suites
+        else:
+            ignore_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),args.ignore_suites)
         try:
-            with open(args.ignore_suites, 'r') as f:
+            with open(ignore_file, 'r') as f:
                 ignore_suites = [x.strip() for x in f.readlines()]
         except:
-            err = '%s is NOT a valid ignore file. Skipping your ignore file.'.format(args.ignore_suites)
-            print err
+            err = '{} is NOT a valid ignore file. Skipping your ignore file. (check permissions of file also)'.format(args.ignore_suites)
+            print 'ERROR!!! '+err
             log.error(err)
+            raise IOError
         ignore_str = '\n\t'.join(ignore_suites)
         msg = 'IGNORING THE FOLLOWING TESTSUITES:\n\t'+ignore_str
         # print msg

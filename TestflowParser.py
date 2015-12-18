@@ -3083,7 +3083,7 @@ class Testflow(TestflowData):
                     self.showMyTree(scriptname=os.path.basename(sys.modules[__name__].__file__), maxlogs=max(1, maxlogs),
                                     t=node_tree, nodeMap=self.nodeMap, nodeData=self.nodeData, name=name, outdir=outdir, show=False)
         else:
-            msg = '-pic option is set to "{}". No pic will be rendered!'.format(pic_type)
+            msg = '-pic option is set to "{}". No testflow picture(png) will be rendered!'.format(pic_type)
             print 'NOTE: '+msg
             log.info(msg)
             nodepathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),

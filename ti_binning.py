@@ -788,7 +788,7 @@ def main():
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
     parser.add_argument('-bin','--binning_csv',required=True, help='Path to binning csv file (Example: BinningKepler.csv')
-    parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups')
+    parser.add_argument('-tt2c','--test_type_to_check',required=True,default='', help='Check this test type against binning groups')
     parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
 
     args = parser.parse_args()
@@ -854,12 +854,6 @@ def main():
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
                           outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
 
-    if OTHER_BIN in testtable.sbin_nums:
-        err = '"#define sOtherBin \'13\'" defined in Binning_helper.cpp conflicts with standard testtable(s): "{}"'\
-            .format(','.join(testtable.sbin_files[OTHER_BIN]))
-        print 'ERROR!!! '+err
-        log.error(err)
-
     identify_ti_csv_files(testtable.special_testtables)
     ti_binning_file = os.path.join(os.path.dirname(categories_file),binning_csv_file)
 
@@ -885,6 +879,16 @@ def main():
 
     create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
                           fn=args.name+'_CategoryBinningIssues_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
+
+    if OTHER_BIN in testtable.sbin_nums:
+        err = '"#define sOtherBin \'13\'" defined in Binning_helper.cpp conflicts with standard testtable(s): "{}"'\
+            .format(','.join(testtable.sbin_files[OTHER_BIN]))
+        print 'ERROR!!! '+err
+        log.error(err)
+    if OTHER_BIN not in ti_binning:
+        err = 'No sofbin 13 defined in: "{}"'.format(binning_csv_file)
+        print 'ERROR!!! '+err
+        log.error(err)
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('ti_binning:\n' + pformat(ti_binning,indent=4))

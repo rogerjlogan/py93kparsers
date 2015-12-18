@@ -587,8 +587,8 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         ('set_pass OR set_fail','ERROR: These testsuite flags CAN break Category binning.'), # 0
         ('InTestflow AND Bypassed AND NOT Bang ("!") AND TT=1','ERROR: Major problem here.  Causes Bin 13.'), # 1
         ('InTestflow AND NOT InCategories','ERROR: All Testsuites in this file use Category binning. (no stop bin or multi bin "downstream").'), # 2
-        ('NOT InTestflow AND TT=1','ERROR: This testsuite MUST be in your flow (TT=1) even if bypassed, but it\'s not. Why?'), # 3
-        ('InTestflow AND TT=0','ERROR: Potential test escape.  If this testsuite fails, you will not know.'), # 4
+        ('NOT InTestflow AND TT=1','WARNING: This testsuite MUST be in your flow (TT=1) even if bypassed, but it\'s not. Why?'), # 3
+        ('InTestflow AND TT=0','WARNING: Potential test escape.  If this testsuite fails, you will not know.'), # 4
         ('InTestflow AND NOT InTestTypes','WARNING: Defaults to "1" but you should probably add it to TestTypes to be explicit.') # 5
     ]
 

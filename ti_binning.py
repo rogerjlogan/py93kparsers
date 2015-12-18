@@ -571,7 +571,7 @@ def create_hardbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__
             writer.writerow({'HardBinName': hname,
                              'HardBinNumber': hbin.lstrip('0')})
 
-def create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
+def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
     csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
     for msg in warn_msg:
         print 'WARNING!!! ',msg
@@ -579,18 +579,85 @@ def create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name_
     for msg in info_msg:
         log.info(msg)
 
-    found = False
-    headers = ['Missing Suites in Testflow',test_type_to_check]
+    # get union (unique set) of suites in flow and not in flow and create a list of them
+    testsuite_superset = list(set(testflow_binning.keys()) | categories_extra_tests)
+
+    failchecks = {}
+    failcheck_desc = ['set_pass || set_fail',                   # 0
+                      'InTestflow && !InCategories',            # 1
+                      'InTestflow && TT=0',                     # 2
+                      'InTestflow && bypass && !bang && TT=1',  # 3
+                      '!InTestflow && TT=1',                    # 4
+                      'InTestflow && !InTestTypes']            # 5
+
+    hdr_null = ['--------------------------------------']
+    hdr1 = ['CheckIndex','CheckDescription']
+    hdr2 = ['Suite','Bypass?','TestTypeValue','Bang?','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?','FailedChecks']
+
     with open(csv_file,'wb') as csvFile:
-        writer = csv.DictWriter(csvFile,fieldnames=headers)
+        writer = csv.DictWriter(csvFile,fieldnames=hdr1)
         writer.writeheader()
-        for ts in test_name_type:
-            if ts not in testflow.testsuite_nodeids and '1' == test_name_type[ts][test_type_to_check] and ts not in suites_w_exclamation:
-                found = True
-                writer.writerow({'Missing Suites in Testflow': ts,
-                                 test_type_to_check: test_name_type[ts][test_type_to_check]})
-    if not found:
-        os.remove(csv_file)
+        for i,check in enumerate(failcheck_desc):
+            writer.writerow({'CheckIndex': i,
+                             'CheckDescription': check})
+        writer = csv.DictWriter(csvFile,fieldnames=hdr_null)
+        writer.writeheader()
+        writer = csv.DictWriter(csvFile,fieldnames=hdr2)
+        writer.writeheader()
+
+        for ts in testsuite_superset:
+            # initialize all checks to False(Pass)
+            failchecks[ts] = [False]*100
+            # set flags and values
+            InTestflow = False # init value
+            if ts in testflow_binning:
+                InTestflow = True
+                bin_array = testflow_binning[ts]
+                bypass = ts in testflow.bypassed_testsuites
+                set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
+                set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
+                bang = False # init value
+                if len(bin_array) > 1:
+                    if bin_array[0]['bintype'] != 'cat':
+                        continue
+                    else:
+                        err = 'Testsuite: "{}" is using category binning and has more than 1 definition'.format(ts)
+                        print err
+                        log.error(err)
+                    sbin = bin_array[0]['Bin_s_num']
+                    bang = category_tests[ts][sbin]['ignore']
+            InCategories = ts in category_tests
+            InTestTypes = ts in test_name_type
+            if InTestTypes:
+                testtype_value = test_name_type[ts][test_type_to_check]
+            else:
+                testtype_value = None
+
+            # Ok, let's start checking for problems
+            if set_pass or set_fail:
+                failchecks[ts][0] = True
+            if InTestflow and not InCategories:
+                failchecks[ts][1] = True
+            if InTestflow and '0' == testtype_value:
+                failchecks[ts][2] = True
+            if InTestflow and bypass and not bang and '1' == testtype_value:
+                failchecks[ts][3] = True
+            if not InTestflow and '1' == testtype_value:
+                failchecks[ts][4] = True
+            if InTestflow and not InTestTypes:
+                failchecks[ts][5] = True
+
+            if any(failchecks[ts]):
+                writer.writerow({'Suite': ts,
+                                 'Bypass?': 'Y' if bypass else '',
+                                 'TestTypeValue': testtype_value,
+                                 'Bang?':  'Y' if bang else '',
+                                 'set_pass?':  'Y' if set_pass else '',
+                                 'set_fail?':  'Y' if set_fail else '',
+                                 'InTestflow?': 'Y' if InTestflow else '',
+                                 'InCategories?': 'Y' if InCategories else '',
+                                 'InTestTypes?': 'Y' if InTestTypes else '',
+                                 'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x])})
 
 def find_actual_bindefs():
     global testflow_bin_defs
@@ -793,9 +860,8 @@ def main():
     create_hardbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
                             fn=args.name+'_ActualHarBinDefs', maxlogs=max(1, args.maxlogs))
 
-    if tt2c_valid:
-        create_tt_missing_suites_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
-                                     fn=args.name+'_TestTypeMissingSuites_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
+    create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
+                          fn=args.name+'_CategoryBinningIssues_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
 
     # For debug and future development, list this module's data containers and their contents
     log.debug('ti_binning:\n' + pformat(ti_binning,indent=4))

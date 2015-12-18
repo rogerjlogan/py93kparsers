@@ -74,6 +74,8 @@ class TestTable(object):
 
     binning2testname = {}
 
+    sbin_files = {}
+
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
@@ -297,6 +299,11 @@ class TestTable(object):
                         if prev != curr:
                             err = 'Duplicate Softbin Number found in: "{}".... \n\t{}\n\t{}'.format(fn,prev,curr)
                             log.error(err)
+
+                    if Bin_s_num not in self.sbin_files:
+                        self.sbin_files[Bin_s_num] = []
+                    if fn not in self.sbin_files[Bin_s_num]:
+                        self.sbin_files[Bin_s_num].append(fn)
 
                     binkey = (Bin_s_num,Bin_s_name,Bin_h_num,Bin_h_name)
                     # if Bin_s_num == '995':

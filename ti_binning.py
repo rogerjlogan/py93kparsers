@@ -57,6 +57,8 @@ CATEGORY_VALID_AND = ['S_ALL','AND']
 
 CATEGORY_VALID_OR = ['S_ANY','OR']
 
+OTHER_BIN = '13'
+
 testflow = None
 testflow_file = None
 testtable = None
@@ -851,6 +853,12 @@ def main():
                         maxlogs=args.maxlogs,outdir=args.output_dir,partial_bin_method=PARTIAL_BINNING_METHOD,pic_type=args.pic_type)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
                           outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
+
+    if OTHER_BIN in testtable.sbin_nums:
+        err = '"#define sOtherBin \'13\'" defined in Binning_helper.cpp conflicts with standard testtable(s): "{}"'\
+            .format(','.join(testtable.sbin_files[OTHER_BIN]))
+        print 'ERROR!!! '+err
+        log.error(err)
 
     identify_ti_csv_files(testtable.special_testtables)
     ti_binning_file = os.path.join(os.path.dirname(categories_file),binning_csv_file)

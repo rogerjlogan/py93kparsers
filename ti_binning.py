@@ -594,7 +594,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
 
     hdr_null = ['--------------------------------------']
     hdr1 = ['CheckIndex','CheckType','CheckDescription']
-    hdr2 = ['Suite','Bypassed?','TestTypeValue','Bang? ("!")','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?','FailedChecks']
+    hdr2 = ['node_id','Suite','FailedChecks','BinSource','Bypassed?','TestTypeValue','Bang? ("!")','set_pass?','set_fail?','InTestflow?','InCategories?','InTestTypes?']
 
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=hdr1)
@@ -615,6 +615,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
             failchecks[ts] = [False]*100
             # set flags and values
             InTestflow = False # init value
+            nid = '' # init value
             if ts in testflow_binning:
                 InTestflow = True
                 if len(testflow_binning[ts]) > 1:
@@ -624,6 +625,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                         err = 'Testsuite: "{}" is using category binning and has more than 1 definition'.format(ts)
                         print err
                         log.error(err)
+                nid = int(testflow.testsuite_nodeids[ts])
                 bypass = ts in testflow.bypassed_testsuites
                 set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
                 set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
@@ -650,7 +652,10 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 failchecks[ts][5] = True
 
             if any(failchecks[ts]):
-                writer.writerow({'Suite': ts,
+                writer.writerow({'node_id' : nid,
+                                 'Suite': ts,
+                                 'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x]),
+                                 'BinSource': 'cat',
                                  'Bypassed?': 'Y' if bypass else '',
                                  'TestTypeValue': testtype_value,
                                  'Bang? ("!")':  'Y' if bang else '',
@@ -658,8 +663,8 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                                  'set_fail?':  'Y' if set_fail else '',
                                  'InTestflow?': 'Y' if InTestflow else '',
                                  'InCategories?': 'Y' if InCategories else '',
-                                 'InTestTypes?': 'Y' if InTestTypes else '',
-                                 'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x])})
+                                 'InTestTypes?': 'Y' if InTestTypes else ''
+                                 })
 
 def find_actual_bindefs():
     global testflow_bin_defs

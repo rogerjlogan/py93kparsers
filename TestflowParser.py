@@ -265,6 +265,9 @@ class TestflowData(object):
     is_partial_suite = {}
     """key=node_id,value=testsuite ... taken from is_partial_tm"""
 
+    partial_suites = []
+    """list of testsuites that use the partial bin testmethod"""
+
     @staticmethod
     def getNodeId():
         """Get unique id"""
@@ -297,6 +300,8 @@ class TestflowData(object):
                 # not really part of the node data, but to me, it made sense to save off this here
                 if tm_id in self.is_partial_tm:
                     self.is_partial_suite[self.node_id] = self.is_partial_tm[tm_id]
+                    if self.is_partial_tm[tm_id]:
+                        self.partial_suites.append(self.testsuite)
 
         nested_data[self.node_id]['data'] = self.nodeData[self.node_id]
         if len(self.true_branch):

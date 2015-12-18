@@ -609,26 +609,25 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer.writeheader()
 
         for ts in testsuite_superset:
+            if ts in testflow.partial_suites:
+                 continue
             # initialize all checks to False(Pass)
             failchecks[ts] = [False]*100
             # set flags and values
             InTestflow = False # init value
             if ts in testflow_binning:
                 InTestflow = True
-                bin_array = testflow_binning[ts]
-                bypass = ts in testflow.bypassed_testsuites
-                set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
-                set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
-                bang = False # init value
-                if len(bin_array) > 1:
-                    if bin_array[0]['bintype'] != 'cat':
+                if len(testflow_binning[ts]) > 1:
+                    if testflow_binning[ts][0]['bintype'] != 'cat':
                         continue
                     else:
                         err = 'Testsuite: "{}" is using category binning and has more than 1 definition'.format(ts)
                         print err
                         log.error(err)
-                    sbin = bin_array[0]['Bin_s_num']
-                    bang = category_tests[ts][sbin]['ignore']
+                bypass = ts in testflow.bypassed_testsuites
+                set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
+                set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
+                bang = ts in suites_w_exclamation
             InCategories = ts in category_tests
             InTestTypes = ts in test_name_type
             if InTestTypes:

@@ -886,7 +886,7 @@ def main():
         print 'ERROR!!! '+err
         log.error(err)
     if OTHER_BIN not in ti_binning:
-        err = 'No sofbin 13 defined in: "{}"'.format(binning_csv_file)
+        err = 'No softbin 13 defined in: "{}"'.format(binning_csv_file)
         print 'ERROR!!! '+err
         log.error(err)
 

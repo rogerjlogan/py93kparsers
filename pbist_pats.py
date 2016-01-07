@@ -279,7 +279,7 @@ class PbistPats(object):
         jsub = self.create_open_file(jsub_file)
         jsub.write('DMAS SQPG,SM,4,('+port+')\n')
         jsub.write('SQLB "'+jsub_label+'",MAIN,0,3,"'+self.wavetable+'",('+port+')\n')
-        jsub.write('SQLB LBL,"'+jsub_label+'","PARA_MEM=SHMEM,SCAN_MEM=NONE,PARA_MCTX=DEFAULT",('+port+')\n')
+        jsub.write('SQLA LBL,"'+jsub_label+'","PARA_MEM=SHMEM,SCAN_MEM=NONE,PARA_MCTX=DEFAULT",('+port+')\n')
         jsub.write('SQPG 0,STVA,0,,,('+port+')\n')
         jsub.write('SQPG 1,STSA,,,,('+port+')\n')
         jsub.write('SQPG 2,JSUB,,"'+jsub2_label+'",,('+port+')\n')

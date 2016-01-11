@@ -209,7 +209,7 @@ class PbistPats(object):
             ostr += 'SQPG '+str(start_count+2)+',JSUB,,RETC,ON_PASS,RSTE,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+3)+',LBGN,'+str(maxfails)+',,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+4)+',JSUB,,"logout_single",,('+port+')\n'
-            ostr += 'SQPG '+str(start_count+5)+',RETC,ON_PASS,RSTE,,('+port+')\n'
+            ostr += 'SQPG '+str(start_count+5)+',JSUB,,RETC,ON_PASS,RSTE,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+6)+',JMPE, "jsub_arp_empty", "jsub_arp_empty",,('+port+')\n'
             ostr += 'SQPG '+str(start_count+7)+',LEND,,,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+8)+',RSUB,,,,('+port+')\n'

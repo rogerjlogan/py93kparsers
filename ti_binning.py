@@ -772,7 +772,7 @@ def find_actual_binning():
     find_actual_bindefs()
 
 def main():
-    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check
+    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check,use_cats
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-d','--debug',action='store_true',help='Print a lot of debug stuff to dlog')
@@ -787,9 +787,10 @@ def main():
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='Name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
-    parser.add_argument('-bin','--binning_csv',required=True, help='Path to binning csv file (Example: BinningKepler.csv')
-    parser.add_argument('-tt2c','--test_type_to_check',required=True,default='', help='Check this test type against binning groups')
+    parser.add_argument('-bin','--binning_csv',required=False, help='Path to binning csv file (Example: BinningKepler.csv (use only with -c option to use categories)')
+    parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups (use only with -c option to use categories)')
     parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
+    parser.add_argument('-c','--categories',action='store_true',help='Add this option to use binning categories')
 
     args = parser.parse_args()
 
@@ -843,27 +844,41 @@ def main():
         log.error(err)
         sys.exit(err)
 
-    # need this global for easy access
-    test_type_to_check = args.test_type_to_check
-
-    # silently ignoring path (in case the user was being silly).  We already have the path
-    binning_csv_file = os.path.basename(args.binning_csv)
+    use_cats = args.categories
+    if use_cats:
+        if not len(args.test_type_to_check):
+            err = 'You\'ve chosen to use category binning (-c option passed) but have not supplied the test type to check (-tt2c).'
+            log.error(err)
+            sys.exit(err)
+        else:
+            test_type_to_check = args.test_type_to_check
+        if not len(args.binning_csv):
+            err = 'You\'ve chosen to use category binning (-c option passed) but have not supplied the binning csv file (-bin).'
+            log.error(err)
+            sys.exit(err)
+        else:
+            # silently ignoring path (in case the user was being silly).  We already have the path
+            binning_csv_file = os.path.basename(args.binning_csv)
+    else:
+        test_type_to_check = None
+        binning_csv_file = None
 
     testflow = Testflow(tf_file=testflow_file,split=args.split,debug=args.debug,progname=args.name,
                         maxlogs=args.maxlogs,outdir=args.output_dir,partial_bin_method=PARTIAL_BINNING_METHOD,pic_type=args.pic_type)
     testtable = TestTable(testtable_file, args.renumber, debug=args.debug, progname=args.name, maxlogs=args.maxlogs,
                           outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
 
-    identify_ti_csv_files(testtable.special_testtables)
-    ti_binning_file = os.path.join(os.path.dirname(categories_file),binning_csv_file)
+    if use_cats:
+        identify_ti_csv_files(testtable.special_testtables)
+        ti_binning_file = os.path.join(os.path.dirname(categories_file),binning_csv_file)
 
-    parse_special_csv(ti_binning_file,csv_type='ti_binning')
-    if bin_groups_file is not None:
-        parse_special_csv(bin_groups_file,csv_type='bin_groups')
-        bin_groups_exist = True
-    parse_special_csv(speed_sort_groups_file,csv_type='speed_sort_groups')
-    parse_special_csv(test_name_type_file,csv_type='test_name_type')
-    parse_special_csv(categories_file,csv_type='categories')
+        parse_special_csv(ti_binning_file,csv_type='ti_binning')
+        if bin_groups_file is not None:
+            parse_special_csv(bin_groups_file,csv_type='bin_groups')
+            bin_groups_exist = True
+        parse_special_csv(speed_sort_groups_file,csv_type='speed_sort_groups')
+        parse_special_csv(test_name_type_file,csv_type='test_name_type')
+        parse_special_csv(categories_file,csv_type='categories')
 
     gather_all_testsuites_bins()
     find_actual_binning()
@@ -877,15 +892,16 @@ def main():
     create_hardbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
                             fn=args.name+'_ActualHarBinDefs', maxlogs=max(1, args.maxlogs))
 
-    create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
-                          fn=args.name+'_CategoryBinningIssues_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
+    if use_cats:
+        create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir=args.output_dir,
+                              fn=args.name+'_CategoryBinningIssues_'+test_type_to_check+'_', maxlogs=max(1, args.maxlogs))
 
-    if OTHER_BIN in testtable.sbin_nums:
+    if use_cats and OTHER_BIN in testtable.sbin_nums:
         err = '"#define sOtherBin \'13\'" defined in Binning_helper.cpp conflicts with standard testtable(s): "{}"'\
             .format(','.join(testtable.sbin_files[OTHER_BIN]))
         print 'ERROR!!! '+err
         log.error(err)
-    if OTHER_BIN not in ti_binning:
+    if use_cats and OTHER_BIN not in ti_binning:
         err = 'No softbin 13 defined in: "{}"'.format(binning_csv_file)
         print 'ERROR!!! '+err
         log.error(err)

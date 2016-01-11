@@ -274,7 +274,7 @@ class PbistPats(object):
             if wvtObj:
                 new_stop = str(int(wvtObj.group('stop'))+8)
                 new_str = 'SQLB "'+wvtObj.group('label_name')+'",MAIN,'+wvtObj.group('start')+\
-                          ','+new_stop+',"'+wvtObj.group('wavetable')+'",'+wvtObj.group('port')
+                          ','+new_stop+',"'+wvtObj.group('wavetable')+'",('+wvtObj.group('port')+')'
                 # we got what we came for so jump out
                 break
         if not len(new_str):

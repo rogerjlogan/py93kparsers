@@ -206,10 +206,10 @@ class PbistPats(object):
         def seqStr(start_count,maxfails,port):
             ostr = 'SQPG '+str(start_count)+',JSUB,,"jsub_arp_CheckForDoneOrPass_1p9sec",,('+port+')\n'
             ostr += 'SQPG '+str(start_count+1)+',JSUB,,"jsub_arp_strobePassH",,('+port+')\n'
-            ostr += 'SQPG '+str(start_count+2)+',JSUB,,RETC,ON_PASS,RSTE,,('+port+')\n'
+            ostr += 'SQPG '+str(start_count+2)+',RETC,ON_PASS,RSTE,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+3)+',LBGN,'+str(maxfails)+',,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+4)+',JSUB,,"logout_single",,('+port+')\n'
-            ostr += 'SQPG '+str(start_count+5)+',JSUB,,RETC,ON_PASS,RSTE,,('+port+')\n'
+            ostr += 'SQPG '+str(start_count+5)+',RETC,ON_PASS,RSTE,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+6)+',JMPE, "jsub_arp_empty", "jsub_arp_empty",,('+port+')\n'
             ostr += 'SQPG '+str(start_count+7)+',LEND,,,,('+port+')\n'
             ostr += 'SQPG '+str(start_count+8)+',RSUB,,,,('+port+')\n'
@@ -273,7 +273,7 @@ class PbistPats(object):
             wvtObj = re.search(self.wvtPat,line)
             if wvtObj:
                 new_stop = str(int(wvtObj.group('stop'))+8)
-                new_str = 'SQLB "'+wvtObj.group('label_name')+'",MAIN,'+wvtObj.group('start')+\
+                new_str = 'SQLB "'+wvtObj.group('label_name')+'",SVEC,'+wvtObj.group('start')+\
                           ','+new_stop+',"'+wvtObj.group('wavetable')+'",('+wvtObj.group('port')+')'
                 # we got what we came for so jump out
                 break

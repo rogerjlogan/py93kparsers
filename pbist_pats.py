@@ -267,6 +267,22 @@ class PbistPats(object):
         replace(jsub2_file,dmasStr,dmasStr_repl)
         replace(jsub2_file,stopStr,stopStr_repl)
 
+        #need to update the sequencer count
+        new_str = ''
+        for line in myOpen(jsub2_file):
+            wvtObj = re.search(self.wvtPat,line)
+            if wvtObj:
+                new_stop = str(int(wvtObj.group('stop'))+8)
+                new_str = 'SQLB "'+wvtObj.group('label_name')+'",MAIN,'+wvtObj.group('start')+\
+                          ','+new_stop+',"'+wvtObj.group('wavetable')+'",'+wvtObj.group('port')
+                # we got what we came for so jump out
+                break
+        if not len(new_str):
+            err = 'Unable to update sequencer count in pat:{}'.format(jsub2_file)
+            log.error(err)
+            sys.exit(err)
+        replace(jsub2_file,wvtObj.group(0),new_str)
+
         # let's create the MPB (and overwrite if already exists)
         mpb = self.create_open_file(mpb_file)
         mpb.write('DMAS SQPG,SM,2,('+port+')\n')

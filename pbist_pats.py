@@ -283,6 +283,10 @@ class PbistPats(object):
             sys.exit(err)
         replace(jsub2_file,wvtObj.group(0),new_str)
 
+        # need to change STSA to NOP since STSA is not needed and not compatible with SVEC label
+        # (STSA is only compatible with MAIN)
+        replace(jsub2_file,'STSA','NOP')
+
         # let's create the MPB (and overwrite if already exists)
         mpb = self.create_open_file(mpb_file)
         mpb.write('DMAS SQPG,SM,2,('+port+')\n')

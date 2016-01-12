@@ -42,7 +42,7 @@ __version__ = '1.0'
 
 SHOW_TIMING_LEVELS = False
 
-PARTIAL_BINNING_METHOD = None
+PARTIAL_BINNING_METHOD = ''
 """V93000 doesn't use partial binning natively.  So, we need a way to identify a method that would flag a testsuite as a partial bin method testsuite"""
 
 # import pydot
@@ -3023,7 +3023,7 @@ class Testflow(TestflowData):
             t.show(tree_style=ts)
 
     def __init__(self,tf_file,debug=False,split=False,progname='',maxlogs=1,outdir=os.path.dirname(os.path.realpath(__file__)),
-                 partial_bin_method=None,pic_type='png'):
+                 partial_bin_method='',pic_type='png'):
         global log,PARTIAL_BINNING_METHOD
         if debug:
             log_level = logging.DEBUG

@@ -847,18 +847,26 @@ def main():
     use_cats = args.categories
     if use_cats:
         if not len(args.test_type_to_check):
-            err = 'You\'ve chosen to use category binning (-c option passed) but have not supplied the test type to check (-tt2c).'
+            err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen TO USE category binning (-c option passed) but HAVE NOT SUPPLIED the test type to check (-tt2c).'
             log.error(err)
             sys.exit(err)
         else:
             test_type_to_check = args.test_type_to_check
         if not len(args.binning_csv):
-            err = 'You\'ve chosen to use category binning (-c option passed) but have not supplied the binning csv file (-bin).'
+            err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen TO USE category binning (-c option passed) but HAVE NOT SUPPLIED the binning csv file (-bin).'
             log.error(err)
             sys.exit(err)
         else:
             # silently ignoring path (in case the user was being silly).  We already have the path
             binning_csv_file = os.path.basename(args.binning_csv)
+    elif len(args.test_type_to_check):
+        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE SUPPLIED the test type to check (-tt2c).'
+        log.error(err)
+        sys.exit(err)
+    elif len(args.binning_csv):
+        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE SUPPLIED not supplied the binning csv file (-bin).'
+        log.error(err)
+        sys.exit(err)
     else:
         test_type_to_check = None
         binning_csv_file = None

@@ -1,0 +1,5 @@
+"Suite name","Test name","Test number","Lsl","Lsl_typ","Usl_typ","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
+"Test mode","","","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","","","","","","","",""
+PHY_DDR_AC_AtSpeedVminDDR3L_st,X_MA_PHY_DDR_AC,363,1,GE,LE,1,Bool,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,
+PHY_DDR_AC_BU_AtSpeedVminDDR3L_st,X_MA_PHY_DDR_AC_BU,364,1,GE,LE,1,Bool,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,
+PHY_DDR_DAT_AtSpeedVminDDR3L_st,X_MA_PHY_DDR_DAT,365,1,GE,LE,1,Bool,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,

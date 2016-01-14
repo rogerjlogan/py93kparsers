@@ -1,0 +1,32 @@
+hp93000,testflow_master_file,0.1
+#this is a comment
+testerfile : CustRtn/Final_RPC_flow_x8_REVB_CustRtn
+information : common/information.tf
+flags : CustRtn/flags.tf
+bins :  CustRtn/bins.tf
+setup :  CustRtn/setup.tf
+var_default :  CustRtn/var_default.tf
+bin_disconnect: common/specialTest_bin_disconnect.tf
+GROUP OnlineNonUSP [open]:  CustRtn/group_OnlineNonUSP.tf
+GROUP USP [open] :  CustRtn/group_USP.tf
+GROUP Set_Up_Us_Teh_Short_Flow_Var [open] : CustRtn/group_Set_Up_Us_Teh_Short_Flow_Var.tf
+GROUP SupplyShortsPre_S [open] :  CustRtn/group_SupplyShortsPre_S.tf
+GROUP DieIDPreRead_S [open] :  CustRtn/group_DieIDPreRead_S.tf
+GROUP OSAndDieID_S [open] :  CustRtn/group_OSAndDieID_S.tf
+GROUP Thermal_S [open] :  CustRtn/group_Thermal_S.tf
+GROUP ODP [open] :  CustRtn/group_ODP.tf
+GROUP PreReadSR_S [open] :  CustRtn/group_PreReadSR_S.tf
+GROUP IddqPre_S [open] :  CustRtn/group_IddqPre_S.tf
+GROUP FuseCtlr_S [open] :  CustRtn/group_FuseCtlr_S.tf
+GROUP AdaptiveRepair [open] :  CustRtn/group_AdaptiveRepair.tf
+GROUP FuncVmin_S [open] :  CustRtn/group_FuncVmin_S.tf
+GROUP AtSpeedVmin_S [open] :  CustRtn/group_AtSpeedVmin_S.tf
+GROUP Search_S [open] :  CustRtn/group_Search_S.tf
+GROUP AtSpeedVskewPhi_S [open] :  CustRtn/group_AtSpeedVskewPhi_S.tf
+GROUP FuncVmax_S [open] :  CustRtn/group_FuncVmax_S.tf
+GROUP AtSpeedVmax_S [open] :  CustRtn/group_AtSpeedVmax_S.tf
+GROUP SpeedBlow_S [open] :  CustRtn/group_SpeedBlow_S.tf
+GROUP SupplyShortsPost_S [open] :  CustRtn/group_SupplyShortsPost_S.tf
+GROUP Cres [open] :  CustRtn/group_Cres.tf
+GROUP DC_LEAKAGE [open] :  CustRtn/group_DC_LEAKAGE.tf
+GROUP group_goodBin [open] : CustRtn/group_goodBin.tf

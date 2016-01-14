@@ -1,0 +1,19 @@
+hp93000,testtable_master_file,0.1
+
+testerfile : Final_RPC/BBT.csv
+testerfile : cmap.csv
+testerfile : Sort/SortBinning.csv
+testerfile : Final_RPC/Cres.csv
+testerfile : Final_RPC/DESIGNREV_NFACTOR.csv
+testerfile : Final_RPC/DieID_S.csv
+testerfile : Final_RPC/dummy.csv 
+testerfile : Final_RPC/efuse.csv
+testerfile : Final_RPC/OSAndDieID_S.csv
+testerfile : Sort/Sort.csv
+testerfile : Final_RPC/SupplyShortsPost_S.csv
+testerfile : Final_RPC/SupplyShortsPre_S.csv
+testerfile : Final_RPC/TWPDLExclusions.csv
+testerfile : Final_RPC/Thermal.csv
+testerfile : Final_RPC/Levels_guardbands.csv
+testerfile : Final_RPC/Timing_guardbands_pg2.csv
+

@@ -1,0 +1,3 @@
+"Suite name","Test name","Test number","Lsl","Lsl_typ","Usl_typ","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
+"Test mode","","","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","","","","","","","",""
+LED_TETRIS_FreqSearch_st,FBS_MA_LED_TETRIS,368,1,GE,LE,1,Bool,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,

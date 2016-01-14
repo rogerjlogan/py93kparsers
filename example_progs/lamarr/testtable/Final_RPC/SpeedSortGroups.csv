@@ -1,0 +1,4 @@
+"SpeedSortGroups","coreSpeed","armSpeed","efuseStr","testName","Test name","Suite name"
+"1214","1.2e9","1.4e9","001000","speedSortCorner1_st","",""
+"1212","1.2e9","1.2e9","000010","speedSortCorner2_st","",""
+"1010","1.0e9","1.0e9","000001","speedSortCorner3_st","",""

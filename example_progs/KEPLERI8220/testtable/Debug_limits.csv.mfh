@@ -1,0 +1,8 @@
+hp93000,testtable_master_file,0.1
+testerfile : Debug/SupplyShortsPre_S.csv
+testerfile : Debug/OSAndDieID_S.csv
+testerfile : Debug/FuncVmin_S.csv
+testerfile : Debug/AtSpeedVmin_S.csv
+testerfile : Debug/FuncVmax_S.csv
+testerfile : Debug/SupplyShortsPost_S.csv
+testerfile : cmapXY.csv

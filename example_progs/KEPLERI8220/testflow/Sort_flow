@@ -1,0 +1,968 @@
+hp93000,testflow,0.1
+language_revision = 1;
+
+information
+
+end
+-----------------------------------------------------------------
+declarations
+
+@SEARCH_SAMPLE_RATE = 0.0667;
+@TIDESIGNREV = "Z";
+@TIDEVICETYPE = "Not_Defined";
+@TIDEV_RPC_SQ_DS = "";
+@TIDEV_RPC_SQ_OS = "";
+@TIDEV_RPC_SQ_SS = "";
+@TIDIENAME = "Not_Defined";
+@TIFABCODE = "T";
+@TIFABSITE = "FS_TSMC12";
+@TILOADBOARD = "6576908B_W140610";
+@TIROMCODE = "Not_Defined";
+@TITESTTEMP = "TEMP_105_DEG";
+@TITESTTEMP_valid = "TEMP_0_DEG,TEMP_105_DEG,TEMP_100_DEG,TEMP_25_DEG,TEMP_N40_DEG";
+@TITESTTYPE = "Not_Defined";
+@TITESTTYPE_valid = "FT_RPC_HT,PB_RPC_HT,PB_RPC_LT,CustomerReturn";
+@TMLimit_FileName = "Sort_limits.csv.mfh";
+@TMLimit_TestMode = "TEMP_105_DEG";
+@USPMODE = "on";
+@USP_BRCONTROL = "main";
+@USP_CALCOUNT = 0;
+@USP_CALSTATUS = "PASS";
+@USP_CTCS_CONTROL = "start";
+@USP_CTCS_ENABLED = "1";
+@USP_CTCS_STATUS = "OK";
+@USP_DIBDIAG_CHCK = "PASS";
+@USP_FABCODE = "T";
+@USP_LOADBOARDID = "Not_Defined";
+@USP_PROTECTED_MODE = "0";
+@USP_SCRIBEID = "Not_Defined";
+@USP_SUMBINCONT = "F_OS";
+@USP_SUMBINFUNC = "F_FUNC";
+@USP_SUMBINGOOD = "GOOD";
+@USP_SUMBINHANDLER = "F_HANDLER";
+@USP_SUMBINOPENS = "F_OPENS";
+@USP_SUMBINPARAM = "F_LEAK,F_PARA";
+@USP_SUMBINVMFAIL = "F_VMFAIL";
+@USP_TEST_TYPE = "PACKAGE";
+@USP_TSTR_MINIDIAG = "PASS";
+@USP_VERSION = "";
+@efuse_bypass = "NONE";
+end
+-----------------------------------------------------------------
+implicit_declarations
+
+end
+-----------------------------------------------------------------
+flags
+
+datalog_formatter = 0;
+datalog_sample_size = 1;
+graphic_result_displa = 1;
+state_display = 0;
+print_wafermap = 0;
+ink_wafer = 0;
+max_reprobes = 1;
+temp_monitor = 0;
+calib_age_monitor = 0;
+diag_monitor = 0;
+current_monitor = 0;
+log_events_enable = 1;
+set_pass_level = 0;
+set_fail_level = 0;
+set_bypass_level = 0;
+hold_on_fail = 0;
+global_hold = 0;
+debug_mode = 3;
+debug_analog = 0;
+parallel_mode = 1;
+site_match_mode = 2;
+global_overon = 0;
+limits_enable = 1;
+test_number_enable = 1;
+test_number_inc = 1;
+log_cycles_before = 0;
+log_cycles_after = 0;
+unburst_mode = 0;
+sqst_mode = 0;
+warn_as_fail = 0;
+use_hw_dsp = 0;
+dsp_file_enable = 0;
+buffer_testflow_log = 0;
+check_testmethod_api = 0;
+stdf_generation = 1;
+tm_crash_as_fatal = 1;
+hidden_datalog_mode = 0;
+multibin_mode = 0;
+user	CCF_Concurrent = 0;
+user	CCF_DevelopMode = 1;
+user	CCF_VerboseLevel = 0;
+user	ENABLE_FT_REPAIR = 1;
+user	SEARCH_SAMPLE_INS_CNT = 0;
+user	SpeedSortIndex = 1;
+user	SpeedSortMax = 3;
+user	TIFELOT = 0;
+user	USP_ESDA_ID = 0;
+user	USP_USN = 0;
+user	bChanged_DPS_limits = 0;
+user	dcdyn_id = -1;
+user	info_level = 2;
+user	thisIsPG2FT1 = 0;
+user	thisIsTehShortFlowz = 0;
+user	vdd_loop = 10;
+end
+-----------------------------------------------------------------
+testmethodparameters
+tm_11:
+  "DPS_disconnect_pinlist" = "";
+  "DPS_setVoltages" = "0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115";
+  "Limit_names" = "I_B_SP_VDDDDR,I_B_SP_VDDPLL,I_B_SP_VDDIO,I_B_SP_VDDNWA,I_B_SP_VDDPLL,I_B_SP_VDDRAM,I_B_SP_VDDSHI,I_B_SP_VDDSLO,I_B_SP_VDDUHI,I_B_SP_VDDULO,I_B_SP_VPP,I_B_SP_VDDCORE";
+  "Perform_functional_pretest" = "No";
+  "Pins" = "VDDDDR,VDDDPLL,VDDIO,VDDNWA,VDDPLL,VDDRAM,VDDSHI,VDDSLO,VDDUHI,VDDULO,VPP,VDDCORE";
+  "Power_of_2_number_of_samples" = "16";
+  "Wait_time_ms" = "35";
+tm_12:
+  "instName" = "TIDieID";
+  "readPST" = "FF_Read_Norm";
+tm_13:
+  "DPS_disconnect_pinlist" = "";
+  "DPS_setVoltages" = "0.01";
+  "Limit_names" = "";
+  "Perform_functional_pretest" = "Yes";
+  "Pins" = "";
+  "Power_of_2_number_of_samples" = "16";
+  "Wait_time_ms" = "2";
+tm_15:
+  "Execution Mode" = "Parallel";
+  "Limit_names" = "I_LB_SHRT_EVEN,I_LB_SHRT_ODD";
+  "Pins" = "SHRT_EVEN,SHRT_ODD";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_16:
+  "Execution Mode" = "Serial";
+  "Limit_names" = "I_LB_SHRT_EVEN,I_LB_SHRT_ODD";
+  "Pins" = "SHRT_EVEN,SHRT_ODD";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_17:
+  "instName" = "TIDieID";
+  "readPST" = "FF_Read_Norm";
+tm_18:
+  "Execution Mode" = "Parallel";
+  "Limit_names" = "I_LB_SHRT_EVEN,I_LB_SHRT_ODD";
+  "Pins" = "SHRT_EVEN,SHRT_ODD";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_19:
+  "Execution Mode" = "Serial";
+  "Limit_names" = "I_LB_SHRT_EVEN,I_LB_SHRT_ODD";
+  "Pins" = "SHRT_EVEN,SHRT_ODD";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_2:
+  "enableSmartReflex" = "YES";
+  "globalSROPPMode" = "2";
+tm_20:
+  "instName" = "TIDieID";
+  "readPST" = "FF_Read_Norm";
+tm_22:
+  "instName" = "TIDieID";
+  "readPST" = "FF_Read_Norm";
+tm_24:
+  "Limit_names" = "I_LB_OPEN_PINS";
+  "Pins" = "OPEN_PINS";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_25:
+  "Limit_names" = "I_LB_OPEN_PINS,I_LB_OPEN_PINS_gpio11";
+  "Pins" = "OPEN_PINS,gpio11";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_26:
+  "instName" = "TIDieID";
+  "readPST" = "FF_Read_Norm";
+tm_27:
+  "Limit_names" = "I_LB_OPEN_PINS";
+  "Pins" = "OPEN_DCsig";
+  "SettlingTime_ms" = "3";
+  "TestCurrent_uA" = "10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_28:
+  "Limit_names" = "I_LB_OPEN_PINS";
+  "Pins" = "OPEN_DCsig";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_29:
+  "Limit_names" = "I_LB_OPEN_PINS";
+  "Pins" = "OPEN_DCsig";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_30:
+  "Limit_names" = "I_LB_OPEN_PINS";
+  "Pins" = "OPEN_DCsig";
+  "SettlingTime_ms" = "1";
+  "TestCurrent_uA" = "-10";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_31:
+  "ComplementBurst" = "No";
+  "ComplementBurstName" = "";
+  "Corner" = "";
+  "Dummy_label_name" = "";
+  "Func_limit_name" = "";
+  "Init_limit_name" = "";
+  "Init_pattern" = "";
+  "Interleave_init_pattern" = "No";
+  "Mask_pins" = "No";
+  "Masked_pins" = "";
+  "Results_per_label" = "Yes";
+  "Retest" = "No";
+  "Site_match_mode" = "No";
+  "SpeedSort" = "No";
+  "SpeedSortAdaptiveSpec" = "No";
+  "Stop_on_fail" = "No";
+  "Util_purpose_off" = "";
+  "Util_purpose_on" = "";
+tm_35:
+  "DPS_disconnect_pinlist" = "";
+  "DPS_setVoltages" = "0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115,0.0115";
+  "Limit_names" = "I_A_SP_VDDDDR,I_A_SP_VDDPLL,I_A_SP_VDDIO,I_A_SP_VDDNWA,I_A_SP_VDDPLL,I_A_SP_VDDRAM,I_A_SP_VDDSHI,I_A_SP_VDDSLO,I_A_SP_VDDUHI,I_A_SP_VDDULO,I_A_SP_VPP,I_A_SP_VDDCORE";
+  "Perform_functional_pretest" = "No";
+  "Pins" = "VDDDDR,VDDDPLL,VDDIO,VDDNWA,VDDPLL,VDDRAM,VDDSHI,VDDSLO,VDDUHI,VDDULO,VPP,VDDCORE";
+  "Power_of_2_number_of_samples" = "16";
+  "Wait_time_ms" = "35";
+tm_4:
+  "BoardSerNo" = "A123456";
+  "BomNoRev" = "61234567";
+tm_7:
+  "Auto Tune PID temperature" = "0";
+  "Control Temperature" = "0";
+  "Enable Cooling" = "0";
+  "Enable Heating" = "0";
+  "Lower Limit Range Offset Temperature" = "0";
+  "Pattern name to cool down device" = "";
+  "Pattern name to warm up device" = "";
+  "SPT OFFSET" = "0";
+  "Thermo Control Mode" = "INIT";
+  "Time Between TD Reading" = "1";
+  "Upper Limit Range Offset Temperature" = "0";
+  "WarmUpLevelsCorner" = "Vmin";
+  "WarmUpLevelset" = "2";
+  "WarmUpTimingSet" = "1";
+  "WarmUpTimingSpecName" = "a99pASY1_pASY5_pASY3nALT_pNONASYNC1_WFT5X4_MPT_AtSpeedVmax";
+tm_8:
+  "Auto Tune PID temperature" = "-40";
+  "Control Temperature" = "0";
+  "Enable Cooling" = "0";
+  "Enable Heating" = "0";
+  "Lower Limit Range Offset Temperature" = "0";
+  "Pattern name to cool down device" = "";
+  "Pattern name to warm up device" = "";
+  "SPT OFFSET" = "0";
+  "Thermo Control Mode" = "TUNE";
+  "Time Between TD Reading" = "1";
+  "Upper Limit Range Offset Temperature" = "0";
+  "WarmUpLevelsCorner" = "Vmin";
+  "WarmUpLevelset" = "2";
+  "WarmUpTimingSet" = "1";
+  "WarmUpTimingSpecName" = "a99pASY1_pASY5_pASY3nALT_pNONASYNC1_WFT5X4_MPT_AtSpeedVmax";
+tm_9:
+  "Auto Tune PID temperature" = "0";
+  "Control Temperature" = "0";
+  "Enable Cooling" = "0";
+  "Enable Heating" = "0";
+  "Lower Limit Range Offset Temperature" = "0";
+  "Pattern name to cool down device" = "";
+  "Pattern name to warm up device" = "";
+  "SPT OFFSET" = "0";
+  "Thermo Control Mode" = "ENDOFLOT";
+  "Time Between TD Reading" = "1";
+  "Upper Limit Range Offset Temperature" = "0";
+  "WarmUpLevelsCorner" = "Vmin";
+  "WarmUpLevelset" = "2";
+  "WarmUpTimingSet" = "1";
+  "WarmUpTimingSpecName" = "a99pASY1_pASY5_pASY3nALT_pNONASYNC1_WFT5X4_MPT_AtSpeedVmax";
+end
+-----------------------------------------------------------------
+testmethodlimits
+tm_5:
+  "USP_READ_EEPROM" = "1":"GE":"1":"LE":"":"1":"1";
+end
+-----------------------------------------------------------------
+testmethods
+tm_1:
+  testmethod_class = "USP_TM_Interface.USPSharedMemory.setUserVars";
+tm_10:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_11:
+  testmethod_class = "ti_tml.DC.Supply_shorts";
+tm_12:
+  testmethod_class = "ti_tml.DieID.PostReadDieID";
+tm_13:
+  testmethod_class = "ti_tml.DC.Supply_shorts";
+tm_14:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_15:
+  testmethod_class = "ti_tml.DC.Continuity_shorts";
+tm_16:
+  testmethod_class = "ti_tml.DC.Continuity_shorts";
+tm_17:
+  testmethod_class = "ti_tml.DieID.PostReadDieID";
+tm_18:
+  testmethod_class = "ti_tml.DC.Continuity_shorts";
+tm_19:
+  testmethod_class = "ti_tml.DC.Continuity_shorts";
+tm_2:
+  testmethod_class = "ti_tml.Misc.Init_Library";
+tm_20:
+  testmethod_class = "ti_tml.DieID.PostReadDieID";
+tm_21:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_22:
+  testmethod_class = "ti_tml.DieID.PostReadDieID";
+tm_23:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_24:
+  testmethod_class = "ti_tml.DC.Continuity_opens";
+tm_25:
+  testmethod_class = "ti_tml.DC.Continuity_opens";
+tm_26:
+  testmethod_class = "ti_tml.DieID.PostReadDieID";
+tm_27:
+  testmethod_class = "ti_tml.DC.Continuity_Opens_DCsig";
+tm_28:
+  testmethod_class = "ti_tml.DC.Continuity_Opens_DCsig";
+tm_29:
+  testmethod_class = "ti_tml.DC.Continuity_Opens_DCsig";
+tm_3:
+  testmethod_class = "ti_tml.Misc.UpdateGuardBandSpecs";
+tm_30:
+  testmethod_class = "ti_tml.DC.Continuity_Opens_DCsig";
+tm_31:
+  testmethod_class = "ti_tml.Digital.Functional";
+tm_32:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_33:
+  testmethod_class = "ti_tml.BBT.CheckOverTempFlag";
+tm_34:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_35:
+  testmethod_class = "ti_tml.DC.Supply_shorts";
+tm_36:
+  testmethod_class = "ti_tml.Misc.BinningDieID";
+tm_37:
+  testmethod_class = "miscellaneous_tml.TestControl.Disconnect";
+tm_4:
+  testmethod_class = "USP_EEPROM64K.EepromClass.USP_WRITE_24C64";
+tm_5:
+  testmethod_class = "USP_EEPROM64K.EepromClass.USP_READ_24C64";
+tm_6:
+  testmethod_class = "ti_tml.Misc.Check_eeprom_against_testflow";
+tm_7:
+  testmethod_class = "ti_tml.Thermal.Thermal_Control";
+tm_8:
+  testmethod_class = "ti_tml.Thermal.Thermal_Control";
+tm_9:
+  testmethod_class = "ti_tml.Thermal.Thermal_Control";
+end
+-----------------------------------------------------------------
+test_suites
+BBT_Status:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "bbtSpec";
+ override_lev_spec_set = 11;
+ override_timset = 1;
+ override_levset = 2;
+ override_seqlbl = "BBT_read_mpb";
+ override_testf = tm_33;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail, frg_single_shot;
+ site_match = 2;
+ site_control = "parallel:";
+CTCS_Auto_Tune_PID_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "a99pASY1_pASY5_pASY3nALT_pNONASYNC1_WFT5X4_MPT";
+ override_lev_spec_set = 6;
+ override_timset = 1;
+ override_levset = 2;
+ override_seqlbl = "PB_PLL_UHD_C3_3_PG_MPB";
+ override_testf = tm_8;
+ comment = "Auto tune the PID";
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+CTCS_End_Of_Lot_st:
+  override = 1;
+ override_testf = tm_9;
+ comment = "End of lot CTCS";
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+CTCS_Init_st:
+  override = 1;
+ override_testf = tm_7;
+ comment = "Start CTCS";
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DCPinOpensTestPerPin_st_nIForce_SigGroup:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_30;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DCPinOpensTestPerPin_st_pIForce_SigGroup:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_28;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DCPinOpensTest_st_nIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_29;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DCPinOpensTest_st_pIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_27;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT:
+  override = 1;
+ override_testf = tm_10;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_1:
+  override = 1;
+ override_testf = tm_34;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_1_2:
+  override = 1;
+ override_testf = tm_32;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_3:
+  override = 1;
+ override_testf = tm_14;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_4:
+  override = 1;
+ override_testf = tm_21;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_4_2:
+  override = 1;
+ override_testf = tm_23;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DISCONNECT_AtEndOfFlow:
+  override = 1;
+ override_testf = tm_37;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DieIDPreRead_Open_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "efuse_Read_Program";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_26;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DieIDPreRead_Shortn_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "efuse_Read_Program";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_17;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DieIDPreRead_Shortp_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "efuse_Read_Program";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_20;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DieIDPreRead_SupplyShort_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "efuse_Read_Program";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_12;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+DieIDPreRead_st:
+  override = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = "efuse_Read_Program";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_22;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+Init_framework:
+  override = 1;
+ override_testf = tm_2;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 0;
+ site_control = "parallel:";
+Loadboard_eeprom_check:
+  override = 1;
+ override_seqlbl = "Read_Norm_MPB";
+ override_testf = tm_6;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinOpensTestPerPin_st_nIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_25;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinOpensTest_st_nIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_24;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinShortsTestPerPin_st_nIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_16;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinShortsTestPerPin_st_pIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_19;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinShortsTest_st_nIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_15;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+PinShortsTest_st_pIForce:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_lev_spec_set = 3;
+ override_levset = 2;
+ override_testf = tm_18;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+SortUnits:
+  override = 1;
+ override_testf = tm_36;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+SupplyOpensTest_st:
+  override = 1;
+ override_tim_equ_set = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = 1;
+ override_lev_spec_set = 27;
+ override_timset = 1;
+ override_levset = 2;
+ override_seqlbl = "DUMMY_DEF_BURST";
+ override_testf = tm_31;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+SupplyShortsPost_st:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_tim_spec_set = "pALL_PLUS_DPS_WFT1_MPT";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 2;
+ override_testf = tm_35;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+SupplyShortsPre2_st:
+  override = 1;
+ override_tim_equ_set = 1;
+ override_lev_equ_set = 1;
+ override_tim_spec_set = 1;
+ override_lev_spec_set = 27;
+ override_timset = 1;
+ override_levset = 2;
+ override_testf = tm_13;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+SupplyShortsPre_st:
+  override = 1;
+ override_lev_equ_set = 2;
+ override_tim_spec_set = "pALL_PLUS_DPS_WFT1_MPT";
+ override_lev_spec_set = 2;
+ override_timset = 1;
+ override_levset = 2;
+ override_testf = tm_11;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+USP_READ_EEPROM:
+  override = 1;
+ override_test_number = 5;
+ override_testf = tm_5;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_control = "parallel:";
+USP_WRITE_EEPROM:
+  override = 1;
+ override_test_number = 5;
+ override_testf = tm_4;
+local_flags  = bypass, output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_control = "parallel:";
+UpdateGuardBand:
+  override = 1;
+ override_testf = tm_3;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_match = 2;
+ site_control = "parallel:";
+setUserVars:
+  override = 1;
+ override_test_number = 1;
+ override_testf = tm_1;
+local_flags  = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;
+ site_control = "parallel:";
+end
+-----------------------------------------------------------------
+test_flow
+
+ {
+    run(setUserVars);
+    if @TITESTTYPE == "Not_Defined" then
+    {
+       @USP_BRCONTROL = "main";
+       @TILOADBOARD = "6576908B_W140610";
+       @TITESTTYPE = "FT_RPC_HT";
+       @TITESTTEMP = "TEMP_105_DEG";
+       @TIDEVICETYPE = "RPC_SQ_SS";
+       @TIROMCODE = "1";
+       @TIDESIGNREV = "Z";
+       @TIFABSITE = "FS_TSMC15";
+       @TIFABCODE = "T";
+    }
+    else
+    {
+    }
+    @TMLimit_TestMode = "@TITESTTEMP";
+    run_and_branch(Init_framework)
+    then
+    {
+    }
+    else
+    {
+    }
+    run(UpdateGuardBand);
+ }, open,"OnlineNonUSP", ""
+ {
+    if @USP_BRCONTROL == "main" then
+    {
+    }
+    else
+    {
+       run(USP_WRITE_EEPROM);
+       run(USP_READ_EEPROM);
+       run_and_branch(Loadboard_eeprom_check)
+       then
+       {
+       }
+       else
+       {
+       }
+       if @USP_CTCS_CONTROL == "start" then
+       {
+          run_and_branch(CTCS_Init_st)
+          then
+          {
+          }
+          else
+          {
+          }
+          run_and_branch(CTCS_Auto_Tune_PID_st)
+          then
+          {
+          }
+          else
+          {
+          }
+       }
+       else
+       {
+          if @USP_CTCS_CONTROL == "stop" then
+          {
+             run_and_branch(CTCS_End_Of_Lot_st)
+             then
+             {
+             }
+             else
+             {
+             }
+             stop_bin "1", "GOOD_UNIT", , good, noreprobe, green, 1, not_over_on;
+          }
+          else
+          {
+          }
+       }
+       stop_bin "1", "GOOD_UNIT", , good, noreprobe, green, 1, not_over_on;
+    }
+ }, open,"USP", ""
+ {
+    run(DISCONNECT);
+    run_and_branch(SupplyShortsPre_st)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(DieIDPreRead_SupplyShort_st)
+       then
+       {
+       }
+       else
+       {
+       }
+       multi_bin;
+    }
+    run_and_branch(SupplyShortsPre2_st)
+    then
+    {
+    }
+    else
+    {
+    }
+ }, open,"SupplyShortsPre_S", ""
+ {
+    run(DISCONNECT_3);
+    run_and_branch(PinShortsTest_st_nIForce)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(PinShortsTestPerPin_st_nIForce)
+       then
+       {
+       }
+       else
+       {
+          run_and_branch(DieIDPreRead_Shortn_st)
+          then
+          {
+          }
+          else
+          {
+          }
+          multi_bin;
+       }
+    }
+    run_and_branch(PinShortsTest_st_pIForce)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(PinShortsTestPerPin_st_pIForce)
+       then
+       {
+       }
+       else
+       {
+          run_and_branch(DieIDPreRead_Shortp_st)
+          then
+          {
+          }
+          else
+          {
+          }
+          multi_bin;
+       }
+    }
+    run(DISCONNECT_4);
+    run_and_branch(DieIDPreRead_st)
+    then
+    {
+    }
+    else
+    {
+       multi_bin;
+    }
+    run(DISCONNECT_4_2);
+ }, open,"DieIDPreRead_S", ""
+ {
+    run_and_branch(PinOpensTest_st_nIForce)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(PinOpensTestPerPin_st_nIForce)
+       then
+       {
+       }
+       else
+       {
+          run_and_branch(DieIDPreRead_Open_st)
+          then
+          {
+          }
+          else
+          {
+          }
+          multi_bin;
+       }
+    }
+    run_and_branch(DCPinOpensTest_st_pIForce)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(DCPinOpensTestPerPin_st_pIForce_SigGroup)
+       then
+       {
+       }
+       else
+       {
+          multi_bin;
+       }
+    }
+    run_and_branch(DCPinOpensTest_st_nIForce)
+    then
+    {
+    }
+    else
+    {
+       run_and_branch(DCPinOpensTestPerPin_st_nIForce_SigGroup)
+       then
+       {
+       }
+       else
+       {
+          multi_bin;
+       }
+    }
+    run_and_branch(SupplyOpensTest_st)
+    then
+    {
+    }
+    else
+    {
+    }
+ }, open,"OSAndDieID_S", ""
+ {
+    run(DISCONNECT_1_2);
+    {
+       run(BBT_Status);
+    }, open,"BBTStatusBypass", ""
+    run(DISCONNECT_1);
+    run_and_branch(SupplyShortsPost_st)
+    then
+    {
+    }
+    else
+    {
+       multi_bin;
+    }
+    run(SortUnits);
+    multi_bin;
+    run(DISCONNECT_AtEndOfFlow);
+ }, open,"SupplyShortsPost_S", ""
+end
+-----------------------------------------------------------------
+binning
+otherwise bin = "13", "F_ERROR_NOSORT_BIN", , bad, noreprobe, red, 7, not_over_on;
+end
+-----------------------------------------------------------------
+context
+
+context_config_file = "PinConfig_I300KEPLER_FT1_x8_revB_pg2.pin";
+context_levels_file = "I300KEPLER_FT1_x8.RevB.MMM.mfh";
+context_timing_file = "I300KEPLER_FT1_pg2_tim.mfh";
+context_vector_file = "Sort_patts.pmfl";
+context_channel_attrib_file = "Kepler_X8_R1_revB";
+context_testtable_file = "Sort_limits.csv.mfh";
+end
+-----------------------------------------------------------------
+hardware_bin_descriptions
+end

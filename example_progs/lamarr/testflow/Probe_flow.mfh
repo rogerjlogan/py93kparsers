@@ -1,0 +1,28 @@
+hp93000,testflow_master_file,0.1
+#this is a comment
+testerfile : Probe_flow
+information : common/information.tf
+flags : common/flags.tf
+bins : common/bins.tf
+setup : Probe/setup.tf
+var_default : Probe/var_default.tf
+GROUP OnlineNonUSP [open]: common/OnlineNonUSP.tf
+GROUP USP [open] : common/USP.tf
+GROUP SupplyShortsPre_S [open]: Probe/SupplyShortsPre_S.tf
+GROUP OSAndDieID_S [open]: Probe/OSAndDieID_S.tf
+GROUP IddqPre_S [open]: Probe/IddqPre_S.tf
+GROUP OnDieStruc_S [open]: Probe/OnDieStruc_S.tf
+GROUP FuseCtlr_S [open]: Probe/FuseCtlr_S.tf
+GROUP DieIDPreRead_S [open]: Probe/DieIDPreRead_S.tf
+GROUP FuncVmin_S [open]: Probe/FuncVmin_S.tf
+GROUP Mem_Repair_S [open]: Probe/Mem_Repair_S.tf
+GROUP AtSpeedVminOD_S [open]: Probe/AtSpeedVminOD_S.tf
+GROUP AtSpeedVminDDR3L_S [open]: Probe/AtSpeedVminDDR3L_S.tf
+GROUP VminSearch_S [open]: Probe/VminSearch_S.tf
+GROUP FmaxSearch_S [open]: Probe/FmaxSearch_S.tf
+GROUP DieIDProg_S [open]: Probe/DieIDProg_S.tf
+GROUP FuncVmaxOD_S [open]: Probe/FuncVmaxOD_S.tf
+GROUP AtSpeedVmaxOD_S [open]: Probe/AtSpeedVmaxOD_S.tf
+GROUP SupplyShortsPost_S [open]: Probe/SupplyShortsPost_S.tf
+GROUP CRES_S [open]: Probe/CRES_S.tf
+GROUP group_goodBin [open] : common/goodBin.tf

@@ -1,0 +1,32 @@
+hp93000,testflow_master_file,0.1
+#this is a comment
+testerfile : Final_RPC_flow
+information : common/information.tf
+flags : common/flags.tf
+bins : common/bins.tf
+setup : common/setup_x8_REVB.tf
+var_default : Final_RPC/var_default.tf
+GROUP OnlineNonUSP [open]: common/OnlineNonUSP_x8.tf
+GROUP USP [open] : common/USP.tf
+GROUP Set_Up_Us_Teh_Short_Flow_Var [open] : common/group_Set_Up_Us_Teh_Short_Flow_Var.tf
+GROUP SupplyShortsPre_S [open]: Final_RPC/SupplyShortsPre_S.tf
+GROUP DieIDPreRead_S [open] : Final_RPC/DieIDPreRead_S.tf
+GROUP OSAndDieID_S [open]: Final_RPC/OSAndDieID_S.tf
+GROUP Thermal_S [open] : Final_RPC/Thermal_S.tf
+GROUP ODP [open] : Final_RPC/ODP.tf
+GROUP PreReadSR_S [open] : Final_RPC/PreReadSR_S.tf
+GROUP IddqPre_S [open]: Final_RPC/IddqPre_S.tf
+GROUP FuseCtlr_S [open] : Final_RPC/FuseCtlr_S.tf
+GROUP AdaptiveRepair [open]: Final_RPC/AdaptiveRepair.tf
+GROUP FuncVmin_S [open]: Final_RPC/FuncVmin_S.tf
+GROUP AtSpeedVmin_S [open]: Final_RPC/AtSpeedVmin_S.tf
+GROUP Search_S [open]: Final_RPC/Search_S.tf
+GROUP AtSpeedVskewPhi_S [open]: Final_RPC/AtSpeedVskewPhi_S.tf
+GROUP FuncVmax_S [open]: Final_RPC/FuncVmax_S.tf
+GROUP AtSpeedVmax_S [open] : Final_RPC/AtSpeedVmax_S.tf
+GROUP SpeedBlow_S [open] : Final_RPC/group_SpeedBlow_S.tf
+GROUP SupplyShortsPost_S [open]: Final_RPC/SupplyShortsPost_S.tf
+GROUP Cres [open]: Final_RPC/Cres.tf
+GROUP DC_LEAKAGE [open] : Final_RPC/group_DC_LEAKAGE.tf
+GROUP group_goodBin [open] : common/goodBin.tf
+bin_disconnect: common/specialTest_bin_disconnect.tf  

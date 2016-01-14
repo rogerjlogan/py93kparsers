@@ -639,8 +639,8 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
                 set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
                 bang = ts in suites_w_exclamation
-            else:
-                continue
+            # else:
+            #     continue
             InCategories = ts in category_tests
             InTestTypes = ts in test_name_type
             if InTestTypes:

@@ -663,9 +663,6 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 failchecks[ts][5] = True
 
             if any(failchecks[ts]):
-                if type(nid) is not int:
-                    print ts
-
                 writer.writerow({'node_id' : nid,
                                  'Suite': ts,
                                  'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x]),

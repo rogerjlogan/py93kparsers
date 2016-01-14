@@ -623,18 +623,24 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
             nid = '' # init value
             if ts in testflow_binning:
                 InTestflow = True
-                if len(testflow_binning[ts]) > 1:
-                    if testflow_binning[ts][0]['bintype'] != 'cat':
-                        continue
-                    else:
+                double_loop_flag = False
+                for i,elem in enumerate(testflow_binning[ts]):
+                    if elem['bintype'] != 'cat':
+                        double_loop_flag = True
+                        break
+                    elif i > 1:
                         err = 'Testsuite: "{}" is using category binning and has more than 1 definition'.format(ts)
                         print err
                         log.error(err)
+                if double_loop_flag:
+                    continue
                 nid = int(testflow.testsuite_nodeids[ts])
                 bypass = ts in testflow.bypassed_testsuites
                 set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
                 set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
                 bang = ts in suites_w_exclamation
+            else:
+                continue
             InCategories = ts in category_tests
             InTestTypes = ts in test_name_type
             if InTestTypes:
@@ -657,6 +663,9 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 failchecks[ts][5] = True
 
             if any(failchecks[ts]):
+                if type(nid) is not int:
+                    print ts
+
                 writer.writerow({'node_id' : nid,
                                  'Suite': ts,
                                  'FailedChecks': ','.join([str(i) for i,x in enumerate(failchecks[ts]) if x]),

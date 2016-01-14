@@ -358,6 +358,14 @@ def gather_all_testsuites_bins():
                     continue
 
                 if testflow.nodeData[desc_id]['type'] == 'StopBinStatement':
+                    if 'over_on' == testflow.nodeData[desc_id]['overon']:
+                        Bin_overon = True
+                    elif 'not_over_on' == testflow.nodeData[desc_id]['overon']:
+                        Bin_overon = False
+                    else:
+                        err = 'Unknown overon setting for node_id: {}'.format(desc_id)
+                        log.error(err)
+                        sys.exit(err)
                     Bin_s_num = testflow.nodeData[desc_id]['swBin'].replace('"','')
                     if Bin_s_num not in hard_bins:
                         hard_bins[Bin_s_num] = []
@@ -371,7 +379,8 @@ def gather_all_testsuites_bins():
                         hard_bins[Bin_s_num] = {
                             'Bin_s_name' : Bin_s_name,
                             'Bin_h_num' : Bin_h_num,
-                            'Bin_h_name' : Bin_h_name
+                            'Bin_h_name' : Bin_h_name,
+                            'Bin_overon' : Bin_overon
                         }
                     else:
                         prev = ('SBIN='+Bin_s_num,hard_bins[Bin_s_num]['Bin_s_name'],
@@ -430,14 +439,13 @@ def create_ti_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for testsuite in testsuite_all_sbins:
-            if testsuite in ignore_suites:
-                continue
-            writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
-                             'SuiteName' : testsuite,
-                             'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
-                             'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
-                             'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
-                             'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
+            if testsuite not in ignore_suites:
+                writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
+                                 'SuiteName' : testsuite,
+                                 'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
+                                 'stop_sbins': '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']),
+                                 'category_sbins': '|'.join(testsuite_all_sbins[testsuite]['cat_sbins']),
+                                 'multi_sbins': '|'.join(testsuite_all_sbins[testsuite]['multi_sbins'])})
 
 def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
     csv_file,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname, name=fn, outdir=outdir, maxlogs=maxlogs, ext='.csv')
@@ -457,25 +465,29 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
         if len(values):
             for v in values:
                 hbin = re.sub('\d+', lambda x:x.group().zfill(20), v['Bin_h_num'])
-                unsorted_rows.append((nid,ts,v['Bin_s_num'],v['Bin_s_name'],hbin,v['Bin_h_name'],v['bintype']))
+                unsorted_rows.append((nid,ts,v['Bin_s_num'],v['Bin_s_name'],hbin,v['Bin_h_name'],v['bintype'],v['Bin_overon']))
                 if ts not in all_suites:
                     all_suites.append(ts)
                 else:
                     duplicate_suites.append(ts)
         else:
-            unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---'))
+            unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---',False))
 
     if tt2c_valid:
-        headers = ['node_id','SuiteName','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource',os.path.basename(test_name_type_file)+' : '+test_type_to_check]
+        headers = ['node_id','SuiteName','Testmethod','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron',os.path.basename(test_name_type_file)+' : '+test_type_to_check]
     else:
-        headers = ['node_id','SuiteName','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource']
+        headers = ['node_id','SuiteName','Testmethod','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron']
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
-        for nid,suite,sbin,sname,hbin,hname,bintype in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
+        for nid,suite,sbin,sname,hbin,hname,bintype,overon in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
             if suite in ignore_suites:
                 continue
             end = ''
+            if 'Testmethods' in testflow.testsuite_data[suite] and 'Class' in testflow.testsuite_data[suite]['Testmethods']:
+                testmethod = testflow.testsuite_data[suite]['Testmethods']['Class'].strip('"')
+            else:
+                testmethod = ''
             if suite in duplicate_suites:
                 if bintype == 'multi':
                     binkey = (str(int(sbin)),sname,str(int(hbin)),hname)
@@ -505,23 +517,26 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                     log.warning(tt2c_log+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
+                                 'Testmethod' : testmethod,
                                  'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
                                  'BinNumber' : hbin.lstrip('0'),
                                  'BinSource' : bintype,
-                                 # os.path.basename(test_name_type_file)+' : '+test_type_to_check : tt2c})
+                                 'BinOveron' : 'Y' if overon else '',
                                  os.path.basename(test_name_type_file)+' : '+test_type_to_check : tt2c})
             else:
                 writer.writerow({'node_id' : int(nid),
                                  'SuiteName' : suite2show,
+                                 'Testmethod' : testmethod,
                                  'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
                                  'BinNumber' : hbin.lstrip('0'),
-                                 'BinSource' : bintype})
+                                 'BinSource' : bintype,
+                                 'BinOveron' : 'Y' if overon else ''})
 
 
 def create_softbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
@@ -732,6 +747,7 @@ def find_actual_binning():
                     'Bin_s_name' : hard_bins[sbin]['Bin_s_name'],
                     'Bin_h_num' : hard_bins[sbin]['Bin_h_num'],
                     'Bin_h_name' : hard_bins[sbin]['Bin_h_name'],
+                    'Bin_overon' : hard_bins[sbin]['Bin_overon'],
                     'bintype' : bintype
                 })
 
@@ -750,6 +766,7 @@ def find_actual_binning():
                         'Bin_s_name' : testtable.binning[sbin]['Bin_s_name'],
                         'Bin_h_num' : testtable.binning[sbin]['Bin_h_num'],
                         'Bin_h_name' : testtable.binning[sbin]['Bin_h_name'],
+                        'Bin_overon' : testtable.binning[sbin]['Bin_overon'],
                         'bintype' : bintype
                     })
 
@@ -762,6 +779,7 @@ def find_actual_binning():
                         'Bin_s_name' : ti_binning[sbin]['Bin_s_name'],
                         'Bin_h_num' : ti_binning[sbin]['Bin_h_num'],
                         'Bin_h_name' : ti_binning[sbin]['Bin_h_name'],
+                        'Bin_overon' : False,
                         'bintype' : bintype
                     })
                 else:
@@ -770,6 +788,7 @@ def find_actual_binning():
                         'Bin_s_name' : 'MISSING BIN INFO',
                         'Bin_h_num' : '---',
                         'Bin_h_name' : '---',
+                        'Bin_overon' : False,
                         'bintype' : bintype
                     })
 

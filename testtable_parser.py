@@ -279,6 +279,7 @@ class TestTable(object):
                     Bin_s_name = row['Bin_s_name'].strip()
                     Bin_h_num  = row['Bin_h_num'].strip()
                     Bin_h_name = row['Bin_h_name'].strip()
+                    Bin_overon = row['Bin_overon'].strip()
 
                     try:
                         # if it can't be converted to an int, we don't care about this row
@@ -289,7 +290,8 @@ class TestTable(object):
                         self.binning[Bin_s_num] = {
                             'Bin_s_name' : Bin_s_name,
                             'Bin_h_num' : Bin_h_num,
-                            'Bin_h_name' : Bin_h_name
+                            'Bin_h_name' : Bin_h_name,
+                            'Bin_overon' : Bin_overon
                         }
                     else:
                         prev = ('SBIN='+Bin_s_num,self.binning[Bin_s_num]['Bin_s_name'],

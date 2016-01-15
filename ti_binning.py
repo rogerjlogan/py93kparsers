@@ -59,6 +59,44 @@ CATEGORY_VALID_OR = ['S_ANY','OR']
 
 OTHER_BIN = '13'
 
+UTM_HARDCODED_TESTNAMES = [
+    'ArrIddQStorageProg_st',
+    'DeltaTemp',
+    'ElevatedCTProg_st',
+    'FTMemRepEFProg_st',
+    'IDDQ_VDDARR_Vnom_Hardline_st',
+    'IDDQ_VDD_Vmin_Hardline_st',
+    'IDDQ_VDD_Vnom_Hardline_st',
+    'IddqVnom_burnin_bin1',
+    'IddqVnom_burnin_bin2',
+    'IddqVnom_burnin_bin3',
+    'IddqVnom_burnin_bin4',
+    'IddqVnom_burnin_bin5',
+    'MEMORYREPAIRED',
+    'MemBistInit_st',
+    'PostAdaptiveRepair_st',
+    'SRc0BuildStr_st',
+    'SRc0Power_st',
+    'SampleDieProg_st',
+    'SmartReflexRead_st',
+    'TDiodeRead_st',
+    'TFTFmaxProg_st',
+    'TFTOutlier_st',
+    'T_CRITICAL_TEMPERATURE',
+    'T_CTCS_MAX_READ',
+    'T_CTCS_MIN_READ',
+    'T_TD_MAX_READ',
+    'T_TD_MIN_READ',
+    'TempStorageProg_st',
+    'VIDSpeedOutOfSpace_st',
+    'VIDSpeedProg_st',
+    'VerifyProgramVIDSpeeds_st',
+    'adaptiveRepairPatterns_st',
+    'adaptiveRepair_st',
+    'alreadyRepair_st',
+    'leak_iddq_fail',
+]
+
 testflow = None
 testflow_file = None
 testtable = None
@@ -474,9 +512,9 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
             unsorted_rows.append((nid,ts,'MISSING BIN INFO','---','---','---','---',False))
 
     if tt2c_valid:
-        headers = ['node_id','SuiteName','Testmethod','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron',os.path.basename(test_name_type_file)+' : '+test_type_to_check]
+        headers = ['node_id','Bypassed','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron(local)','Testmethod',os.path.basename(test_name_type_file)+' : '+test_type_to_check]
     else:
-        headers = ['node_id','SuiteName','Testmethod','Bypassed','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron']
+        headers = ['node_id','Bypassed','SuiteName','SoftBinNum','SoftBinName','HardBinName','BinNumber','BinSource','BinOveron(local)','Testmethod',]
     with open(csv_file,'wb') as csvFile:
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
@@ -516,27 +554,27 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
                     tt2c_log = 'SUITE: "{}" NOT IN "{}"'.format(suite,os.path.basename(test_name_type_file))
                     log.warning(tt2c_log+'\tNOTE: this WARNING is also in "%s"',os.path.basename(csv_file))
                 writer.writerow({'node_id' : int(nid),
-                                 'SuiteName' : suite2show,
-                                 'Testmethod' : testmethod,
                                  'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
+                                 'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
                                  'BinNumber' : hbin.lstrip('0'),
                                  'BinSource' : bintype,
-                                 'BinOveron' : 'Y' if overon else '',
+                                 'BinOveron(local)' : 'Y' if overon else '',
+                                 'Testmethod' : testmethod,
                                  os.path.basename(test_name_type_file)+' : '+test_type_to_check : tt2c})
             else:
                 writer.writerow({'node_id' : int(nid),
-                                 'SuiteName' : suite2show,
-                                 'Testmethod' : testmethod,
                                  'Bypassed' : 'Y' if suite in testflow.bypassed_testsuites else '',
+                                 'SuiteName' : suite2show,
                                  'SoftBinNum' : sbin.lstrip('0'),
                                  'SoftBinName' : sname,
                                  'HardBinName' : hname,
                                  'BinNumber' : hbin.lstrip('0'),
                                  'BinSource' : bintype,
-                                 'BinOveron' : 'Y' if overon else ''})
+                                 'BinOveron(local)' : 'Y' if overon else '',
+                                 'Testmethod' : testmethod})
 
 
 def create_softbinaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):
@@ -600,16 +638,23 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         log.info(msg)
 
     # get union (unique set) of suites in flow and not in flow and create a list of them
-    testsuite_superset = list(set(testflow_binning.keys()) | categories_extra_tests)
+    testsuite_superset = list(set(testflow_binning.keys()) | categories_extra_tests | set(UTM_HARDCODED_TESTNAMES))
 
     failchecks = {}
     failcheck_desc = [
+
+        # TODO: change these to tuples to have their fail index with them, since they are no longer serial (we have to change in 4 or 5 places every time this gets updated)
+
+        # ERRORS (<10)
         ('set_pass OR set_fail','ERROR: These testsuite flags CAN break Category binning.'), # 0
         ('InTestflow AND Bypassed AND NOT Bang ("!") AND TT=1','ERROR: Major problem here.  Causes Bin 13.'), # 1
         ('InTestflow AND NOT InCategories','ERROR: All Testsuites in this file use Category binning. (no stop bin or multi bin "downstream").'), # 2
-        ('NOT InTestflow AND TT=1','WARNING: This testsuite MUST be in your flow (TT=1) even if bypassed, but it\'s not. Why?'), # 3
-        ('InTestflow AND TT=0','WARNING: Potential test escape.  If this testsuite fails, you will not know.'), # 4
-        ('InTestflow AND NOT InTestTypes','WARNING: Defaults to "1" but you should probably add it to TestTypes to be explicit.') # 5
+        ('HARDCODED Testname NOT InCategories','ERROR: This Testname must be in BinningCategories.csv because it is hardcoded in the UTM.'), # 3
+
+        # WARNINGS (>=10)
+        ('NOT InTestflow AND TT=1','WARNING: This testsuite MUST be in your flow (TT=1) even if bypassed, but it\'s not. Why?'), # 10
+        ('InTestflow AND TT=0','WARNING: Potential test escape.  If this testsuite fails, you will not know.'), # 11
+        ('InTestflow AND NOT InTestTypes','WARNING: Defaults to "1" but you should probably add it to TestTypes to be explicit.') # 12
     ]
 
     hdr_null = ['--------------------------------------']
@@ -620,7 +665,18 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer = csv.DictWriter(csvFile,fieldnames=hdr1)
         writer.writeheader()
         for i,check in enumerate(failcheck_desc):
-            writer.writerow({'CheckIndex': i,
+
+            # tedious, i know, but i'm pressed for time
+            if i == 4:
+                idx = 10
+            elif i == 5:
+                idx = 11
+            elif i == 6:
+                idx = 12
+            else:
+                idx = i
+
+            writer.writerow({'CheckIndex': idx,
                              'CheckType': check[0],
                              'CheckDescription': check[1]})
         writer = csv.DictWriter(csvFile,fieldnames=hdr_null)
@@ -664,18 +720,25 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 testtype_value = None
 
             # Ok, let's start checking for problems
+
+            # ERRORS
+            # ho hum, more tediousness... gotta make these indices dynamic instead of hardcoding them... later
             if set_pass or set_fail:
                 failchecks[ts][0] = True
             if InTestflow and bypass and not bang and '1' == testtype_value:
                 failchecks[ts][1] = True
             if InTestflow and not InCategories:
                 failchecks[ts][2] = True
-            if not InTestflow and '1' == testtype_value:
+            if ts in UTM_HARDCODED_TESTNAMES and not InCategories:
                 failchecks[ts][3] = True
+
+            # WARNINGS
+            if not InTestflow and '1' == testtype_value:
+                failchecks[ts][10] = True
             if InTestflow and '0' == testtype_value:
-                failchecks[ts][4] = True
+                failchecks[ts][11] = True
             if InTestflow and not InTestTypes:
-                failchecks[ts][5] = True
+                failchecks[ts][12] = True
 
             if any(failchecks[ts]):
                 writer.writerow({'node_id' : nid,

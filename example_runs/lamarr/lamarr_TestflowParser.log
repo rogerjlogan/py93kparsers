@@ -1,0 +1,10 @@
+01/15/2016 03:45:01 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting lamarr_TestflowParser.log
+01/15/2016 03:45:01 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/example_runs/lamarr/lamarr_TestflowParser.log
+01/15/2016 03:45:01 PM INFO: Running TestflowParser.pyc...
+01/15/2016 03:45:02 PM INFO: Parsing testflow file: Final_RPC_flow.mfh .....
+01/15/2016 03:45:05 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting lamarr_Final_RPC_flow_TestflowParser.png
+01/15/2016 03:45:05 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.png
+01/15/2016 03:45:05 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting lamarr_Final_RPC_flow_TestflowParser.log
+01/15/2016 03:45:05 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.log
+01/15/2016 03:45:14 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
+01/15/2016 03:45:14 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0

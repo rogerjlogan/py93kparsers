@@ -1,302 +1,302 @@
-node_id,SuiteName,Testmethod,Bypassed,SoftBinNum,SoftBinName,HardBinName,BinNumber,BinSource,BinOveron,Lamarr_TestNameTypeList.csv : FT_RPC_HT
-0,setUserVars,USP_TM_Interface.USPSharedMemory.setUserVars,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-13,Init_framework,ti_tml.Misc.Init_Library,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-14,UpdateGuardBand,ti_tml.Misc.UpdateGuardBandSpecs,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-17,DPS128Connectivity,dc_tml.DcTest.DpsConnectivity,,97,F_DPS128_Connectivity,F_OS,8,stop,,MISSING TestNameType ENTRY
-18,USP_WRITE_EEPROM,USP_EEPROM64K.EepromClass.USP_WRITE_24C64,Y,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-20,USP_READ_EEPROM,USP_EEPROM64K.EepromClass.USP_READ_24C64,,98,F_LOADBOARDCHK_SBIN,F_ERROR,7,stop,,MISSING TestNameType ENTRY
-21,CTCS_Init_st,ti_tml.Thermal.Thermal_Control,,1051,F_CTCS_INIT,F_ERROR,7,cat,,!0
-22,CTCS_End_Of_Lot_st,ti_tml.Thermal.Thermal_Control,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-29,UHC4Connectivity,dc_tml.DcTest.DpsConnectivity,,96,F_UHC4_Connectivity,F_OS,8,stop,,MISSING TestNameType ENTRY
-31,Thermal_init,ti_tml.Thermal.Thermal_Reading,,999,F_THERMAL_INIT,F_ERROR,7,multi,Y,0
-32,CTCS_Init_manual_st,ti_tml.Thermal.Thermal_Control,,1051,F_CTCS_INIT,F_ERROR,7,cat,,!0
-34,CTCS_Read_st -- DeltaTemp,ti_tml.Thermal.Thermal_Control,,988,F_CTCS_READ_DELTA,F_ERROR,7,multi,Y,0
-34,CTCS_Read_st -- CTCS : TD,ti_tml.Thermal.Thermal_Control,,995,F_CTCS_READ,F_ERROR,7,multi,Y,0
-35,DISCONNECT_1,miscellaneous_tml.TestControl.Disconnect,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-37,SetupBBT_st,ti_tml.BBT.SetupBBT,Y,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-39,DISCONNECT_SupplyShortsPre,miscellaneous_tml.TestControl.Disconnect,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-41,SupplyShortsPre_st,ti_tml.DC.Supply_shorts,,9,OS_SHRT_VDD_F,F_OS,8,multi,Y,1
-44,PinShortsTestPerPin_st_nIForce_Even,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,0
-45,PinShortsTest_st_nIForce_Even,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,1
-47,PinShortsTestPerPin_st_pIForce_Even,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,0
-48,PinShortsTest_st_pIForce_Even,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,1
-50,PinShortsTestPerPin_st_nIForce_Odd,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,0
-51,PinShortsTest_st_nIForce_Odd,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,1
-53,PinShortsTestPerPin_st_pIForce_Odd,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,0
-54,PinShortsTest_st_pIForce_Odd,ti_tml.DC.Continuity_shorts,,7,OS_OPEN_F,F_OS,8,multi,Y,1
-56,PinOpensTestPerPin_st,ti_tml.DC.Continuity_opens,,7,OS_OPEN_F,F_OS,8,multi,Y,0
-57,PinOpensTest_st,ti_tml.DC.Continuity_opens,,7,OS_OPEN_F,F_OS,8,multi,Y,1
-58,DISCONNECT_Conty,miscellaneous_tml.TestControl.Disconnect,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-60,DieIDPostRead_st,ti_tml.DieID.PostReadDieID,,31,FUSE_DIEID_PostRead_F,F_FUSE,10,multi,Y,1
-63,CTCS_Start_st,ti_tml.Thermal.Thermal_Control,,992,F_CTCS_START,F_ERROR,7,multi,Y,0
-64,CTCS_START_Thermal,ti_tml.Thermal.Thermal_Control,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-66,CTCS_Purge_st -- CTCS_Short,ti_tml.Thermal.Thermal_Control,,987,F_CTCS_STAB,F_ERROR,7,multi,Y,0
-66,CTCS_Purge_st -- CTCS_Purge_Flag_1 : CTCS_Purge_Flag_1_1 : CTCS_Purge_Flag_1_2 : CTCS_Purge_Flag_2 : CTCS_Purge_Flag_2_1 : CTCS_Purge_Flag_2_2 : PurgeTimeLimit : CTCS_Long : CTCS,ti_tml.Thermal.Thermal_Control,,994,F_CTCS_PURGE,F_ERROR,7,multi,Y,0
-68,Thermo_Sensors_Calibration,ti_tml.Thermal.Thermal_Calibration,,1058,F_THERMDIODE,F_ERROR,7,cat,,!0
-70,Thermo_Sensors_Read_Temperature,ti_tml.Thermal.Thermal_Reading,,1058,F_THERMDIODE,F_ERROR,7,cat,,!0
-71,CTCS_Thermal,ti_tml.Thermal.Thermal_Control,,MISSING BIN INFO,---,---,---,---,,0
-73,ReadVIDSpeeds,ti_tml.MCP.MCP_ReadVIDSpeeds,,1104,FUSE_VerifyVIDSpeeds_F,F_FUSE,10,cat,,!0
-74,PreReadSrc0,ti_tml.SmartReflex.SR_PreReadSRc0,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-77,SetGlobalSRVoltages -- Invalid_SmartReflexVoltage,ti_tml.SmartReflex.SR_setGlobalSRVoltage,,53,LEAK_IDDQ_N_Hardline_F,F_LEAK,12,multi,Y,MISSING TestNameType ENTRY
-77,SetGlobalSRVoltages -- globalSR1VIDVoltage : globalSR1VminVoltage : globalSR2VIDVoltage : globalSR2VminVoltage : SRV1_ICalc : SRV2_ICalc : M_Budget1_Value1 : B_Budget1_Value1 : I_budget1_0p8_1 : M_Budget2_Value2 : B_Budget2_Value2 : I_budget2_0p8_2 : I_budget1_1p0_1 : I_budget2_1p0_2 : B_value90_1 : B_value90_2 : M_value90_1 : M_value90_2 : VDDARR_IDDQ_Vnom_90C_ICalc_1 : VDD_IDDQ_Vnom_90C_ICalc_1 : VDDARR_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vmin_90C_ICalc_1 : VDD_IDDQ_Vmin_90C_ICalc_2 : TD_JB_IDDQ_TEMP : TD_JA_IDDQ_TEMP : TD_NB_IDDQ_TEMP : TD_NA_IDDQ_TEMP : VDD_Core_IDDQ_Vmin_PR_IMeas : VDD_Core_IDDQ_Vnom_PR_IMeas : VDDARR_IDDQ_Vnom_PR_IMeas : VDD_Core_IDDQ_Vmin2_FT_IMeas : VDD_Core_IDDQ_Vnom2_FT_IMeas : VDDARR_IDDQ_Vnom2_FT_IMeas : TD_LEAST_TEMP_IDDQ,ti_tml.SmartReflex.SR_setGlobalSRVoltage,,63,SMARTREFLEX_F,F_LEAK,12,multi,Y,MISSING TestNameType ENTRY
-80,IddqVmin1_IqC08Ful_______LM10_005_st_PM1_FUNC,ti_tml.Digital.Functional_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-81,IddqVmin1_IqC08Ful_______LM10_005_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-82,IddqVmin1_IqC08Ful_______LM10_005_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,0
-83,IddqVmin1_IqC08Ful_______LM10_005_st_CCE,ccf_tml.CCExecution,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,MISSING TestNameType ENTRY
-85,IddqVmin1_IqC08Ful_______LM10_006_st_PM1_FUNC,ti_tml.Digital.Functional_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-86,IddqVmin1_IqC08Ful_______LM10_006_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-87,IddqVmin1_IqC08Ful_______LM10_006_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,0
-88,IddqVmin1_IqC08Ful_______LM10_006_st_CCE,ccf_tml.CCExecution,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,MISSING TestNameType ENTRY
-90,IddqVnom_IqC08Ful_______LM10_005_st_PM1_FUNC,ti_tml.Digital.Functional_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-91,IddqVnom_IqC08Ful_______LM10_005_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-92,IddqVnom_IqC08Ful_______LM10_005_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,0
-93,IddqVnom_IqC08Ful_______LM10_005_st_CCE,ccf_tml.CCExecution,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,MISSING TestNameType ENTRY
-95,IddqVnom_IqC08Ful_______LM10_006_st_PM1_FUNC,ti_tml.Digital.Functional_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-96,IddqVnom_IqC08Ful_______LM10_006_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,1
-97,IddqVnom_IqC08Ful_______LM10_006_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,0
-98,IddqVnom_IqC08Ful_______LM10_006_st_CCE,ccf_tml.CCExecution,,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,MISSING TestNameType ENTRY
-100,IddqVmax_IqC08Ful_______LM10_005_st_PM1_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-101,IddqVmax_IqC08Ful_______LM10_005_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-102,IddqVmax_IqC08Ful_______LM10_005_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-103,IddqVmax_IqC08Ful_______LM10_005_st_CCE,ccf_tml.CCExecution,Y,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-105,IddqVmax_IqC08Ful_______LM10_006_st_PM1_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-106,IddqVmax_IqC08Ful_______LM10_006_st_PM1_MEAS,ti_tml.DC.IDDQ_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-107,IddqVmax_IqC08Ful_______LM10_006_st_end_FUNC,ti_tml.Digital.Functional_cct,Y,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,!0
-108,IddqVmax_IqC08Ful_______LM10_006_st_CCE,ccf_tml.CCExecution,Y,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-113,SRc0PowerTest -- Invalid_SmartReflexVoltage,ti_tml.SmartReflex.SR_SRc0PowerTest,,53,LEAK_IDDQ_N_Hardline_F,F_LEAK,12,multi,Y,MISSING TestNameType ENTRY
-113,SRc0PowerTest -- globalSR1VIDVoltage : globalSR1VminVoltage : globalSR2VIDVoltage : globalSR2VminVoltage : SRV1_ICalc : SRV2_ICalc : M_Budget1_Value1 : B_Budget1_Value1 : I_budget1_0p8_1 : M_Budget2_Value2 : B_Budget2_Value2 : I_budget2_0p8_2 : I_budget1_1p0_1 : I_budget2_1p0_2 : B_value90_1 : B_value90_2 : M_value90_1 : M_value90_2 : VDDARR_IDDQ_Vnom_90C_ICalc_1 : VDD_IDDQ_Vnom_90C_ICalc_1 : VDDARR_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vmin_90C_ICalc_1 : VDD_IDDQ_Vmin_90C_ICalc_2 : TD_JB_IDDQ_TEMP : TD_JA_IDDQ_TEMP : TD_NB_IDDQ_TEMP : TD_NA_IDDQ_TEMP : VDD_Core_IDDQ_Vmin_PR_IMeas : VDD_Core_IDDQ_Vnom_PR_IMeas : VDDARR_IDDQ_Vnom_PR_IMeas : VDD_Core_IDDQ_Vmin2_FT_IMeas : VDD_Core_IDDQ_Vnom2_FT_IMeas : VDDARR_IDDQ_Vnom2_FT_IMeas : TD_LEAST_TEMP_IDDQ,ti_tml.SmartReflex.SR_SRc0PowerTest,,63,SMARTREFLEX_F,F_LEAK,12,multi,Y,MISSING TestNameType ENTRY
-117,ODP_RingOscTest,ti_tml.ODP.ODP_RingOscTest,Y,1010,ODP_RingOsc_F,F_OS,8,cat,,!0
-118,ODP_NullDutTest,ti_tml.ODP.ODP_NullDutTest,Y,1011,ODP_Icap_F,F_OS,8,cat,,!0
-119,ODP_IcapTest,ti_tml.ODP.ODP_IcapTest,Y,1012,ODP_Via_F,F_OS,8,cat,,!0
-120,ODP_ViaTest,ti_tml.ODP.ODP_ViaTest,Y,1013,ODP_XtrIdrive_F,F_OS,8,cat,,!0
-121,ODP_XtrIdriveTest,ti_tml.ODP.ODP_XtrIdriveTest,Y,1014,ODP_XtrVt_F,F_OS,8,cat,,!0
-122,ODP_XtrVtTest,ti_tml.ODP.ODP_XtrVtTest,Y,1015,MISSING BIN INFO,---,---,cat,,!0
-124,EfuseInitCheck_st,ti_tml.Digital.Functional,,1101,FUSE_InitCheck_F,F_FUSE,10,cat,,1
-125,EfuseRunAutoload_st,ti_tml.Digital.Functional,,1102,FUSE_RunAutoload_F,F_FUSE,10,cat,,1
-127,BRDG_ALL_FuncVmin_st,ti_tml.Digital.Functional,,1200,FUNC_J_BRDG_ALL_F,F_FUNC,13,cat,,1
-128,BSCAN_RPC_FuncVmin_st,ti_tml.Digital.Functional,,1201,FUNC_J_BSCAN_RPC_F,F_FUNC,13,cat,,1
-129,CHAIN_SAF_FuncVmin_st,ti_tml.Digital.Functional,,1202,FUNC_J_CHAIN_SAF_F,F_FUNC,13,cat,,1
-130,CHAIN_SAF_1_FuncVmin_st,ti_tml.Digital.Functional,,1203,FUNC_J_CHAIN_SAF_1_F,F_FUNC,13,cat,,1
-131,CHAIN_SAF_2_FuncVmin_st,ti_tml.Digital.Functional,,1204,FUNC_J_CHAIN_SAF_2_F,F_FUNC,13,cat,,1
-132,CHAIN_SAF_3_FuncVmin_st,ti_tml.Digital.Functional,,1205,FUNC_J_CHAIN_SAF_3_F,F_FUNC,13,cat,,1
-133,CHAIN_SAF_4_FuncVmin_st,ti_tml.Digital.Functional,,1206,FUNC_J_CHAIN_SAF_4_F,F_FUNC,13,cat,,1
-134,CHAIN_SAF_5_FuncVmin_st,ti_tml.Digital.Functional,,1207,FUNC_J_CHAIN_SAF_5_F,F_FUNC,13,cat,,1
-135,CHAIN_SAF_6_FuncVmin_st,ti_tml.Digital.Functional,,1208,FUNC_J_CHAIN_SAF_6_F,F_FUNC,13,cat,,1
-136,CHAIN_TRANS_FuncVmin_st,ti_tml.Digital.Functional,,1209,FUNC_J_CHAIN_TRANS_F,F_FUNC,13,cat,,1
-137,SAF_ALL_FuncVmin_st,ti_tml.Digital.Functional,,1210,FUNC_J_SAF_ALL_F,F_FUNC,13,cat,,1
-138,SAF_ALL_1_FuncVmin_st,ti_tml.Digital.Functional,,1211,FUNC_J_SAF_ALL_1_F,F_FUNC,13,cat,,1
-139,SAF_ALL_2_FuncVmin_st,ti_tml.Digital.Functional,,1212,FUNC_J_SAF_ALL_2_F,F_FUNC,13,cat,,1
-140,SAF_FULCHP_FuncVmin_st,ti_tml.Digital.Functional,,1213,FUNC_J_SAF_FULCHP_F,F_FUNC,13,cat,,1
-142,ApplySRVminGBfromTDMeas,ti_tml.SmartReflex.SR_CorrectSRwithTDMeas,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-145,SpeedSortVert_TRANS_P08,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-146,TRANS_P08_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1303,FUNC_OG_TRANS_P08_F,F_FUNC_SPEED,14,cat,,1
-150,SpeedSortVert_TRANS_P08_1,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-151,TRANS_P08_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1304,FUNC_OG_TRANS_P08_1_F,F_FUNC_SPEED,14,cat,,1
-156,SpeedSortVert_PBIST_TETRIS,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-157,PB_PLL_TETRIS_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1406,FUNC_OG_PB_PLL_TETRIS_F,F_FUNC_SRAM,15,cat,,1
-162,SpeedSortVert_LED_TETRIS,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-163,LED_TETRIS_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1279,FUNC_OG_LED_TETRIS_F,F_FUNC_SPEED,14,cat,,1
-168,SpeedSortVert_TRANS,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-169,TRANS_P01_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1290,FUNC_OG_TRANS_P01_F,F_FUNC_SPEED,14,cat,,1
-170,TRANS_P02_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1293,FUNC_OG_TRANS_P02_1_F,F_FUNC_SPEED,14,cat,,1
-171,TRANS_P03_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1294,FUNC_OG_TRANS_P03_F,F_FUNC_SPEED,14,cat,,1
-172,TRANS_P04_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1297,FUNC_OG_TRANS_P04_1_F,F_FUNC_SPEED,14,cat,,1
-173,TRANS_P05_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1299,FUNC_OG_TRANS_P05_1_F,F_FUNC_SPEED,14,cat,,1
-174,TRANS_P07_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1301,FUNC_OG_TRANS_P07_F,F_FUNC_SPEED,14,cat,,1
-175,TRANS_P09_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1305,FUNC_OG_TRANS_P09_F,F_FUNC_SPEED,14,cat,,1
-179,SpeedSortVert_TRANS_1,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-180,TRANS_P01_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1291,FUNC_OG_TRANS_P01_1_F,F_FUNC_SPEED,14,cat,,1
-181,TRANS_P02_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1292,FUNC_OG_TRANS_P02_F,F_FUNC_SPEED,14,cat,,1
-182,TRANS_P03_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1295,FUNC_OG_TRANS_P03_1_F,F_FUNC_SPEED,14,cat,,1
-183,TRANS_P04_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1296,FUNC_OG_TRANS_P04_F,F_FUNC_SPEED,14,cat,,1
-184,TRANS_P05_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1298,FUNC_OG_TRANS_P05_F,F_FUNC_SPEED,14,cat,,1
-185,TRANS_P06_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1300,FUNC_OG_TRANS_P06_F,F_FUNC_SPEED,14,cat,,1
-186,TRANS_P07_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1302,FUNC_OG_TRANS_P07_1_F,F_FUNC_SPEED,14,cat,,1
-187,TRANS_P09_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1306,FUNC_OG_TRANS_P09_1_F,F_FUNC_SPEED,14,cat,,1
-191,SpeedSortVert_TRANS_FULLCHIP,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-192,TRANS_FULCHIP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1289,FUNC_OG_TRANS_FULCHIP_F,F_FUNC_SPEED,14,cat,,1
-197,SpeedSortVert_PBIST,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-198,PB_PLL_GEM_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1402,FUNC_OG_PB_PLL_GEM_F,F_FUNC_SRAM,15,cat,,1
-199,PB_PLL_CHIP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1400,FUNC_OG_PB_PLL_CHIP_F,F_FUNC_SRAM,15,cat,,1
-200,PB_PLL_MSMC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1403,FUNC_OG_PB_PLL_MSMC_F,F_FUNC_SRAM,15,cat,,1
-201,PB_PLL_ROM_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1405,FUNC_OG_PB_PLL_ROM_F,F_FUNC_SRAM,15,cat,,1
-206,SpeedSortVert_LED,ti_tml.Digital.SpeedSortVertical,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-207,LED_BCP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1250,FUNC_OG_LED_BCP_F,F_FUNC_SPEED,14,cat,,1
-208,LED_BOOTCFG_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1251,FUNC_OG_LED_BOOTCFG_F,F_FUNC_SPEED,14,cat,,1
-209,LED_DDR_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1252,FUNC_OG_LED_DDR_F,F_FUNC_SPEED,14,cat,,1
-210,LED_DFT_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1253,FUNC_OG_LED_DFT_F,F_FUNC_SPEED,14,cat,,1
-211,LED_EDMA_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1254,FUNC_OG_LED_EDMA_F,F_FUNC_SPEED,14,cat,,1
-212,LED_EMIF_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1255,FUNC_OG_LED_EMIF_F,F_FUNC_SPEED,14,cat,,1
-213,LED_ETB_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1256,FUNC_OG_LED_ETB_F,F_FUNC_SPEED,14,cat,,1
-214,LED_FFTC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1257,FUNC_OG_LED_FFTC_F,F_FUNC_SPEED,14,cat,,1
-215,LED_GEM_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1258,FUNC_OG_LED_GEM_F,F_FUNC_SPEED,14,cat,,1
-216,LED_GPIO_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1259,FUNC_OG_LED_GPIO_F,F_FUNC_SPEED,14,cat,,1
-217,LED_I2C_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1260,FUNC_OG_LED_I2C_F,F_FUNC_SPEED,14,cat,,1
-218,LED_INTC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1261,FUNC_OG_LED_INTC_F,F_FUNC_SPEED,14,cat,,1
-219,LED_IQN_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1262,FUNC_OG_LED_IQN_F,F_FUNC_SPEED,14,cat,,1
-220,LED_MMAP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1263,FUNC_OG_LED_MMAP_F,F_FUNC_SPEED,14,cat,,1
-221,LED_MPU_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1264,FUNC_OG_LED_MPU_F,F_FUNC_SPEED,14,cat,,1
-222,LED_MSMC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1265,FUNC_OG_LED_MSMC_F,F_FUNC_SPEED,14,cat,,1
-223,LED_OSR_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1267,FUNC_OG_LED_OSR_F,F_FUNC_SPEED,14,cat,,1
-224,LED_PCIE_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1268,FUNC_OG_LED_PCIE_F,F_FUNC_SPEED,14,cat,,1
-225,LED_PLLCTRL_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1269,FUNC_OG_LED_PLLCTRL_F,F_FUNC_SPEED,14,cat,,1
-226,LED_PSC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1270,FUNC_OG_LED_PSC_F,F_FUNC_SPEED,14,cat,,1
-227,LED_QMGR_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1271,FUNC_OG_LED_QMGR_F,F_FUNC_SPEED,14,cat,,1
-228,LED_RAC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1272,FUNC_OG_LED_RAC_F,F_FUNC_SPEED,14,cat,,1
-229,LED_SEC_CTL_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1273,FUNC_OG_LED_SEC_CTL_F,F_FUNC_SPEED,14,cat,,1
-230,LED_SEMAPHORE_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1274,FUNC_OG_LED_SEMAPHORE_F,F_FUNC_SPEED,14,cat,,1
-231,LED_SPI_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1276,FUNC_OG_LED_SPI_F,F_FUNC_SPEED,14,cat,,1
-232,LED_TAC_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1277,FUNC_OG_LED_TAC_F,F_FUNC_SPEED,14,cat,,1
-233,LED_TCP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1278,FUNC_OG_LED_TCP_F,F_FUNC_SPEED,14,cat,,1
-234,LED_TIMER_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1280,FUNC_OG_LED_TIMER_F,F_FUNC_SPEED,14,cat,,1
-235,LED_TRACER_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1281,FUNC_OG_LED_TRACER_F,F_FUNC_SPEED,14,cat,,1
-236,LED_UART_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1282,FUNC_OG_LED_UART_F,F_FUNC_SPEED,14,cat,,1
-237,LED_USB_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1283,FUNC_OG_LED_USB_F,F_FUNC_SPEED,14,cat,,1
-238,LED_USIM_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1284,FUNC_OG_LED_USIM_F,F_FUNC_SPEED,14,cat,,1
-239,LED_VCP_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1285,FUNC_OG_LED_VCP_F,F_FUNC_SPEED,14,cat,,1
-243,TRANS_CPU1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1288,FUNC_OG_TRANS_CPU1_F,F_FUNC_SPEED,14,cat,,1
-244,TRANS_P10_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1307,FUNC_OG_TRANS_P10_F,F_FUNC_SPEED,14,cat,,1
-245,TRANS_Q04_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1308,FUNC_OG_TRANS_Q04_F,F_FUNC_SPEED,14,cat,,1
-246,TRANS_Q04_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1309,FUNC_OG_TRANS_Q04_1_F,F_FUNC_SPEED,14,cat,,1
-247,TRANS_Q06_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1310,FUNC_OG_TRANS_Q06_F,F_FUNC_SPEED,14,cat,,1
-248,TRANS_Q07_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1311,FUNC_OG_TRANS_Q07_F,F_FUNC_SPEED,14,cat,,1
-249,TRANS_Q07_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1312,FUNC_OG_TRANS_Q07_1_F,F_FUNC_SPEED,14,cat,,1
-250,TRANS_Q09_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1313,FUNC_OG_TRANS_Q09_F,F_FUNC_SPEED,14,cat,,1
-251,TRANS_COV_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1286,FUNC_OG_TRANS_COV_F,F_FUNC_SPEED,14,cat,,1
-252,TRANS_COV_1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1287,FUNC_OG_TRANS_COV_1_F,F_FUNC_SPEED,14,cat,,1
-253,PB_PLL_DFE_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1401,FUNC_OG_PB_PLL_DFE_F,F_FUNC_SRAM,15,cat,,1
-254,PB_PLL_NSS_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1404,FUNC_OG_PB_PLL_NSS_F,F_FUNC_SRAM,15,cat,,1
-255,LED_NSS_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1266,FUNC_OG_LED_NSS_F,F_FUNC_SPEED,14,cat,,1
-256,LED_SMARTREFLEX_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1275,FUNC_OG_LED_SMARTREFLEX_F,F_FUNC_SPEED,14,cat,,1
-257,PHY_DRFE0_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,Y,1450,FUNC_OG_PHY_DRFE0_F,F_PARA,11,cat,,0
-258,PHY_DRFE1_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,Y,1451,FUNC_OG_PHY_DRFE1_F,F_PARA,11,cat,,0
-259,PHY_PCIE_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,Y,1452,FUNC_OG_PHY_PCIE_F,F_PARA,11,cat,,0
-260,PHY_SGMII_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,Y,1453,FUNC_OG_PHY_SGMII_F,F_PARA,11,cat,,0
-261,PHY_USB_AtSpeedSRVminOD_st,ti_tml.Digital.Functional,,1454,FUNC_OG_PHY_USB_F,F_PARA,11,cat,,1
-263,PHY_DDR_AC_AtSpeedSRVminDDR3L_st,ti_tml.Digital.Functional,,1455,FUNC_2_DDR_AC_F,F_PARA,11,cat,,1
-264,PHY_DDR_AC_BU_AtSpeedSRVminDDR3L_st,ti_tml.Digital.Functional,,1456,FUNC_2_DDR_AC_BU_F,F_PARA,11,cat,,1
-265,PHY_DDR_DAT_AtSpeedSRVminDDR3L_st,ti_tml.Digital.Functional,,1457,FUNC_2_DDR_DAT_F,F_PARA,11,cat,,1
-267,BRDG_ALL_FuncVmaxOK_st,ti_tml.Digital.Functional,,1214,FUNC_OK_BRDG_ALL_F,F_FUNC,13,cat,,1
-268,BSCAN_RPC_FuncVmaxOK_st,ti_tml.Digital.Functional,,1215,FUNC_OK_BSCAN_RPC_F,F_FUNC,13,cat,,1
-269,CHAIN_SAF_FuncVmaxOK_st,ti_tml.Digital.Functional,,1216,FUNC_OK_CHAIN_SAF_F,F_FUNC,13,cat,,1
-270,CHAIN_SAF_1_FuncVmaxOK_st,ti_tml.Digital.Functional,,1217,FUNC_OK_CHAIN_SAF_1_F,F_FUNC,13,cat,,1
-271,CHAIN_SAF_2_FuncVmaxOK_st,ti_tml.Digital.Functional,,1218,FUNC_OK_CHAIN_SAF_2_F,F_FUNC,13,cat,,1
-272,CHAIN_SAF_3_FuncVmaxOK_st,ti_tml.Digital.Functional,,1219,FUNC_OK_CHAIN_SAF_3_F,F_FUNC,13,cat,,1
-273,CHAIN_SAF_4_FuncVmaxOK_st,ti_tml.Digital.Functional,,1220,FUNC_OK_CHAIN_SAF_4_F,F_FUNC,13,cat,,1
-274,CHAIN_SAF_5_FuncVmaxOK_st,ti_tml.Digital.Functional,,1221,FUNC_OK_CHAIN_SAF_5_F,F_FUNC,13,cat,,1
-275,CHAIN_SAF_6_FuncVmaxOK_st,ti_tml.Digital.Functional,,1222,FUNC_OK_CHAIN_SAF_6_F,F_FUNC,13,cat,,1
-276,CHAIN_TRANS_FuncVmaxOK_st,ti_tml.Digital.Functional,,1223,FUNC_OK_CHAIN_TRANS_F,F_FUNC,13,cat,,1
-277,SAF_ALL_FuncVmaxOK_st,ti_tml.Digital.Functional,,1224,FUNC_OK_SAF_ALL_F,F_FUNC,13,cat,,1
-278,SAF_ALL_1_FuncVmaxOK_st,ti_tml.Digital.Functional,,1225,FUNC_OK_SAF_ALL_1_F,F_FUNC,13,cat,,1
-279,SAF_ALL_2_FuncVmaxOK_st,ti_tml.Digital.Functional,,1226,FUNC_OK_SAF_ALL_2_F,F_FUNC,13,cat,,1
-280,SAF_FULCHP_FuncVmaxOK_st,ti_tml.Digital.Functional,,1227,FUNC_OK_SAF_FULCHP_F,F_FUNC,13,cat,,1
-282,TRANS_CPU1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1352,FUNC_OK_TRANS_CPU1_F,F_FUNC_SPEED,14,cat,,1
-283,TRANS_FULCHIP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1353,FUNC_OK_TRANS_FULCHIP_F,F_FUNC_SPEED,14,cat,,1
-284,TRANS_P01_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1354,FUNC_OK_TRANS_P01_F,F_FUNC_SPEED,14,cat,,1
-285,TRANS_P01_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1355,FUNC_OK_TRANS_P01_1_F,F_FUNC_SPEED,14,cat,,1
-286,TRANS_P02_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1356,FUNC_OK_TRANS_P02_F,F_FUNC_SPEED,14,cat,,1
-287,TRANS_P02_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1357,FUNC_OK_TRANS_P02_1_F,F_FUNC_SPEED,14,cat,,1
-288,TRANS_P03_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1358,FUNC_OK_TRANS_P03_F,F_FUNC_SPEED,14,cat,,1
-289,TRANS_P03_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1359,FUNC_OK_TRANS_P03_1_F,F_FUNC_SPEED,14,cat,,1
-290,TRANS_P04_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1360,FUNC_OK_TRANS_P04_F,F_FUNC_SPEED,14,cat,,1
-291,TRANS_P04_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1361,FUNC_OK_TRANS_P04_1_F,F_FUNC_SPEED,14,cat,,1
-292,TRANS_P05_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1362,FUNC_OK_TRANS_P05_F,F_FUNC_SPEED,14,cat,,1
-293,TRANS_P05_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1363,FUNC_OK_TRANS_P05_1_F,F_FUNC_SPEED,14,cat,,1
-294,TRANS_P06_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1364,FUNC_OK_TRANS_P06_F,F_FUNC_SPEED,14,cat,,1
-295,TRANS_P07_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1365,FUNC_OK_TRANS_P07_F,F_FUNC_SPEED,14,cat,,1
-296,TRANS_P07_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1366,FUNC_OK_TRANS_P07_1_F,F_FUNC_SPEED,14,cat,,1
-297,TRANS_P08_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1367,FUNC_OK_TRANS_P08_F,F_FUNC_SPEED,14,cat,,1
-298,TRANS_P08_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1368,FUNC_OK_TRANS_P08_1_F,F_FUNC_SPEED,14,cat,,1
-299,TRANS_P09_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1369,FUNC_OK_TRANS_P09_F,F_FUNC_SPEED,14,cat,,1
-300,TRANS_P09_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1370,FUNC_OK_TRANS_P09_1_F,F_FUNC_SPEED,14,cat,,1
-301,TRANS_P10_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1371,FUNC_OK_TRANS_P10_F,F_FUNC_SPEED,14,cat,,1
-302,TRANS_Q04_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1372,FUNC_OK_TRANS_Q04_F,F_FUNC_SPEED,14,cat,,1
-303,TRANS_Q04_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1373,FUNC_OK_TRANS_Q04_1_F,F_FUNC_SPEED,14,cat,,1
-304,TRANS_Q06_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1374,FUNC_OK_TRANS_Q06_F,F_FUNC_SPEED,14,cat,,1
-305,TRANS_Q07_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1375,FUNC_OK_TRANS_Q07_F,F_FUNC_SPEED,14,cat,,1
-306,TRANS_Q07_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1376,FUNC_OK_TRANS_Q07_1_F,F_FUNC_SPEED,14,cat,,1
-307,TRANS_Q09_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1377,FUNC_OK_TRANS_Q09_F,F_FUNC_SPEED,14,cat,,1
-308,TRANS_COV_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1350,FUNC_OK_TRANS_COV_F,F_FUNC_SPEED,14,cat,,1
-309,TRANS_COV_1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1351,FUNC_OK_TRANS_COV_1_F,F_FUNC_SPEED,14,cat,,1
-310,PB_PLL_CHIP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1407,FUNC_OK_PB_PLL_CHIP_F,F_FUNC_SRAM,15,cat,,1
-311,PB_PLL_DFE_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1408,FUNC_OK_PB_PLL_DFE_F,F_FUNC_SRAM,15,cat,,1
-312,PB_PLL_GEM_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1409,FUNC_OK_PB_PLL_GEM_F,F_FUNC_SRAM,15,cat,,1
-313,PB_PLL_MSMC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1410,FUNC_OK_PB_PLL_MSMC_F,F_FUNC_SRAM,15,cat,,1
-314,PB_PLL_NSS_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1411,FUNC_OK_PB_PLL_NSS_F,F_FUNC_SRAM,15,cat,,1
-315,PB_PLL_ROM_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1412,FUNC_OK_PB_PLL_ROM_F,F_FUNC_SRAM,15,cat,,1
-316,PB_PLL_TETRIS_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1413,FUNC_OK_PB_PLL_TETRIS_F,F_FUNC_SRAM,15,cat,,1
-317,LED_BCP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1314,FUNC_OK_LED_BCP_F,F_FUNC_SPEED,14,cat,,1
-318,LED_BOOTCFG_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1315,FUNC_OK_LED_BOOTCFG_F,F_FUNC_SPEED,14,cat,,1
-319,LED_DDR_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1316,FUNC_OK_LED_DDR_F,F_FUNC_SPEED,14,cat,,1
-320,LED_DFT_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1317,FUNC_OK_LED_DFT_F,F_FUNC_SPEED,14,cat,,1
-321,LED_EDMA_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1318,FUNC_OK_LED_EDMA_F,F_FUNC_SPEED,14,cat,,1
-322,LED_EMIF_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1319,FUNC_OK_LED_EMIF_F,F_FUNC_SPEED,14,cat,,1
-323,LED_ETB_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1320,FUNC_OK_LED_ETB_F,F_FUNC_SPEED,14,cat,,1
-324,LED_FFTC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1321,FUNC_OK_LED_FFTC_F,F_FUNC_SPEED,14,cat,,1
-325,LED_GEM_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1322,FUNC_OK_LED_GEM_F,F_FUNC_SPEED,14,cat,,1
-326,LED_GPIO_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1323,FUNC_OK_LED_GPIO_F,F_FUNC_SPEED,14,cat,,1
-327,LED_I2C_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1324,FUNC_OK_LED_I2C_F,F_FUNC_SPEED,14,cat,,1
-328,LED_INTC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1325,FUNC_OK_LED_INTC_F,F_FUNC_SPEED,14,cat,,1
-329,LED_IQN_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1326,FUNC_OK_LED_IQN_F,F_FUNC_SPEED,14,cat,,1
-330,LED_MMAP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1327,FUNC_OK_LED_MMAP_F,F_FUNC_SPEED,14,cat,,1
-331,LED_MPU_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1328,FUNC_OK_LED_MPU_F,F_FUNC_SPEED,14,cat,,1
-332,LED_MSMC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1329,FUNC_OK_LED_MSMC_F,F_FUNC_SPEED,14,cat,,1
-333,LED_NSS_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1330,FUNC_OK_LED_NSS_F,F_FUNC_SPEED,14,cat,,1
-334,LED_OSR_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1331,FUNC_OK_LED_OSR_F,F_FUNC_SPEED,14,cat,,1
-335,LED_PCIE_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1332,FUNC_OK_LED_PCIE_F,F_FUNC_SPEED,14,cat,,1
-336,LED_PLLCTRL_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1333,FUNC_OK_LED_PLLCTRL_F,F_FUNC_SPEED,14,cat,,1
-337,LED_PSC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1334,FUNC_OK_LED_PSC_F,F_FUNC_SPEED,14,cat,,1
-338,LED_QMGR_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1335,FUNC_OK_LED_QMGR_F,F_FUNC_SPEED,14,cat,,1
-339,LED_RAC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1336,FUNC_OK_LED_RAC_F,F_FUNC_SPEED,14,cat,,1
-340,LED_SEC_CTL_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1337,FUNC_OK_LED_SEC_CTL_F,F_FUNC_SPEED,14,cat,,1
-341,LED_SEMAPHORE_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1338,FUNC_OK_LED_SEMAPHORE_F,F_FUNC_SPEED,14,cat,,1
-342,LED_SMARTREFLEX_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1339,FUNC_OK_LED_SMARTREFLEX_F,F_FUNC_SPEED,14,cat,,1
-343,LED_SPI_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1340,FUNC_OK_LED_SPI_F,F_FUNC_SPEED,14,cat,,1
-344,LED_TAC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1341,FUNC_OK_LED_TAC_F,F_FUNC_SPEED,14,cat,,1
-345,LED_TCP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1342,FUNC_OK_LED_TCP_F,F_FUNC_SPEED,14,cat,,1
-346,LED_TETRIS_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1343,FUNC_OK_LED_TETRIS_F,F_FUNC_SPEED,14,cat,,1
-347,LED_TIMER_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1344,FUNC_OK_LED_TIMER_F,F_FUNC_SPEED,14,cat,,1
-348,LED_TRACER_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1345,FUNC_OK_LED_TRACER_F,F_FUNC_SPEED,14,cat,,1
-349,LED_UART_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1346,FUNC_OK_LED_UART_F,F_FUNC_SPEED,14,cat,,1
-350,LED_USB_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1347,FUNC_OK_LED_USB_F,F_FUNC_SPEED,14,cat,,1
-351,LED_USIM_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1348,FUNC_OK_LED_USIM_F,F_FUNC_SPEED,14,cat,,1
-352,LED_VCP_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1349,FUNC_OK_LED_VCP_F,F_FUNC_SPEED,14,cat,,1
-353,PHY_DDR_AC_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1463,FUNC_OK_PHY_DDR_AC_F,F_PARA,11,cat,,1
-354,PHY_DDR_AC_BU_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1464,FUNC_OK_PHY_DDR_AC_BU_F,F_PARA,11,cat,,1
-355,PHY_DDR_DAT_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1465,FUNC_OK_PHY_DDR_DAT_F,F_PARA,11,cat,,1
-356,PHY_DRFE0_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,Y,1458,FUNC_OK_PHY_DRFE0_F,F_PARA,11,cat,,0
-357,PHY_DRFE1_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,Y,1459,FUNC_OK_PHY_DRFE1_F,F_PARA,11,cat,,0
-358,PHY_PCIE_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,Y,1460,FUNC_OK_PHY_PCIE_F,F_PARA,11,cat,,0
-359,PHY_SGMII_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,Y,1461,FUNC_OK_PHY_SGMII_F,F_PARA,11,cat,,0
-360,PHY_USB_AtSpeedVmaxOK_st,ti_tml.Digital.Functional,,1462,FUNC_OK_PHY_USB_F,F_PARA,11,cat,,1
-362,PB_PLL_VSKEW_AtSpeedVskewPhiOD_st,ti_tml.Digital.Functional,,1414,FUNC_OW_PB_PLL_VSKEW_F,F_FUNC_SRAM,15,cat,,1
-363,PB_PLL_VSKEW_1_AtSpeedVskewPhiOD_st,ti_tml.Digital.Functional,,1415,FUNC_OW_PB_PLL_VSKEW_1_F,F_FUNC_SRAM,15,cat,,1
-364,PB_PLL_VSKEW_2_AtSpeedVskewPhiOD_st,ti_tml.Digital.Functional,,1416,FUNC_OW_PB_PLL_VSKEW_2_F,F_FUNC_SRAM,15,cat,,1
-365,PB_PLL_VSKEW_3_AtSpeedVskewPhiOD_st,ti_tml.Digital.Functional,,1417,FUNC_OW_PB_PLL_VSKEW_3_F,F_FUNC_SRAM,15,cat,,1
-367,LED_TETRIS_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-368,LED_GEM_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-369,LED_GEM_XM_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-370,PB_PLL_RTA_M0_1DO_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-371,PB_PLL_TETRIS_1DO_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-372,TFT_SPEED_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-373,TFT_SPEED_1_FreqSearch_st,ti_tml.Digital.FastFmax_linlin,,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,!0
-375,SAF_C_P00_P10_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-376,SAF_C_P00_P10_1_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-377,SAF_P00_P10_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-378,SAF_P00_P10_1_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-379,SAF_FULCHP_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-380,LED_TETRIS_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-381,LED_GEM_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-382,LED_GEM_XM_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-383,PB_PLL_RTA_M0_1DO_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-384,PB_PLL_TETRIS_1DO_VminSearch_st,ti_tml.Digital.FastVmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-385,TRANS_P08_VminSearch_st,ti_tml.Digital.Vmin_linlin,,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,!0
-388,ProgramVIDSpeeds,ti_tml.MCP.MCP_ProgramVIDSpeeds,,1103,FUSE_ProgramVIDSpeeds_F,F_FUSE,10,multi,Y,MISSING TestNameType ENTRY
-390,VerifyProgramVIDSpeeds,ti_tml.MCP.MCP_VerigyProgramVIDSpeeds,,1104,FUSE_VerifyVIDSpeeds_F,F_FUSE,10,multi,Y,MISSING TestNameType ENTRY
-392,EfusePostVerify_st,ti_tml.Digital.Functional,Y,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-394,EndOfFlowThaw,ti_tml.Thermal.Thermal_Control,,1061,F_WARMUP,F_ERROR,7,cat,,!0
-397,DISCONNECT_SupplyShortsPost,miscellaneous_tml.TestControl.Disconnect,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-399,SupplyShortsPost_st,ti_tml.DC.Supply_shorts,,9,OS_SHRT_VDD_F,F_OS,8,multi,Y,1
-401,DISCONNECT_Cres,miscellaneous_tml.TestControl.Disconnect,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
-402,Cres_st,ti_tml.DC.Cres,,1000,OS_CRES_F,F_OS,8,cat,,1
-405,Final_Binning,ti_tml.Misc.Binning,,MISSING BIN INFO,---,---,---,---,,MISSING TestNameType ENTRY
+node_id,Bypassed,SuiteName,SoftBinNum,SoftBinName,HardBinName,BinNumber,BinSource,BinOveron(local),Testmethod,Lamarr_TestNameTypeList.csv : FT_RPC_HT
+0,,setUserVars,MISSING BIN INFO,---,---,---,---,,USP_TM_Interface.USPSharedMemory.setUserVars,MISSING TestNameType ENTRY
+13,,Init_framework,MISSING BIN INFO,---,---,---,---,,ti_tml.Misc.Init_Library,MISSING TestNameType ENTRY
+14,,UpdateGuardBand,MISSING BIN INFO,---,---,---,---,,ti_tml.Misc.UpdateGuardBandSpecs,MISSING TestNameType ENTRY
+17,,DPS128Connectivity,97,F_DPS128_Connectivity,F_OS,8,stop,,dc_tml.DcTest.DpsConnectivity,MISSING TestNameType ENTRY
+18,Y,USP_WRITE_EEPROM,MISSING BIN INFO,---,---,---,---,,USP_EEPROM64K.EepromClass.USP_WRITE_24C64,MISSING TestNameType ENTRY
+20,,USP_READ_EEPROM,98,F_LOADBOARDCHK_SBIN,F_ERROR,7,stop,,USP_EEPROM64K.EepromClass.USP_READ_24C64,MISSING TestNameType ENTRY
+21,,CTCS_Init_st,1051,F_CTCS_INIT,F_ERROR,7,cat,,ti_tml.Thermal.Thermal_Control,!0
+22,,CTCS_End_Of_Lot_st,MISSING BIN INFO,---,---,---,---,,ti_tml.Thermal.Thermal_Control,MISSING TestNameType ENTRY
+29,,UHC4Connectivity,96,F_UHC4_Connectivity,F_OS,8,stop,,dc_tml.DcTest.DpsConnectivity,MISSING TestNameType ENTRY
+31,,Thermal_init,999,F_THERMAL_INIT,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Reading,0
+32,,CTCS_Init_manual_st,1051,F_CTCS_INIT,F_ERROR,7,cat,,ti_tml.Thermal.Thermal_Control,!0
+34,,CTCS_Read_st -- DeltaTemp,988,F_CTCS_READ_DELTA,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Control,0
+34,,CTCS_Read_st -- CTCS : TD,995,F_CTCS_READ,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Control,0
+35,,DISCONNECT_1,MISSING BIN INFO,---,---,---,---,,miscellaneous_tml.TestControl.Disconnect,MISSING TestNameType ENTRY
+37,Y,SetupBBT_st,MISSING BIN INFO,---,---,---,---,,ti_tml.BBT.SetupBBT,MISSING TestNameType ENTRY
+39,,DISCONNECT_SupplyShortsPre,MISSING BIN INFO,---,---,---,---,,miscellaneous_tml.TestControl.Disconnect,MISSING TestNameType ENTRY
+41,,SupplyShortsPre_st,9,OS_SHRT_VDD_F,F_OS,8,multi,Y,ti_tml.DC.Supply_shorts,1
+44,,PinShortsTestPerPin_st_nIForce_Even,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,0
+45,,PinShortsTest_st_nIForce_Even,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,1
+47,,PinShortsTestPerPin_st_pIForce_Even,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,0
+48,,PinShortsTest_st_pIForce_Even,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,1
+50,,PinShortsTestPerPin_st_nIForce_Odd,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,0
+51,,PinShortsTest_st_nIForce_Odd,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,1
+53,,PinShortsTestPerPin_st_pIForce_Odd,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,0
+54,,PinShortsTest_st_pIForce_Odd,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_shorts,1
+56,,PinOpensTestPerPin_st,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_opens,0
+57,,PinOpensTest_st,7,OS_OPEN_F,F_OS,8,multi,Y,ti_tml.DC.Continuity_opens,1
+58,,DISCONNECT_Conty,MISSING BIN INFO,---,---,---,---,,miscellaneous_tml.TestControl.Disconnect,MISSING TestNameType ENTRY
+60,,DieIDPostRead_st,31,FUSE_DIEID_PostRead_F,F_FUSE,10,multi,Y,ti_tml.DieID.PostReadDieID,1
+63,,CTCS_Start_st,992,F_CTCS_START,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Control,0
+64,,CTCS_START_Thermal,MISSING BIN INFO,---,---,---,---,,ti_tml.Thermal.Thermal_Control,MISSING TestNameType ENTRY
+66,,CTCS_Purge_st -- CTCS_Short,987,F_CTCS_STAB,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Control,0
+66,,CTCS_Purge_st -- CTCS_Purge_Flag_1 : CTCS_Purge_Flag_1_1 : CTCS_Purge_Flag_1_2 : CTCS_Purge_Flag_2 : CTCS_Purge_Flag_2_1 : CTCS_Purge_Flag_2_2 : PurgeTimeLimit : CTCS_Long : CTCS,994,F_CTCS_PURGE,F_ERROR,7,multi,Y,ti_tml.Thermal.Thermal_Control,0
+68,,Thermo_Sensors_Calibration,1058,F_THERMDIODE,F_ERROR,7,cat,,ti_tml.Thermal.Thermal_Calibration,!0
+70,,Thermo_Sensors_Read_Temperature,1058,F_THERMDIODE,F_ERROR,7,cat,,ti_tml.Thermal.Thermal_Reading,!0
+71,,CTCS_Thermal,MISSING BIN INFO,---,---,---,---,,ti_tml.Thermal.Thermal_Control,0
+73,,ReadVIDSpeeds,1104,FUSE_VerifyVIDSpeeds_F,F_FUSE,10,cat,,ti_tml.MCP.MCP_ReadVIDSpeeds,!0
+74,,PreReadSrc0,MISSING BIN INFO,---,---,---,---,,ti_tml.SmartReflex.SR_PreReadSRc0,MISSING TestNameType ENTRY
+77,,SetGlobalSRVoltages -- Invalid_SmartReflexVoltage,53,LEAK_IDDQ_N_Hardline_F,F_LEAK,12,multi,Y,ti_tml.SmartReflex.SR_setGlobalSRVoltage,MISSING TestNameType ENTRY
+77,,SetGlobalSRVoltages -- globalSR1VIDVoltage : globalSR1VminVoltage : globalSR2VIDVoltage : globalSR2VminVoltage : SRV1_ICalc : SRV2_ICalc : M_Budget1_Value1 : B_Budget1_Value1 : I_budget1_0p8_1 : M_Budget2_Value2 : B_Budget2_Value2 : I_budget2_0p8_2 : I_budget1_1p0_1 : I_budget2_1p0_2 : B_value90_1 : B_value90_2 : M_value90_1 : M_value90_2 : VDDARR_IDDQ_Vnom_90C_ICalc_1 : VDD_IDDQ_Vnom_90C_ICalc_1 : VDDARR_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vmin_90C_ICalc_1 : VDD_IDDQ_Vmin_90C_ICalc_2 : TD_JB_IDDQ_TEMP : TD_JA_IDDQ_TEMP : TD_NB_IDDQ_TEMP : TD_NA_IDDQ_TEMP : VDD_Core_IDDQ_Vmin_PR_IMeas : VDD_Core_IDDQ_Vnom_PR_IMeas : VDDARR_IDDQ_Vnom_PR_IMeas : VDD_Core_IDDQ_Vmin2_FT_IMeas : VDD_Core_IDDQ_Vnom2_FT_IMeas : VDDARR_IDDQ_Vnom2_FT_IMeas : TD_LEAST_TEMP_IDDQ,63,SMARTREFLEX_F,F_LEAK,12,multi,Y,ti_tml.SmartReflex.SR_setGlobalSRVoltage,MISSING TestNameType ENTRY
+80,,IddqVmin1_IqC08Ful_______LM10_005_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,1
+81,,IddqVmin1_IqC08Ful_______LM10_005_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,1
+82,Y,IddqVmin1_IqC08Ful_______LM10_005_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,0
+83,,IddqVmin1_IqC08Ful_______LM10_005_st_CCE,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+85,,IddqVmin1_IqC08Ful_______LM10_006_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,1
+86,,IddqVmin1_IqC08Ful_______LM10_006_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,1
+87,Y,IddqVmin1_IqC08Ful_______LM10_006_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,0
+88,,IddqVmin1_IqC08Ful_______LM10_006_st_CCE,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+90,,IddqVnom_IqC08Ful_______LM10_005_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,1
+91,,IddqVnom_IqC08Ful_______LM10_005_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,1
+92,Y,IddqVnom_IqC08Ful_______LM10_005_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,0
+93,,IddqVnom_IqC08Ful_______LM10_005_st_CCE,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+95,,IddqVnom_IqC08Ful_______LM10_006_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,1
+96,,IddqVnom_IqC08Ful_______LM10_006_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,1
+97,Y,IddqVnom_IqC08Ful_______LM10_006_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,0
+98,,IddqVnom_IqC08Ful_______LM10_006_st_CCE,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+100,Y,IddqVmax_IqC08Ful_______LM10_005_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,!0
+101,Y,IddqVmax_IqC08Ful_______LM10_005_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,!0
+102,Y,IddqVmax_IqC08Ful_______LM10_005_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,!0
+103,Y,IddqVmax_IqC08Ful_______LM10_005_st_CCE,MISSING BIN INFO,---,---,---,---,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+105,Y,IddqVmax_IqC08Ful_______LM10_006_st_PM1_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,!0
+106,Y,IddqVmax_IqC08Ful_______LM10_006_st_PM1_MEAS,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.DC.IDDQ_cct,!0
+107,Y,IddqVmax_IqC08Ful_______LM10_006_st_end_FUNC,1150,LEAK_IDDQ_F,F_LEAK,12,cat,,ti_tml.Digital.Functional_cct,!0
+108,Y,IddqVmax_IqC08Ful_______LM10_006_st_CCE,MISSING BIN INFO,---,---,---,---,,ccf_tml.CCExecution,MISSING TestNameType ENTRY
+113,,SRc0PowerTest -- Invalid_SmartReflexVoltage,53,LEAK_IDDQ_N_Hardline_F,F_LEAK,12,multi,Y,ti_tml.SmartReflex.SR_SRc0PowerTest,MISSING TestNameType ENTRY
+113,,SRc0PowerTest -- globalSR1VIDVoltage : globalSR1VminVoltage : globalSR2VIDVoltage : globalSR2VminVoltage : SRV1_ICalc : SRV2_ICalc : M_Budget1_Value1 : B_Budget1_Value1 : I_budget1_0p8_1 : M_Budget2_Value2 : B_Budget2_Value2 : I_budget2_0p8_2 : I_budget1_1p0_1 : I_budget2_1p0_2 : B_value90_1 : B_value90_2 : M_value90_1 : M_value90_2 : VDDARR_IDDQ_Vnom_90C_ICalc_1 : VDD_IDDQ_Vnom_90C_ICalc_1 : VDDARR_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vnom_90C_ICalc_2 : VDD_IDDQ_Vmin_90C_ICalc_1 : VDD_IDDQ_Vmin_90C_ICalc_2 : TD_JB_IDDQ_TEMP : TD_JA_IDDQ_TEMP : TD_NB_IDDQ_TEMP : TD_NA_IDDQ_TEMP : VDD_Core_IDDQ_Vmin_PR_IMeas : VDD_Core_IDDQ_Vnom_PR_IMeas : VDDARR_IDDQ_Vnom_PR_IMeas : VDD_Core_IDDQ_Vmin2_FT_IMeas : VDD_Core_IDDQ_Vnom2_FT_IMeas : VDDARR_IDDQ_Vnom2_FT_IMeas : TD_LEAST_TEMP_IDDQ,63,SMARTREFLEX_F,F_LEAK,12,multi,Y,ti_tml.SmartReflex.SR_SRc0PowerTest,MISSING TestNameType ENTRY
+117,Y,ODP_RingOscTest,1010,ODP_RingOsc_F,F_OS,8,cat,,ti_tml.ODP.ODP_RingOscTest,!0
+118,Y,ODP_NullDutTest,1011,ODP_Icap_F,F_OS,8,cat,,ti_tml.ODP.ODP_NullDutTest,!0
+119,Y,ODP_IcapTest,1012,ODP_Via_F,F_OS,8,cat,,ti_tml.ODP.ODP_IcapTest,!0
+120,Y,ODP_ViaTest,1013,ODP_XtrIdrive_F,F_OS,8,cat,,ti_tml.ODP.ODP_ViaTest,!0
+121,Y,ODP_XtrIdriveTest,1014,ODP_XtrVt_F,F_OS,8,cat,,ti_tml.ODP.ODP_XtrIdriveTest,!0
+122,Y,ODP_XtrVtTest,1015,MISSING BIN INFO,---,---,cat,,ti_tml.ODP.ODP_XtrVtTest,!0
+124,,EfuseInitCheck_st,1101,FUSE_InitCheck_F,F_FUSE,10,cat,,ti_tml.Digital.Functional,1
+125,,EfuseRunAutoload_st,1102,FUSE_RunAutoload_F,F_FUSE,10,cat,,ti_tml.Digital.Functional,1
+127,,BRDG_ALL_FuncVmin_st,1200,FUNC_J_BRDG_ALL_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+128,,BSCAN_RPC_FuncVmin_st,1201,FUNC_J_BSCAN_RPC_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+129,,CHAIN_SAF_FuncVmin_st,1202,FUNC_J_CHAIN_SAF_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+130,,CHAIN_SAF_1_FuncVmin_st,1203,FUNC_J_CHAIN_SAF_1_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+131,,CHAIN_SAF_2_FuncVmin_st,1204,FUNC_J_CHAIN_SAF_2_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+132,,CHAIN_SAF_3_FuncVmin_st,1205,FUNC_J_CHAIN_SAF_3_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+133,,CHAIN_SAF_4_FuncVmin_st,1206,FUNC_J_CHAIN_SAF_4_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+134,,CHAIN_SAF_5_FuncVmin_st,1207,FUNC_J_CHAIN_SAF_5_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+135,,CHAIN_SAF_6_FuncVmin_st,1208,FUNC_J_CHAIN_SAF_6_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+136,,CHAIN_TRANS_FuncVmin_st,1209,FUNC_J_CHAIN_TRANS_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+137,,SAF_ALL_FuncVmin_st,1210,FUNC_J_SAF_ALL_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+138,,SAF_ALL_1_FuncVmin_st,1211,FUNC_J_SAF_ALL_1_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+139,,SAF_ALL_2_FuncVmin_st,1212,FUNC_J_SAF_ALL_2_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+140,,SAF_FULCHP_FuncVmin_st,1213,FUNC_J_SAF_FULCHP_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+142,,ApplySRVminGBfromTDMeas,MISSING BIN INFO,---,---,---,---,,ti_tml.SmartReflex.SR_CorrectSRwithTDMeas,MISSING TestNameType ENTRY
+145,,SpeedSortVert_TRANS_P08,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+146,,TRANS_P08_AtSpeedSRVminOD_st,1303,FUNC_OG_TRANS_P08_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+150,,SpeedSortVert_TRANS_P08_1,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+151,,TRANS_P08_1_AtSpeedSRVminOD_st,1304,FUNC_OG_TRANS_P08_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+156,,SpeedSortVert_PBIST_TETRIS,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+157,,PB_PLL_TETRIS_AtSpeedSRVminOD_st,1406,FUNC_OG_PB_PLL_TETRIS_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+162,,SpeedSortVert_LED_TETRIS,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+163,,LED_TETRIS_AtSpeedSRVminOD_st,1279,FUNC_OG_LED_TETRIS_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+168,,SpeedSortVert_TRANS,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+169,,TRANS_P01_AtSpeedSRVminOD_st,1290,FUNC_OG_TRANS_P01_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+170,,TRANS_P02_1_AtSpeedSRVminOD_st,1293,FUNC_OG_TRANS_P02_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+171,,TRANS_P03_AtSpeedSRVminOD_st,1294,FUNC_OG_TRANS_P03_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+172,,TRANS_P04_1_AtSpeedSRVminOD_st,1297,FUNC_OG_TRANS_P04_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+173,,TRANS_P05_1_AtSpeedSRVminOD_st,1299,FUNC_OG_TRANS_P05_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+174,,TRANS_P07_AtSpeedSRVminOD_st,1301,FUNC_OG_TRANS_P07_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+175,,TRANS_P09_AtSpeedSRVminOD_st,1305,FUNC_OG_TRANS_P09_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+179,,SpeedSortVert_TRANS_1,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+180,,TRANS_P01_1_AtSpeedSRVminOD_st,1291,FUNC_OG_TRANS_P01_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+181,,TRANS_P02_AtSpeedSRVminOD_st,1292,FUNC_OG_TRANS_P02_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+182,,TRANS_P03_1_AtSpeedSRVminOD_st,1295,FUNC_OG_TRANS_P03_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+183,,TRANS_P04_AtSpeedSRVminOD_st,1296,FUNC_OG_TRANS_P04_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+184,,TRANS_P05_AtSpeedSRVminOD_st,1298,FUNC_OG_TRANS_P05_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+185,,TRANS_P06_AtSpeedSRVminOD_st,1300,FUNC_OG_TRANS_P06_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+186,,TRANS_P07_1_AtSpeedSRVminOD_st,1302,FUNC_OG_TRANS_P07_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+187,,TRANS_P09_1_AtSpeedSRVminOD_st,1306,FUNC_OG_TRANS_P09_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+191,,SpeedSortVert_TRANS_FULLCHIP,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+192,,TRANS_FULCHIP_AtSpeedSRVminOD_st,1289,FUNC_OG_TRANS_FULCHIP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+197,,SpeedSortVert_PBIST,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+198,,PB_PLL_GEM_AtSpeedSRVminOD_st,1402,FUNC_OG_PB_PLL_GEM_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+199,,PB_PLL_CHIP_AtSpeedSRVminOD_st,1400,FUNC_OG_PB_PLL_CHIP_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+200,,PB_PLL_MSMC_AtSpeedSRVminOD_st,1403,FUNC_OG_PB_PLL_MSMC_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+201,,PB_PLL_ROM_AtSpeedSRVminOD_st,1405,FUNC_OG_PB_PLL_ROM_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+206,,SpeedSortVert_LED,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.SpeedSortVertical,MISSING TestNameType ENTRY
+207,,LED_BCP_AtSpeedSRVminOD_st,1250,FUNC_OG_LED_BCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+208,,LED_BOOTCFG_AtSpeedSRVminOD_st,1251,FUNC_OG_LED_BOOTCFG_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+209,,LED_DDR_AtSpeedSRVminOD_st,1252,FUNC_OG_LED_DDR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+210,,LED_DFT_AtSpeedSRVminOD_st,1253,FUNC_OG_LED_DFT_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+211,,LED_EDMA_AtSpeedSRVminOD_st,1254,FUNC_OG_LED_EDMA_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+212,,LED_EMIF_AtSpeedSRVminOD_st,1255,FUNC_OG_LED_EMIF_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+213,,LED_ETB_AtSpeedSRVminOD_st,1256,FUNC_OG_LED_ETB_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+214,,LED_FFTC_AtSpeedSRVminOD_st,1257,FUNC_OG_LED_FFTC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+215,,LED_GEM_AtSpeedSRVminOD_st,1258,FUNC_OG_LED_GEM_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+216,,LED_GPIO_AtSpeedSRVminOD_st,1259,FUNC_OG_LED_GPIO_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+217,,LED_I2C_AtSpeedSRVminOD_st,1260,FUNC_OG_LED_I2C_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+218,,LED_INTC_AtSpeedSRVminOD_st,1261,FUNC_OG_LED_INTC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+219,,LED_IQN_AtSpeedSRVminOD_st,1262,FUNC_OG_LED_IQN_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+220,,LED_MMAP_AtSpeedSRVminOD_st,1263,FUNC_OG_LED_MMAP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+221,,LED_MPU_AtSpeedSRVminOD_st,1264,FUNC_OG_LED_MPU_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+222,,LED_MSMC_AtSpeedSRVminOD_st,1265,FUNC_OG_LED_MSMC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+223,,LED_OSR_AtSpeedSRVminOD_st,1267,FUNC_OG_LED_OSR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+224,,LED_PCIE_AtSpeedSRVminOD_st,1268,FUNC_OG_LED_PCIE_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+225,,LED_PLLCTRL_AtSpeedSRVminOD_st,1269,FUNC_OG_LED_PLLCTRL_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+226,,LED_PSC_AtSpeedSRVminOD_st,1270,FUNC_OG_LED_PSC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+227,,LED_QMGR_AtSpeedSRVminOD_st,1271,FUNC_OG_LED_QMGR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+228,,LED_RAC_AtSpeedSRVminOD_st,1272,FUNC_OG_LED_RAC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+229,,LED_SEC_CTL_AtSpeedSRVminOD_st,1273,FUNC_OG_LED_SEC_CTL_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+230,,LED_SEMAPHORE_AtSpeedSRVminOD_st,1274,FUNC_OG_LED_SEMAPHORE_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+231,,LED_SPI_AtSpeedSRVminOD_st,1276,FUNC_OG_LED_SPI_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+232,,LED_TAC_AtSpeedSRVminOD_st,1277,FUNC_OG_LED_TAC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+233,,LED_TCP_AtSpeedSRVminOD_st,1278,FUNC_OG_LED_TCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+234,,LED_TIMER_AtSpeedSRVminOD_st,1280,FUNC_OG_LED_TIMER_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+235,,LED_TRACER_AtSpeedSRVminOD_st,1281,FUNC_OG_LED_TRACER_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+236,,LED_UART_AtSpeedSRVminOD_st,1282,FUNC_OG_LED_UART_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+237,,LED_USB_AtSpeedSRVminOD_st,1283,FUNC_OG_LED_USB_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+238,,LED_USIM_AtSpeedSRVminOD_st,1284,FUNC_OG_LED_USIM_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+239,,LED_VCP_AtSpeedSRVminOD_st,1285,FUNC_OG_LED_VCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+243,,TRANS_CPU1_AtSpeedSRVminOD_st,1288,FUNC_OG_TRANS_CPU1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+244,,TRANS_P10_AtSpeedSRVminOD_st,1307,FUNC_OG_TRANS_P10_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+245,,TRANS_Q04_AtSpeedSRVminOD_st,1308,FUNC_OG_TRANS_Q04_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+246,,TRANS_Q04_1_AtSpeedSRVminOD_st,1309,FUNC_OG_TRANS_Q04_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+247,,TRANS_Q06_AtSpeedSRVminOD_st,1310,FUNC_OG_TRANS_Q06_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+248,,TRANS_Q07_AtSpeedSRVminOD_st,1311,FUNC_OG_TRANS_Q07_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+249,,TRANS_Q07_1_AtSpeedSRVminOD_st,1312,FUNC_OG_TRANS_Q07_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+250,,TRANS_Q09_AtSpeedSRVminOD_st,1313,FUNC_OG_TRANS_Q09_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+251,,TRANS_COV_AtSpeedSRVminOD_st,1286,FUNC_OG_TRANS_COV_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+252,,TRANS_COV_1_AtSpeedSRVminOD_st,1287,FUNC_OG_TRANS_COV_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+253,,PB_PLL_DFE_AtSpeedSRVminOD_st,1401,FUNC_OG_PB_PLL_DFE_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+254,,PB_PLL_NSS_AtSpeedSRVminOD_st,1404,FUNC_OG_PB_PLL_NSS_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+255,,LED_NSS_AtSpeedSRVminOD_st,1266,FUNC_OG_LED_NSS_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+256,,LED_SMARTREFLEX_AtSpeedSRVminOD_st,1275,FUNC_OG_LED_SMARTREFLEX_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+257,Y,PHY_DRFE0_AtSpeedSRVminOD_st,1450,FUNC_OG_PHY_DRFE0_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+258,Y,PHY_DRFE1_AtSpeedSRVminOD_st,1451,FUNC_OG_PHY_DRFE1_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+259,Y,PHY_PCIE_AtSpeedSRVminOD_st,1452,FUNC_OG_PHY_PCIE_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+260,Y,PHY_SGMII_AtSpeedSRVminOD_st,1453,FUNC_OG_PHY_SGMII_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+261,,PHY_USB_AtSpeedSRVminOD_st,1454,FUNC_OG_PHY_USB_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+263,,PHY_DDR_AC_AtSpeedSRVminDDR3L_st,1455,FUNC_2_DDR_AC_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+264,,PHY_DDR_AC_BU_AtSpeedSRVminDDR3L_st,1456,FUNC_2_DDR_AC_BU_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+265,,PHY_DDR_DAT_AtSpeedSRVminDDR3L_st,1457,FUNC_2_DDR_DAT_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+267,,BRDG_ALL_FuncVmaxOK_st,1214,FUNC_OK_BRDG_ALL_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+268,,BSCAN_RPC_FuncVmaxOK_st,1215,FUNC_OK_BSCAN_RPC_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+269,,CHAIN_SAF_FuncVmaxOK_st,1216,FUNC_OK_CHAIN_SAF_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+270,,CHAIN_SAF_1_FuncVmaxOK_st,1217,FUNC_OK_CHAIN_SAF_1_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+271,,CHAIN_SAF_2_FuncVmaxOK_st,1218,FUNC_OK_CHAIN_SAF_2_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+272,,CHAIN_SAF_3_FuncVmaxOK_st,1219,FUNC_OK_CHAIN_SAF_3_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+273,,CHAIN_SAF_4_FuncVmaxOK_st,1220,FUNC_OK_CHAIN_SAF_4_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+274,,CHAIN_SAF_5_FuncVmaxOK_st,1221,FUNC_OK_CHAIN_SAF_5_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+275,,CHAIN_SAF_6_FuncVmaxOK_st,1222,FUNC_OK_CHAIN_SAF_6_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+276,,CHAIN_TRANS_FuncVmaxOK_st,1223,FUNC_OK_CHAIN_TRANS_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+277,,SAF_ALL_FuncVmaxOK_st,1224,FUNC_OK_SAF_ALL_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+278,,SAF_ALL_1_FuncVmaxOK_st,1225,FUNC_OK_SAF_ALL_1_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+279,,SAF_ALL_2_FuncVmaxOK_st,1226,FUNC_OK_SAF_ALL_2_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+280,,SAF_FULCHP_FuncVmaxOK_st,1227,FUNC_OK_SAF_FULCHP_F,F_FUNC,13,cat,,ti_tml.Digital.Functional,1
+282,,TRANS_CPU1_AtSpeedVmaxOK_st,1352,FUNC_OK_TRANS_CPU1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+283,,TRANS_FULCHIP_AtSpeedVmaxOK_st,1353,FUNC_OK_TRANS_FULCHIP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+284,,TRANS_P01_AtSpeedVmaxOK_st,1354,FUNC_OK_TRANS_P01_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+285,,TRANS_P01_1_AtSpeedVmaxOK_st,1355,FUNC_OK_TRANS_P01_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+286,,TRANS_P02_AtSpeedVmaxOK_st,1356,FUNC_OK_TRANS_P02_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+287,,TRANS_P02_1_AtSpeedVmaxOK_st,1357,FUNC_OK_TRANS_P02_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+288,,TRANS_P03_AtSpeedVmaxOK_st,1358,FUNC_OK_TRANS_P03_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+289,,TRANS_P03_1_AtSpeedVmaxOK_st,1359,FUNC_OK_TRANS_P03_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+290,,TRANS_P04_AtSpeedVmaxOK_st,1360,FUNC_OK_TRANS_P04_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+291,,TRANS_P04_1_AtSpeedVmaxOK_st,1361,FUNC_OK_TRANS_P04_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+292,,TRANS_P05_AtSpeedVmaxOK_st,1362,FUNC_OK_TRANS_P05_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+293,,TRANS_P05_1_AtSpeedVmaxOK_st,1363,FUNC_OK_TRANS_P05_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+294,,TRANS_P06_AtSpeedVmaxOK_st,1364,FUNC_OK_TRANS_P06_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+295,,TRANS_P07_AtSpeedVmaxOK_st,1365,FUNC_OK_TRANS_P07_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+296,,TRANS_P07_1_AtSpeedVmaxOK_st,1366,FUNC_OK_TRANS_P07_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+297,,TRANS_P08_AtSpeedVmaxOK_st,1367,FUNC_OK_TRANS_P08_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+298,,TRANS_P08_1_AtSpeedVmaxOK_st,1368,FUNC_OK_TRANS_P08_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+299,,TRANS_P09_AtSpeedVmaxOK_st,1369,FUNC_OK_TRANS_P09_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+300,,TRANS_P09_1_AtSpeedVmaxOK_st,1370,FUNC_OK_TRANS_P09_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+301,,TRANS_P10_AtSpeedVmaxOK_st,1371,FUNC_OK_TRANS_P10_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+302,,TRANS_Q04_AtSpeedVmaxOK_st,1372,FUNC_OK_TRANS_Q04_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+303,,TRANS_Q04_1_AtSpeedVmaxOK_st,1373,FUNC_OK_TRANS_Q04_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+304,,TRANS_Q06_AtSpeedVmaxOK_st,1374,FUNC_OK_TRANS_Q06_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+305,,TRANS_Q07_AtSpeedVmaxOK_st,1375,FUNC_OK_TRANS_Q07_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+306,,TRANS_Q07_1_AtSpeedVmaxOK_st,1376,FUNC_OK_TRANS_Q07_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+307,,TRANS_Q09_AtSpeedVmaxOK_st,1377,FUNC_OK_TRANS_Q09_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+308,,TRANS_COV_AtSpeedVmaxOK_st,1350,FUNC_OK_TRANS_COV_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+309,,TRANS_COV_1_AtSpeedVmaxOK_st,1351,FUNC_OK_TRANS_COV_1_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+310,,PB_PLL_CHIP_AtSpeedVmaxOK_st,1407,FUNC_OK_PB_PLL_CHIP_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+311,,PB_PLL_DFE_AtSpeedVmaxOK_st,1408,FUNC_OK_PB_PLL_DFE_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+312,,PB_PLL_GEM_AtSpeedVmaxOK_st,1409,FUNC_OK_PB_PLL_GEM_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+313,,PB_PLL_MSMC_AtSpeedVmaxOK_st,1410,FUNC_OK_PB_PLL_MSMC_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+314,,PB_PLL_NSS_AtSpeedVmaxOK_st,1411,FUNC_OK_PB_PLL_NSS_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+315,,PB_PLL_ROM_AtSpeedVmaxOK_st,1412,FUNC_OK_PB_PLL_ROM_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+316,,PB_PLL_TETRIS_AtSpeedVmaxOK_st,1413,FUNC_OK_PB_PLL_TETRIS_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+317,,LED_BCP_AtSpeedVmaxOK_st,1314,FUNC_OK_LED_BCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+318,,LED_BOOTCFG_AtSpeedVmaxOK_st,1315,FUNC_OK_LED_BOOTCFG_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+319,,LED_DDR_AtSpeedVmaxOK_st,1316,FUNC_OK_LED_DDR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+320,,LED_DFT_AtSpeedVmaxOK_st,1317,FUNC_OK_LED_DFT_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+321,,LED_EDMA_AtSpeedVmaxOK_st,1318,FUNC_OK_LED_EDMA_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+322,,LED_EMIF_AtSpeedVmaxOK_st,1319,FUNC_OK_LED_EMIF_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+323,,LED_ETB_AtSpeedVmaxOK_st,1320,FUNC_OK_LED_ETB_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+324,,LED_FFTC_AtSpeedVmaxOK_st,1321,FUNC_OK_LED_FFTC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+325,,LED_GEM_AtSpeedVmaxOK_st,1322,FUNC_OK_LED_GEM_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+326,,LED_GPIO_AtSpeedVmaxOK_st,1323,FUNC_OK_LED_GPIO_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+327,,LED_I2C_AtSpeedVmaxOK_st,1324,FUNC_OK_LED_I2C_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+328,,LED_INTC_AtSpeedVmaxOK_st,1325,FUNC_OK_LED_INTC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+329,,LED_IQN_AtSpeedVmaxOK_st,1326,FUNC_OK_LED_IQN_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+330,,LED_MMAP_AtSpeedVmaxOK_st,1327,FUNC_OK_LED_MMAP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+331,,LED_MPU_AtSpeedVmaxOK_st,1328,FUNC_OK_LED_MPU_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+332,,LED_MSMC_AtSpeedVmaxOK_st,1329,FUNC_OK_LED_MSMC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+333,,LED_NSS_AtSpeedVmaxOK_st,1330,FUNC_OK_LED_NSS_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+334,,LED_OSR_AtSpeedVmaxOK_st,1331,FUNC_OK_LED_OSR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+335,,LED_PCIE_AtSpeedVmaxOK_st,1332,FUNC_OK_LED_PCIE_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+336,,LED_PLLCTRL_AtSpeedVmaxOK_st,1333,FUNC_OK_LED_PLLCTRL_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+337,,LED_PSC_AtSpeedVmaxOK_st,1334,FUNC_OK_LED_PSC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+338,,LED_QMGR_AtSpeedVmaxOK_st,1335,FUNC_OK_LED_QMGR_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+339,,LED_RAC_AtSpeedVmaxOK_st,1336,FUNC_OK_LED_RAC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+340,,LED_SEC_CTL_AtSpeedVmaxOK_st,1337,FUNC_OK_LED_SEC_CTL_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+341,,LED_SEMAPHORE_AtSpeedVmaxOK_st,1338,FUNC_OK_LED_SEMAPHORE_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+342,,LED_SMARTREFLEX_AtSpeedVmaxOK_st,1339,FUNC_OK_LED_SMARTREFLEX_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+343,,LED_SPI_AtSpeedVmaxOK_st,1340,FUNC_OK_LED_SPI_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+344,,LED_TAC_AtSpeedVmaxOK_st,1341,FUNC_OK_LED_TAC_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+345,,LED_TCP_AtSpeedVmaxOK_st,1342,FUNC_OK_LED_TCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+346,,LED_TETRIS_AtSpeedVmaxOK_st,1343,FUNC_OK_LED_TETRIS_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+347,,LED_TIMER_AtSpeedVmaxOK_st,1344,FUNC_OK_LED_TIMER_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+348,,LED_TRACER_AtSpeedVmaxOK_st,1345,FUNC_OK_LED_TRACER_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+349,,LED_UART_AtSpeedVmaxOK_st,1346,FUNC_OK_LED_UART_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+350,,LED_USB_AtSpeedVmaxOK_st,1347,FUNC_OK_LED_USB_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+351,,LED_USIM_AtSpeedVmaxOK_st,1348,FUNC_OK_LED_USIM_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+352,,LED_VCP_AtSpeedVmaxOK_st,1349,FUNC_OK_LED_VCP_F,F_FUNC_SPEED,14,cat,,ti_tml.Digital.Functional,1
+353,,PHY_DDR_AC_AtSpeedVmaxOK_st,1463,FUNC_OK_PHY_DDR_AC_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+354,,PHY_DDR_AC_BU_AtSpeedVmaxOK_st,1464,FUNC_OK_PHY_DDR_AC_BU_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+355,,PHY_DDR_DAT_AtSpeedVmaxOK_st,1465,FUNC_OK_PHY_DDR_DAT_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+356,Y,PHY_DRFE0_AtSpeedVmaxOK_st,1458,FUNC_OK_PHY_DRFE0_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+357,Y,PHY_DRFE1_AtSpeedVmaxOK_st,1459,FUNC_OK_PHY_DRFE1_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+358,Y,PHY_PCIE_AtSpeedVmaxOK_st,1460,FUNC_OK_PHY_PCIE_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+359,Y,PHY_SGMII_AtSpeedVmaxOK_st,1461,FUNC_OK_PHY_SGMII_F,F_PARA,11,cat,,ti_tml.Digital.Functional,0
+360,,PHY_USB_AtSpeedVmaxOK_st,1462,FUNC_OK_PHY_USB_F,F_PARA,11,cat,,ti_tml.Digital.Functional,1
+362,,PB_PLL_VSKEW_AtSpeedVskewPhiOD_st,1414,FUNC_OW_PB_PLL_VSKEW_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+363,,PB_PLL_VSKEW_1_AtSpeedVskewPhiOD_st,1415,FUNC_OW_PB_PLL_VSKEW_1_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+364,,PB_PLL_VSKEW_2_AtSpeedVskewPhiOD_st,1416,FUNC_OW_PB_PLL_VSKEW_2_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+365,,PB_PLL_VSKEW_3_AtSpeedVskewPhiOD_st,1417,FUNC_OW_PB_PLL_VSKEW_3_F,F_FUNC_SRAM,15,cat,,ti_tml.Digital.Functional,1
+367,,LED_TETRIS_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+368,,LED_GEM_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+369,,LED_GEM_XM_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+370,,PB_PLL_RTA_M0_1DO_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+371,,PB_PLL_TETRIS_1DO_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+372,,TFT_SPEED_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+373,,TFT_SPEED_1_FreqSearch_st,1491,FUNC_FMAXSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastFmax_linlin,!0
+375,,SAF_C_P00_P10_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+376,,SAF_C_P00_P10_1_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+377,,SAF_P00_P10_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+378,,SAF_P00_P10_1_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+379,,SAF_FULCHP_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+380,,LED_TETRIS_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+381,,LED_GEM_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+382,,LED_GEM_XM_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+383,,PB_PLL_RTA_M0_1DO_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+384,,PB_PLL_TETRIS_1DO_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.FastVmin_linlin,!0
+385,,TRANS_P08_VminSearch_st,1490,FUNC_VMINSEARCH_F,F_FUNC,14,cat,,ti_tml.Digital.Vmin_linlin,!0
+388,,ProgramVIDSpeeds,1103,FUSE_ProgramVIDSpeeds_F,F_FUSE,10,multi,Y,ti_tml.MCP.MCP_ProgramVIDSpeeds,MISSING TestNameType ENTRY
+390,,VerifyProgramVIDSpeeds,1104,FUSE_VerifyVIDSpeeds_F,F_FUSE,10,multi,Y,ti_tml.MCP.MCP_VerigyProgramVIDSpeeds,MISSING TestNameType ENTRY
+392,Y,EfusePostVerify_st,MISSING BIN INFO,---,---,---,---,,ti_tml.Digital.Functional,MISSING TestNameType ENTRY
+394,,EndOfFlowThaw,1061,F_WARMUP,F_ERROR,7,cat,,ti_tml.Thermal.Thermal_Control,!0
+397,,DISCONNECT_SupplyShortsPost,MISSING BIN INFO,---,---,---,---,,miscellaneous_tml.TestControl.Disconnect,MISSING TestNameType ENTRY
+399,,SupplyShortsPost_st,9,OS_SHRT_VDD_F,F_OS,8,multi,Y,ti_tml.DC.Supply_shorts,1
+401,,DISCONNECT_Cres,MISSING BIN INFO,---,---,---,---,,miscellaneous_tml.TestControl.Disconnect,MISSING TestNameType ENTRY
+402,,Cres_st,1000,OS_CRES_F,F_OS,8,cat,,ti_tml.DC.Cres,1
+405,,Final_Binning,MISSING BIN INFO,---,---,---,---,,ti_tml.Misc.Binning,MISSING TestNameType ENTRY

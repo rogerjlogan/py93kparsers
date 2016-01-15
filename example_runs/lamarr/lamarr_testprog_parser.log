@@ -1,0 +1,15 @@
+01/15/2016 03:45:01 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting lamarr_testprog_parser.log
+01/15/2016 03:45:01 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/example_runs/lamarr/lamarr_testprog_parser.log
+01/15/2016 03:45:01 PM INFO: Running testprog_parser.pyc...
+01/15/2016 03:45:01 PM INFO: Parsing testprog file: F791857_Final_RPC.tpg .....
+01/15/2016 03:45:01 PM INFO: {   'Applicdata': 'usp_package_test',
+    'Dataform': '',
+    'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
+    'Pdi_lib': '',
+    'Profile': '../USP_datalog_ON.prf',
+    'Testflow': 'Final_RPC_flow.mfh',
+    'Testtable': 'Final_RPC_limits.csv.mfh',
+    'Userproc': '',
+    'Waferdescr': ''}
+01/15/2016 03:45:01 PM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+01/15/2016 03:45:01 PM INFO: Number of ERRORS for "testprog_parser.pyc": 0

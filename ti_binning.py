@@ -733,7 +733,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
                 failchecks[ts][3] = True
 
             # WARNINGS
-            if not InTestflow and '1' == testtype_value:
+            if not InTestflow and '1' == testtype_value and ts not in UTM_HARDCODED_TESTNAMES:
                 failchecks[ts][10] = True
             if InTestflow and '0' == testtype_value:
                 failchecks[ts][11] = True
@@ -948,11 +948,11 @@ def main():
             # silently ignoring path (in case the user was being silly).  We already have the path
             binning_csv_file = os.path.basename(args.binning_csv)
     elif len(args.test_type_to_check):
-        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE SUPPLIED the test type to check (-tt2c).'
+        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option NOT passed) but HAVE SUPPLIED the test type to check (-tt2c).'
         log.error(err)
         sys.exit(err)
     elif len(args.binning_csv):
-        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE SUPPLIED not supplied the binning csv file (-bin).'
+        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option NOT passed) but HAVE SUPPLIED not supplied the binning csv file (-bin).'
         log.error(err)
         sys.exit(err)
     else:

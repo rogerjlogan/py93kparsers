@@ -5,7 +5,8 @@ The script splits a log file into several log files..
     algorithm:
         1) beginning delim: either beginning of log file (for first split) or first appearance of "] Init_framework ("
         2) end delim: last line before "] Init_framework (" but AFTER "] bin_disconnect (" has been seen
-        3) log files are named with their beginning lineno from original log file.
+        3) log files are named with their beginning lineno from original log file
+        4) DEVDIEID, if found, is noted in the *.log file with the location (which split log.txt it is in)
 
 """
 
@@ -36,7 +37,12 @@ def parse_logfile(pathfn,name='',outdir=''):
     log.info(msg)
     lineno = 0
     beg_started,end_started = False,False
-    fp = open(os.path.join(outdir, 'log_'+str(lineno+1)+'.txt'),'w')
+    fn = 'log_1.txt'
+    msg = '\tCreating log: '+fn
+    print msg
+    log.info(msg)
+    fp = open(os.path.join(outdir, fn),'w')
+    diePat = re.compile(r'DEVDIEID\=(?P<devdieid>\S+)')
     with open(pathfn) as logfile:
         for line in logfile:
             lineno+=1
@@ -54,10 +60,18 @@ def parse_logfile(pathfn,name='',outdir=''):
                     # This IS the end !
                     beg_started = False
                     end_started = False
+                else:
+                    dieObj = diePat.search(line)
+                    if dieObj:
+                        log.info('\t\t'+ fn + ' : ' + dieObj.group('devdieid'))
             if newlog:
                 # close the old file pointer and start a new one
                 fp.close()
-                fp = open(os.path.join(outdir, 'log_'+str(lineno)+'.txt'),'w')
+                fn = 'log_'+str(lineno+1)+'.txt'
+                msg = '\tCreating log: '+fn
+                print msg
+                log.info(msg)
+                fp = open(os.path.join(outdir, fn),'w')
             fp.write(line)
     fp.close()
 

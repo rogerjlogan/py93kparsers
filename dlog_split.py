@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 """
-The script splits a log file into several log files for each unit based on die id
+The script splits a log file into several log files..
+
+    algorithm:
+        1) beginning delim: either beginning of log file (for first split) or first appearance of Init_framework
+        2) end delim: last line before Init_framework but AFTER bin_disconnect has been seen
+        3) log files are named with their beginning lineno from original log file.
 
 """
 
@@ -12,26 +17,49 @@ log = None
 
 __author__ = 'Roger'
 
-startPat = re.compile("^\s*\*\s*(?P<vector>.*?)\s*\*\s*(?P<sh_wft>.*?)\s*;")
-
-def parse_logfile(pathfn):
+def parse_logfile(pathfn,name='',outdir=''):
+    if not os.path.isdir(outdir):
+        try:
+            msg = "Creating new directory: "+outdir
+            log.info(msg)
+            os.makedirs(outdir)
+        except:
+            err = 'Unable to create directory: '+outdir+'\n'
+            err += 'Check file read/write permissions\n'
+            err += 'You might also try closing all editors and explorer windows with a view in this directory.\n'
+            print err
+            log.error(err)
+            raise IOError
     path, fn = os.path.split(pathfn)
     msg = 'Parsing log file: {} .....'.format(fn)
     print msg
     log.info(msg)
-    limPat = re.compile(r'^\s*testerfile\s*:(?P<limit_file>.*)')
-    hdr_found = False
     lineno = 0
-    start = False
+    beg_started,end_started = False,False
+    fp = open(os.path.join(outdir, 'log_'+str(lineno)+'.txt'),'w')
     with open(pathfn) as logfile:
         for line in logfile:
             lineno+=1
-            if not start and -1 != line.find('Init_framework'):
-                start = True
-            if start:
-                print line
-            # if lineno>20:
-            #     sys.exit()
+            newlog = False
+            if not beg_started:
+                if not end_started and -1 != line.find('Init_framework'):
+                    # found beginning of a section
+                    beg_started = True
+                    newlog = True
+            else:
+                if -1 != line.find('bin_disconnect'):
+                    # found the beginning of the end .... mmmmmwwwwahahahahahaha
+                    end_started = True
+                elif end_started:
+                    # This IS the end !
+                    beg_started = False
+                    end_started = False
+            if newlog:
+                # close the old file pointer and start a new one
+                fp.close()
+                fp = open(os.path.join(outdir, 'log_'+str(lineno)+'.txt'),'w')
+            fp.write(line)
+    fp.close()
 
 def main():
     global log
@@ -64,7 +92,7 @@ def main():
     print msg
     log.info(msg)
 
-    parse_logfile(args.log_file)
+    parse_logfile(args.log_file,args.name,args.output_dir)
 
 
 if __name__ == "__main__":

@@ -76,6 +76,8 @@ class TestTable(object):
 
     sbin_files = {}
 
+    testsuite_data = {}
+
     @staticmethod
     def getNewTestNumber():
         """Get unique 'Test number'"""
@@ -266,6 +268,8 @@ class TestTable(object):
                     lineno += 1
 
                     testsuite = row['Suite name'].strip()
+                    if testsuite not in self.testsuite_data:
+                        self.testsuite_data[testsuite] = []
                     if testsuite not in self.testsuite_sbins:
                         self.testsuite_sbins[testsuite] = []
 
@@ -427,6 +431,17 @@ class TestTable(object):
                             self.binmap_err[Bin_s_name] = []
                         if "MISSING_HBIN_NAME" not in self.binmap_err[Bin_s_name]:
                             self.binmap_err[Bin_s_name].append("MISSING_HBIN_NAME")
+                    self.testsuite_data[testsuite].append(
+                        {
+                            'Test name' : testname,
+                            'Test number' : testnum,
+                            'Pins' : pin,
+                            'Bin_s_num' : Bin_s_num,
+                            'Bin_s_name' : Bin_s_name,
+                            'Bin_h_num' : Bin_h_num,
+                            'Bin_h_name' : Bin_h_name
+                        }
+                    )
         if runum and not special_testtable:
             self.renum_test_numbers(pathfn)
 

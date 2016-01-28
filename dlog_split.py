@@ -3,8 +3,8 @@
 The script splits a log file into several log files..
 
     algorithm:
-        1) beginning delim: either beginning of log file (for first split) or first appearance of Init_framework
-        2) end delim: last line before Init_framework but AFTER bin_disconnect has been seen
+        1) beginning delim: either beginning of log file (for first split) or first appearance of "] Init_framework ("
+        2) end delim: last line before "] Init_framework (" but AFTER "] bin_disconnect (" has been seen
         3) log files are named with their beginning lineno from original log file.
 
 """
@@ -36,18 +36,18 @@ def parse_logfile(pathfn,name='',outdir=''):
     log.info(msg)
     lineno = 0
     beg_started,end_started = False,False
-    fp = open(os.path.join(outdir, 'log_'+str(lineno)+'.txt'),'w')
+    fp = open(os.path.join(outdir, 'log_'+str(lineno+1)+'.txt'),'w')
     with open(pathfn) as logfile:
         for line in logfile:
             lineno+=1
             newlog = False
             if not beg_started:
-                if not end_started and -1 != line.find('Init_framework'):
+                if not end_started and -1 != line.find('] Init_framework ('):
                     # found beginning of a section
                     beg_started = True
                     newlog = True
             else:
-                if -1 != line.find('bin_disconnect'):
+                if -1 != line.find('] bin_disconnect ('):
                     # found the beginning of the end .... mmmmmwwwwahahahahahaha
                     end_started = True
                 elif end_started:
@@ -84,6 +84,8 @@ def main():
     log.warning=callcounted(log.warning)
     log.error=callcounted(log.error)
 
+    parse_logfile(args.log_file,args.name,args.output_dir)
+
     log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
     msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)
     print msg
@@ -91,9 +93,6 @@ def main():
     msg = 'Number of ERRORS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.error.counter)
     print msg
     log.info(msg)
-
-    parse_logfile(args.log_file,args.name,args.output_dir)
-
 
 if __name__ == "__main__":
     main()

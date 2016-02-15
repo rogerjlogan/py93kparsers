@@ -380,11 +380,14 @@ def evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict):
 import py93kParsers.parseUtils as parseUtils
 def createEnv(inp):
     out = {}
-    for spec in inp['SPECS']:
-        try:
-            out[spec] = float(inp['SPECS'][spec]['actual'])
-        except ValueError:
-            continue
+    try:
+        for spec in inp['SPECS']:
+            try:
+                out[spec] = float(inp['SPECS'][spec]['actual'])
+            except ValueError:
+                continue
+    except KeyError:
+        pass
     return out
 def addEquEnv(envi, eqs):
     """ since equations are in a dictionary, they are not always evaluated in order, so need a complicated while loop"""

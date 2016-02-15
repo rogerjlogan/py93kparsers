@@ -1,0 +1,21 @@
+02/15/2016 11:33:02 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting vayuFPC_a93k_extract.log
+02/15/2016 11:33:02 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC/vayuFPC_a93k_extract.log
+02/15/2016 11:33:02 AM INFO: Running a93k_extract.py...
+02/15/2016 11:33:22 AM ERROR: No softbin 13 defined in: "None"
+02/15/2016 11:33:22 AM INFO: ARGUMENTS:
+	--name=vayuFPC
+	--ignore_suites=None
+	--testflow_file=/data/mkoe3/VAYU/USERS/cgreen/VAYU_FPC/VAYU/testflow/Final_flow.mfh
+	--binning_csv=
+	--testprog_file=/data/mkoe3/VAYU/USERS/cgreen/VAYU_FPC/VAYU/testprog/VAYUFPC.tpg
+	--maxlogs=1
+	--test_type_to_check=
+	--renumber=False
+	--split=False
+	--pic_type=png
+	--debug=False
+	--testtable_file=/data/mkoe3/VAYU/USERS/cgreen/VAYU_FPC/VAYU/testtable/Final_limits.csv.mfh
+	--categories=False
+	--output_dir=/db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC
+02/15/2016 11:33:22 AM INFO: Number of WARNINGS for "a93k_extract.py": 0
+02/15/2016 11:33:22 AM INFO: Number of ERRORS for "a93k_extract.py": 1

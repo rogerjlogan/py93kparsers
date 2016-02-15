@@ -124,6 +124,8 @@ def addFlowAuditSheet(wkBook, levels):
                 sheet.row(currRow).write(11, row['Bin_h_num'], style = bodyLeft)
                 sheet.row(currRow).write(12, row['Bin_h_name'], style = bodyLeft)
                 currRow +=1
+            if not testtable.testsuite_data[ts]:
+                currRow += 1
         else:
             currRow +=1
 def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', fn='', maxlogs=1):

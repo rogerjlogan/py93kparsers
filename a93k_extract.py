@@ -380,14 +380,11 @@ def evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict):
 import py93kParsers.parseUtils as parseUtils
 def createEnv(inp):
     out = {}
-    try:
-        for spec in inp['SPECS']:
-            try:
-                out[spec] = float(inp['SPECS'][spec]['actual'])
-            except ValueError:
-                continue
-    except KeyError:
-        pass
+    for spec in inp['SPECS']:
+        try:
+            out[spec] = float(inp['SPECS'][spec]['actual'])
+        except ValueError:
+            continue
     return out
 def addEquEnv(envi, eqs):
     """ since equations are in a dictionary, they are not always evaluated in order, so need a complicated while loop"""
@@ -414,7 +411,11 @@ def evalPeriods(tims):
         for ind in tims['SPS'][spec]:
             assert len(tims['SPS'][spec][ind]['PORT']) == 1
             port = tims['SPS'][spec][ind]['PORT'][0]
-            envi = createEnv(tims['SPS'][spec][ind])
+            try:
+                envi = createEnv(tims['SPS'][spec][ind])
+            except KeyError:
+                print "spec:", spec, "port,", port, ind
+                envi = {}
             out[spec][port] = {}
             if 'EQUATIONS' in tims['EQN'][ind]:
                 addEquEnv(envi, tims['EQN'][ind]['EQUATIONS'])
@@ -422,7 +423,9 @@ def evalPeriods(tims):
                 perExpr = parseUtils.valueExpr.parseString(tims['EQN'][ind]['TIMINGSET'][timeset]['period'])[0]
                 try:
                     out[spec][port][timeset] = parseUtils.getVal(perExpr, envi)
-                except KeyError:
+                except KeyError, msg:
+                    print msg
+                    print "ERROR!!", spec, port, timeset
                     out[spec][port][timeset] = -1e7
     return out
 from genOut import titleLeft, titleStyle, bodyLeft, bodyStyle, _addTitle
@@ -663,7 +666,7 @@ if __name__ == "__main__":
                 a_line.split()[0].strip(),
                 re.sub("[\[\]]", "", a_line.split()[-1].strip()) if len(a_line.split())>1 else ""
             ),  # strip leading whitespace and remove []'s, split off middle whitespace, (name, units)
-            "TIMINGSET": "^\s*(?:PINS\s+[\w\s\-\(\)]+|period\s*=\s*[\w\s\*\+\-/]+)",
+            "TIMINGSET": "^\s*(?:PINS\s+[\w\s\-\(\)]+|period\s*=\s*[\w\s\*\(\)\+\-/,]+)",
             "DEFINES" : lambda a_line: re.sub("^\s*DEFINES\s+", "", a_line).split()
         },
         "SPS": {
@@ -702,6 +705,7 @@ if __name__ == "__main__":
                     "".join(a_part.strip().split()) for a_part in a_line.split("=")
             ),  # split by equals sign, get rid of white space
         },
+        
         "SPS": {
             "remove": [],
             "topLevel": "^\s*EQNSET\s+\d+(?:\"[\,\w\s\-\.]\")?",

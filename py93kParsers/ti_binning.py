@@ -142,7 +142,7 @@ testflow_extra_tests = []
 
 testsuite_all_sbins = {}
 
-ignore_suites = []
+ignore_suites_file = []
 
 ti_binning = {}
 
@@ -301,9 +301,9 @@ def parse_special_csv(pathfn, csv_type=None):
 
             # calculate set differences
             categories_extra_tests = set(category_tests.keys()) - set(testflow.testsuite_data.keys() + bin_groups.keys())
-            categories_extra_tests = categories_extra_tests - set(ignore_suites)
+            categories_extra_tests = categories_extra_tests - set(ignore_suites_file)
             testflow_extra_tests = set(testflow.testsuite_data.keys()) - set(category_tests.keys())
-            testflow_extra_tests = testflow_extra_tests - set(ignore_suites)
+            testflow_extra_tests = testflow_extra_tests - set(ignore_suites_file)
 
             if len(categories_extra_tests):
                 cat_extra_str = '\n\t'.join(categories_extra_tests)
@@ -479,7 +479,7 @@ def create_ti_binning_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for testsuite in testsuite_all_sbins:
-            if testsuite not in ignore_suites:
+            if testsuite not in ignore_suites_file:
                 writer.writerow({'node_id' : testflow.testsuite_nodeids[testsuite],
                                  'SuiteName' : testsuite,
                                  'bypassed' : 'Y' if testsuite in testflow.bypassed_testsuites else '',
@@ -495,7 +495,7 @@ def addTiBinningSheet(wkBook):
     _addTitle(sheet, headers)
     currRow = 1
     for testsuite in testsuite_all_sbins:
-        if testsuite not in ignore_suites:
+        if testsuite not in ignore_suites_file:
             sheet.row(currRow).write(0, testsuite, style = bodyLeft)
             sheet.row(currRow).write(1, 'Y' if testsuite in testflow.bypassed_testsuites else '', style=bodyLeft)
             sheet.row(currRow).write(2, '|'.join(testsuite_all_sbins[testsuite]['stop_sbins']), style=bodyLeft)
@@ -531,7 +531,7 @@ def addFlowAuditSheet(wkBook):
     _addTitle(sheet, headers)
     currRow = 1
     for nid,suite,sbin,sname,hbin,hname,bintype,overon in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
-        if suite in ignore_suites:
+        if suite in ignore_suites_file:
             continue
         end = ''
         if 'Testmethods' in testflow.testsuite_data[suite] and 'Class' in testflow.testsuite_data[suite]['Testmethods']:
@@ -614,7 +614,7 @@ def create_flowaudit_csv(scriptname=os.path.basename(sys.modules[__name__].__fil
         writer = csv.DictWriter(csvFile,fieldnames=headers)
         writer.writeheader()
         for nid,suite,sbin,sname,hbin,hname,bintype,overon in sorted(unsorted_rows, key=lambda x: (x[0],x[4],x[2])):
-            if suite in ignore_suites:
+            if suite in ignore_suites_file:
                 continue
             end = ''
             if 'Testmethods' in testflow.testsuite_data[suite] and 'Class' in testflow.testsuite_data[suite]['Testmethods']:
@@ -804,7 +804,7 @@ def addCatIssues(wkBook):
     _addTitle(sheet, hdr2, startRow=currRow)
     currRow +=1
     for ts in testsuite_superset:
-        if ts in testflow.partial_suites or ts in ignore_suites:
+        if ts in testflow.partial_suites or ts in ignore_suites_file:
              continue
         # initialize all checks to False(Pass)
         failchecks[ts] = [False]*100
@@ -931,7 +931,7 @@ def create_cat_issues_csv(scriptname=os.path.basename(sys.modules[__name__].__fi
         writer.writeheader()
 
         for ts in testsuite_superset:
-            if ts in testflow.partial_suites or ts in ignore_suites:
+            if ts in testflow.partial_suites or ts in ignore_suites_file:
                  continue
             # initialize all checks to False(Pass)
             failchecks[ts] = [False]*100
@@ -1106,7 +1106,7 @@ def find_actual_binning():
     find_actual_bindefs()
 
 def main():
-    global log,ignore_suites,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check,use_cats
+    global log,ignore_suites_file,testflow,testflow_file,testtable,bin_groups_exist,binning_csv_file,test_type_to_check,use_cats
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
     parser.add_argument('-d','--debug',action='store_true',help='Print a lot of debug stuff to dlog')
@@ -1120,7 +1120,7 @@ def main():
                         WARNING: THIS GOES WITH -tf (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='Name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
-    parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
+    parser.add_argument('-ignore','--ignore_suites_file',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
     parser.add_argument('-bin','--binning_csv',required=False,default='', help='Path to binning csv file (Example: BinningKepler.csv (use only with -c option to use categories)')
     parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups (use only with -c option to use categories)')
     parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
@@ -1144,20 +1144,20 @@ def main():
     print msg
     log.info(msg)
 
-    if args.ignore_suites is not None:
-        if os.path.isfile(args.ignore_suites):
-            ignore_file = args.ignore_suites
+    if args.ignore_suites_file is not None:
+        if os.path.isfile(args.ignore_suites_file):
+            ignore_file = args.ignore_suites_file
         else:
-            ignore_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),args.ignore_suites)
+            ignore_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),args.ignore_suites_file)
         try:
             with open(ignore_file, 'r') as f:
-                ignore_suites = [x.strip() for x in f.readlines()]
+                ignore_suites_file = [x.strip() for x in f.readlines()]
         except:
-            err = '{} is NOT a valid ignore file. Skipping your ignore file. (check permissions of file also)'.format(args.ignore_suites)
+            err = '{} is NOT a valid ignore file. Skipping your ignore file. (check permissions of file also)'.format(args.ignore_suites_file)
             print 'ERROR!!! '+err
             log.error(err)
             raise IOError
-        ignore_str = '\n\t'.join(ignore_suites)
+        ignore_str = '\n\t'.join(ignore_suites_file)
         msg = 'IGNORING THE FOLLOWING TESTSUITES:\n\t'+ignore_str
         # print msg
         log.info(msg)

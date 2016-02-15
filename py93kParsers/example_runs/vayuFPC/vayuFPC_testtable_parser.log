@@ -1,613 +1,612 @@
-02/15/2016 11:33:21 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting vayuFPC_testtable_parser.log
-02/15/2016 11:33:21 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC/vayuFPC_testtable_parser.log
-02/15/2016 11:33:21 AM INFO: Running testtable_parser.pyc...
-02/15/2016 11:33:21 AM INFO: Parsing testtable master file: Final_limits.csv.mfh .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: CRES_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: SupplyShorts_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: PinOpenShrt_S.csv .....
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC/vayuFPC_testtable_parser.log
+02/15/2016 03:40:13 PM INFO: Running testtable_parser.pyc...
+02/15/2016 03:40:13 PM INFO: Parsing testtable master file: Final_limits.csv.mfh .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: CRES_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: SupplyShorts_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: PinOpenShrt_S.csv .....
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn0@ddr1_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn0@ddr1_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn1@ddr1_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn1@ddr1_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn2@ddr1_dqsn2 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn2@ddr1_dqsn2 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn3@ddr1_dqsn3 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn3@ddr1_dqsn3 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_vref0@ddr1_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_vref0@ddr1_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn0@ddr2_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn0@ddr2_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn1@ddr2_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn1@ddr2_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_vref0@ddr2_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_vref0@ddr2_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clockx@hdmi1_clockx reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clockx@hdmi1_clockx reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clocky@hdmi1_clocky reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clocky@hdmi1_clocky reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0x@hdmi1_data0x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0x@hdmi1_data0x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0y@hdmi1_data0y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0y@hdmi1_data0y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1x@hdmi1_data1x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1x@hdmi1_data1x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1y@hdmi1_data1y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1y@hdmi1_data1y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2x@hdmi1_data2x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2x@hdmi1_data2x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2y@hdmi1_data2y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2y@hdmi1_data2y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxn0@sata1_rxn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxn0@sata1_rxn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxp0@sata1_rxp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxp0@sata1_rxp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txn0@sata1_txn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txn0@sata1_txn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txp0@sata1_txp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txp0@sata1_txp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_hsync0@vin2a_hsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_hsync0@vin2a_hsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_vsync0@vin2a_vsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_vsync0@vin2a_vsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn0@ddr1_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn0@ddr1_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn1@ddr1_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn1@ddr1_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn2@ddr1_dqsn2 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn2@ddr1_dqsn2 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn3@ddr1_dqsn3 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_dqsn3@ddr1_dqsn3 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_vref0@ddr1_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr1_vref0@ddr1_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn0@ddr2_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn0@ddr2_dqsn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn1@ddr2_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_dqsn1@ddr2_dqsn1 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_vref0@ddr2_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_ddr2_vref0@ddr2_vref0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clockx@hdmi1_clockx reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clockx@hdmi1_clockx reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clocky@hdmi1_clocky reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_clocky@hdmi1_clocky reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0x@hdmi1_data0x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0x@hdmi1_data0x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0y@hdmi1_data0y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data0y@hdmi1_data0y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1x@hdmi1_data1x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1x@hdmi1_data1x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1y@hdmi1_data1y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data1y@hdmi1_data1y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2x@hdmi1_data2x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2x@hdmi1_data2x reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2y@hdmi1_data2y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_hdmi1_data2y@hdmi1_data2y reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxn0@sata1_rxn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxn0@sata1_rxn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxp0@sata1_rxp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_rxp0@sata1_rxp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txn0@sata1_txn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txn0@sata1_txn0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txp0@sata1_txp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_sata1_txp0@sata1_txp0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_hsync0@vin2a_hsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_hsync0@vin2a_hsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_vsync0@vin2a_vsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vin2a_vsync0@vin2a_vsync0 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
+02/15/2016 03:40:13 PM ERROR: Duplicate Softbin Number found in: "PinOpenShrt_S.csv".... 
 	('SBIN=8', 'F_OS_OPEN', 'HBIN=8', 'F_OPENS')
 	('SBIN=8', 'F_OS_SHRT_PIN', 'HBIN=8', 'F_OPENS')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_OPINS2GND@RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_OPINS2GND@rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_OPINS2PWR@RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_OPINS2PWR@rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_SPINS2GND_RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_SPINS2GND_rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_SPINS2PWR_RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_AUTO_SPINS2PWR_rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_dspeve@vbbldo_dspeve reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_gpu@vbbldo_gpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_iva@vbbldo_iva reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_mpu@vbbldo_mpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_dspeve@vbbldo_dspeve reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_gpu@vbbldo_gpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_iva@vbbldo_iva reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_mpu@vbbldo_mpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: SupplyOpen_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: EfuseTests.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: DieTemp_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: PreStressIddq_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: FuncVminPre_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: Trim_S.csv .....
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_DE_N_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_DE_P_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_SE_N_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_SE_P_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_DE_N_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_DE_P_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_SE_N_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_SE_P_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PRE@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PRE@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PRE@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PRE@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_N_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_P_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_N_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_P_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_N_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_P_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_N_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_P_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PST@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PST@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PST@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PST@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_P_Post@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_N_Post@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_N_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_P_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_N_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_P_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_N_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_P_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_N_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_P_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PST_ZOFF@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PST_ZOFF@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PST_ZOFF@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PST_ZOFF@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_P_Post_ZOFF@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_N_Post_ZOFF@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: AnalogVmin_S.csv .....
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE5_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_ISATAgen1_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_ISATAgen2_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE4_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_HDMI_IVDDA1P8V@vdda_hdmi reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_ISATAgen1_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_ISATAgen2_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUSPU_1p8@vdda_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUSPU_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_GPIORX_IVDDA18@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_GPIORX_IVDDA33@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_GPIORX_IVDDA18@vdda_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_GPIORX_IVDDA33@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTFS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTFS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTHS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTHS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTLS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTLS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTFS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTHS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTLS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IUSB3_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE5_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_Iidle_PWRUP_1p8a@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_Ilfps_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_IUSB3_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE6_Iidle_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_Iidle_PWRUP_1p8a@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE2_Ilfps_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_IUSB3_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE7_Iidle_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_Iidle_PWRUP_1p8a@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE3_Ilfps_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_IUSB3_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE4_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_Iidle_PWRUP_1p8a@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_Ilfps_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE6_GRXA_PWR_VDDA1P8V@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE7_GRXA_PWR_VDDA1P8V@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUSPU_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUSPU_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_DE_N_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_DE_P_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_SE_N_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_SE_P_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_DE_N_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_DE_P_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_SE_N_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_SE_P_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: AnalogVmax_S.csv .....
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IUSB3_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE4_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_Iidle_PWRUP_1p8a@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_Ilfps_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_ISATAgen2_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_ISATAgen1_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IUSB3_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE5_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_Iidle_PWRUP_1p8a@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_Ilfps_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_ISATAgen2_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_ISATAgen1_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_IUSB3_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE6_Iidle_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_Iidle_PWRUP_1p8a@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_Ilfps_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_IUSB3_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE7_Iidle_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_Iidle_PWRUP_1p8a@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_Ilfps_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE2_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE4_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE3_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE5_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE6_GRXA_PWR_VDDA1P8V@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE7_GRXA_PWR_VDDA1P8V@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_HDMI_IVDDA1P8V@vdda_hdmi reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTFS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTHS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTLS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_GPIORX_IVDDA33@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_GPIORX_IVDDA18@vdda_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUSPU_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUSPU_1p8@vdda_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTFS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTFS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTHS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTHS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTLS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTLS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_GPIORX_IVDDA33@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_GPIORX_IVDDA18@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUSPU_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUSPU_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_DE_N_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_DE_P_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_SE_N_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_SE_P_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_DE_N_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_DE_P_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_SE_N_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_SE_P_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: SpecLevelsVmin_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: VoutVmin_S.csv .....
-02/15/2016 11:33:21 AM INFO: Parsing standard testtable file: SupplyShortsPost_S.csv .....
-02/15/2016 11:33:22 AM INFO: Parsing standard testtable file: FuncVmaxPost_S.csv .....
-02/15/2016 11:33:22 AM INFO: Parsing standard testtable file: dummy.csv .....
-02/15/2016 11:33:22 AM INFO: Parsing standard testtable file: DieID_FT_S.csv .....
-02/15/2016 11:33:22 AM ERROR: 
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_OPINS2GND@RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_OPINS2GND@rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_OPINS2PWR@RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_OPINS2PWR@rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_SPINS2GND_RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_SPINS2GND_rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_SPINS2PWR_RMII_MHZ_50_CLK reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_AUTO_SPINS2PWR_rtc_osc_xi_clkin32 reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_dspeve@vbbldo_dspeve reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_gpu@vbbldo_gpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_iva@vbbldo_iva reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_mpu@vbbldo_mpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_dspeve@vbbldo_dspeve reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_gpu@vbbldo_gpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_iva@vbbldo_iva reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_vbbldo_mpu@vbbldo_mpu reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: DCSIG_PINS_rtc_osc_xo@rtc_osc_xo reached in file: PinOpenShrt_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: SupplyOpen_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: EfuseTests.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: DieTemp_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: PreStressIddq_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: FuncVminPre_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: Trim_S.csv .....
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: Trim_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_DE_N_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_DE_P_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_SE_N_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_EST_SE_P_Pre@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_DE_N_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_DE_P_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_SE_N_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: V_NO_DDRIO_NRTH_SE_P_Pre@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PRE@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PRE@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PRE@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PRE@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_N_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_P_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_N_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_P_Post@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_N_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_P_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_N_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_P_Post@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PST@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PST@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PST@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PST@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_P_Post@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_N_Post@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_N_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_DE_P_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_N_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_EST_SE_P_Post_ZOFF@ddr2_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_N_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_DE_P_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_N_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_NO_DDRIO_NRTH_SE_P_Post_ZOFF@ddr1_a0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_N_TRIM_PST_ZOFF@mlbp_dat_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_DAT_P_TRIM_PST_ZOFF@mlbp_dat_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_N_TRIM_PST_ZOFF@mlbp_sig_n reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MLB_SIG_P_TRIM_PST_ZOFF@mlbp_sig_p reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_P_Post_ZOFF@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_SDIO_BUFF_TRIM_N_Post_ZOFF@mmc1_dat0 reached in file: Trim_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: AnalogVmin_S.csv .....
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmin_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE5_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_ISATAgen1_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_ISATAgen2_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE4_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_HDMI_IVDDA1P8V@vdda_hdmi reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_ISATAgen1_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_ISATAgen2_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUSPU_1p8@vdda_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IUSBSUSPU_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_GPIORX_IVDDA18@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_GPIORX_IVDDA33@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_GPIORX_IVDDA18@vdda_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_GPIORX_IVDDA33@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTFS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTFS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTHS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTHS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTLS_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IYBISTLS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTFS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTHS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IYBISTLS_3p3@vdda33v_usb1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IUSB3_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE5_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_Iidle_PWRUP_1p8a@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_Ilfps_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_IUSB3_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE6_Iidle_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_Iidle_PWRUP_1p8a@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE2_Ilfps_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_IUSB3_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE7_Iidle_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_Iidle_PWRUP_1p8a@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE3_Ilfps_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_IUSB3_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE4_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_Iidle_PWRUP_1p8a@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_Ilfps_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE6_GRXA_PWR_VDDA1P8V@vdda_pcie0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE7_GRXA_PWR_VDDA1P8V@vdda_pcie1 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUS_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUSPU_1p8@vdda_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_SE1_IUSBSUSPU_3p3@vdda33v_usb2 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_DE_N_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_DE_P_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_SE_N_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_EST_SE_P_ZOFF@ddr2_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_DE_N_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_DE_P_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_SE_N_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_MA_DDRIO_NRTH_SE_P_ZOFF@ddr1_a0 reached in file: AnalogVmin_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: AnalogVmax_S.csv .....
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM ERROR: Duplicate occurrence of Row Key combination found in File: AnalogVmax_S.csv; Row Key combination: ('', '', '')
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IUSB3_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE4_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_Iidle_PWRUP_1p8a@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_Ilfps_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_Iidle_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_ISATAgen2_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_ISATAgen1_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_ISATA_PWRUP_1p8@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IUSB3_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE5_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_Iidle_PWRUP_1p8a@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_Ilfps_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_Iidle_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_ISATAgen2_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_ISATAgen1_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_ISATA_PWRUP_1p8@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_IUSB3_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE6_Iidle_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_Iidle_PWRUP_1p8a@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_Ilfps_PWRUP_1p8@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_IUSB3_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE7_Iidle_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_Iidle_PWRUP_1p8a@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_Ilfps_PWRUP_1p8@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE2_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE4_GRXA_PWR_VDDA1P8V@vdda_usb3 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE3_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE5_GRXA_PWR_VDDA1P8V@vdda_sata reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE6_GRXA_PWR_VDDA1P8V@vdda_pcie0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE7_GRXA_PWR_VDDA1P8V@vdda_pcie1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_HDMI_IVDDA1P8V@vdda_hdmi reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTFS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTHS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IYBISTLS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_GPIORX_IVDDA33@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_GPIORX_IVDDA18@vdda_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUS_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUSPU_3p3@vdda33v_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE_IUSBSUSPU_1p8@vdda_usb1 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTFS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTFS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTHS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTHS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTLS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IYBISTLS_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_GPIORX_IVDDA33@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_GPIORX_IVDDA18@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUS_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUSPU_3p3@vdda33v_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_SE1_IUSBSUSPU_1p8@vdda_usb2 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_DE_N_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_DE_P_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_SE_N_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_EST_SE_P_ZOFF@ddr2_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_DE_N_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_DE_P_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_SE_N_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM WARNING: Max length of testname(max=30: I_XA_DDRIO_NRTH_SE_P_ZOFF@ddr1_a0 reached in file: AnalogVmax_S.csv.  Possible truncation in STDF
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: SpecLevelsVmin_S.csv .....
+02/15/2016 03:40:13 PM INFO: Parsing standard testtable file: VoutVmin_S.csv .....
+02/15/2016 03:40:14 PM INFO: Parsing standard testtable file: SupplyShortsPost_S.csv .....
+02/15/2016 03:40:14 PM INFO: Parsing standard testtable file: FuncVmaxPost_S.csv .....
+02/15/2016 03:40:14 PM INFO: Parsing standard testtable file: dummy.csv .....
+02/15/2016 03:40:14 PM INFO: Parsing standard testtable file: DieID_FT_S.csv .....
+02/15/2016 03:40:14 PM ERROR: 
 ***********************************************
 Softbin NAME to Softbin NUMBERS errors listed below !!!!
 This is a ONE to MANY error !!!!
@@ -640,12 +639,12 @@ Cannot use more than one !!!!
 								507(functional,R_MA_SDIO_N,R_MA_SDIO_P,I_MA_SDIO_N,I_MA_SDIO_P,R_MA_SDIO_N_ZOFF,R_MA_SDIO_P_ZOFF)
 								
 
-02/15/2016 11:33:22 AM INFO: 
+02/15/2016 03:40:14 PM INFO: 
 ***********************************************
 PASSED: Hardbin NAME to Hardbin NUMBERS check !!!!
 ***********************************************
 
-02/15/2016 11:33:22 AM ERROR: 
+02/15/2016 03:40:14 PM ERROR: 
 ***********************************************
 Softbin NUMBER to Softbin NAMES errors listed below !!!!
 This is a ONE to MANY error !!!!
@@ -656,7 +655,7 @@ Cannot use more than one !!!!
 								F_OS_OPEN(I_LB_OPEN_PINS,I_AUTO_OPINS2GND,functional,I_AUTO_OPINS2PWR,DCSIG_PINS,DCSIG_PINS_vbbldo_dspeve,DCSIG_PINS_vbbldo_gpu,DCSIG_PINS_vbbldo_iva,DCSIG_PINS_vbbldo_mpu,DCSIG_PINS_rtc_osc_xo ... and 481 more)
 								
 
-02/15/2016 11:33:22 AM ERROR: 
+02/15/2016 03:40:14 PM ERROR: 
 ***********************************************
 Hardbin NUMBER to Hardbin NAMES errors listed below !!!!
 This is a ONE to MANY error !!!!
@@ -671,7 +670,7 @@ Cannot use more than one !!!!
 								F_OPEN(CR_2D_dcan1_rx,CR_2D_dcan1_tx,CR_2D_emu0,CR_2D_emu1,CR_2D_gpio6_14,CR_2D_mcasp4_axr1,CR_2D_mcasp4_fsx,CR_2D_nmin,CR_2D_resetn,CR_2D_rstoutn ... and 471 more)
 								
 
-02/15/2016 11:33:22 AM ERROR: 
+02/15/2016 03:40:14 PM ERROR: 
 ***********************************************
 Softbin NAME to Hardbin NAMES errors listed below !!!!
 This is a ONE to MANY error !!!!
@@ -681,5 +680,5 @@ Cannot use more than one !!!!
 								F_OPENS(DCSIG_PINS,DCSIG_PINS_Wakeup0,DCSIG_PINS_Wakeup1,DCSIG_PINS_Wakeup2,DCSIG_PINS_Wakeup3,DCSIG_PINS_atestv,DCSIG_PINS_ddr1_dqsn0,DCSIG_PINS_ddr1_dqsn1,DCSIG_PINS_ddr1_dqsn2,DCSIG_PINS_ddr1_dqsn3 ... and 46 more)
 								F_SHORTS(I_LB_EVEN,I_LB_EVEN_Wakeup0,I_LB_EVEN_Wakeup2,I_LB_EVEN_ddr1_a0,I_LB_EVEN_ddr1_a10,I_LB_EVEN_ddr1_a12,I_LB_EVEN_ddr1_a13,I_LB_EVEN_ddr1_a3,I_LB_EVEN_ddr1_a5,I_LB_EVEN_ddr1_a7 ... and 1357 more)
 								
-02/15/2016 11:33:22 AM INFO: Number of WARNINGS for "testtable_parser.pyc": 231
-02/15/2016 11:33:22 AM INFO: Number of ERRORS for "testtable_parser.pyc": 141
+02/15/2016 03:40:14 PM INFO: Number of WARNINGS for "testtable_parser.pyc": 231
+02/15/2016 03:40:14 PM INFO: Number of ERRORS for "testtable_parser.pyc": 141

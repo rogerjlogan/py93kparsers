@@ -63,20 +63,26 @@ expr = pp.Forward()
 name = pp.Word(pp.alphas+"_", pp.alphanums+"_")
 funcall = (name + lPar + pp.delimitedList(expr|qStr) +
                    rPar).setName('funcall')
+
 def getVal(val, envi):
-    if isinstance(val, str):
-        return envi[val]
-    if isinstance(val, float):
-        return val
-    return val.eval(envi)
+    try:
+        if isinstance(val, str):
+            return envi[val]
+        if isinstance(val, float):
+            return val
+        return val.eval(envi)
+    except KeyError, msg:
+        raise
+    
 
 class funcEval(object):
     _funDict = dict((meth,getattr(math,meth)) for meth in dir(math) if
                      callable(getattr(math, meth)))
     _funDict['chr'] = chr
     _funDict['abs'] = abs
+    _funDict['fract'] = lambda x, y,z : x/y*z
     def __init__(self,toks):
-#        print "Processing function..." + toks[0]
+        print "Processing function..." + toks[0]
         self.name = toks[0]
         self.params = toks[1:]
         self.repr = self.name + '(' +\
@@ -209,7 +215,7 @@ class CondExpr(object):
         return str(self.cond) + "? " + str(self.trueExp) + " : " + str(self.falseExp)
 condExpr.setParseAction(CondExpr)
 
-valueExpr = expr ^ condExpr
+valueExpr = expr ^ condExpr + pp.StringEnd()
 
 
 

@@ -1,8 +1,8 @@
-02/15/2016 11:33:02 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting vayuFPC_testprog_parser.log
-02/15/2016 11:33:02 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC/vayuFPC_testprog_parser.log
-02/15/2016 11:33:02 AM INFO: Running testprog_parser.pyc...
-02/15/2016 11:33:02 AM INFO: Parsing testprog file: VAYUFPC.tpg .....
-02/15/2016 11:33:02 AM INFO: {   'Applicdata': 'usp_package_test',
+02/15/2016 03:39:53 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting vayuFPC_testprog_parser.log
+02/15/2016 03:39:53 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/vayuFPC/vayuFPC_testprog_parser.log
+02/15/2016 03:39:53 PM INFO: Running testprog_parser.pyc...
+02/15/2016 03:39:53 PM INFO: Parsing testprog file: VAYUFPC.tpg .....
+02/15/2016 03:39:53 PM INFO: {   'Applicdata': 'usp_package_test',
     'Dataform': '',
     'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
     'Pdi_lib': '',
@@ -11,5 +11,5 @@
     'Testtable': 'Final_limits.csv.mfh',
     'Userproc': '',
     'Waferdescr': ''}
-02/15/2016 11:33:02 AM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
-02/15/2016 11:33:02 AM INFO: Number of ERRORS for "testprog_parser.pyc": 0
+02/15/2016 03:39:53 PM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+02/15/2016 03:39:53 PM INFO: Number of ERRORS for "testprog_parser.pyc": 0

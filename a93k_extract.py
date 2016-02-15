@@ -66,7 +66,7 @@ def parseArguments(defaultArgsDict=None):
                         WARNING: THIS GOES WITH -tf (--testflow_file), BUT NOT WITH -tp (--testprog_file)')
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='Name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
-    parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
+    parser.add_argument('-ignore','--ignore_suites_file',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
     parser.add_argument('-bin','--binning_csv',default='',required=False, help='Path to binning csv file (Example: BinningKepler.csv (use only with -c option to use categories)')
     parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups (use only with -c option to use categories)')
     parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
@@ -84,20 +84,20 @@ def parseTestFlow(args):
 
     log = setUpLogging(debug=args.debug, outputDir=args.output_dir, outputName=args.name, maxLogs=args.maxlogs)
     py93kParsers.ti_binning.log = log
-    if args.ignore_suites is not None:
-        if os.path.isfile(args.ignore_suites):
-            ignore_file = args.ignore_suites
+    if args.ignore_suites_file is not None:
+        if os.path.isfile(args.ignore_suites_file):
+            ignore_file = args.ignore_suites_file
         else:
-            ignore_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),args.ignore_suites)
+            ignore_file = os.path.join(os.path.dirname(os.path.realpath(__file__)),args.ignore_suites_file)
         try:
             with open(ignore_file, 'r') as f:
-                ignore_suites = [x.strip() for x in f.readlines()]
+                ignore_suites_file = [x.strip() for x in f.readlines()]
         except:
-            err = '{} is NOT a valid ignore file. Skipping your ignore file. (check permissions of file also)'.format(args.ignore_suites)
+            err = '{} is NOT a valid ignore file. Skipping your ignore file. (check permissions of file also)'.format(args.ignore_suites_file)
             print 'ERROR!!! '+err
             log.error(err)
             raise IOError
-        ignore_str = '\n\t'.join(ignore_suites)
+        ignore_str = '\n\t'.join(ignore_suites_file)
         msg = 'IGNORING THE FOLLOWING TESTSUITES:\n\t'+ignore_str
         # print msg
         log.info(msg)
@@ -617,13 +617,13 @@ if __name__ == "__main__":
     argsDefault = {
         "name": "bob", "debug": False, "output_dir": r"c:\Temp", "maxlogs": 1,
         "renumber": False, "split": False, "testflow_file": "", "testtable_file": "",
-        "testprog_file": "", "ignore_suites": "", "binning_csv": "", "test_type_to_check": "",
+        "testprog_file": "", "ignore_suites_file": "", "binning_csv": "", "test_type_to_check": "",
         "pic_type": "png", "categories": False
     }
     setArgsDict = {
         "--testprog_file": argsTestProgFile, "--name": argsName, "--output_dir": argsOutputDir,
         "--test_type_to_check": argsTestTypeToCheck, "--pic_type": "", "--binning_csv": argsBinningCsv,
-        "--ignore_suites": argsIgnoreSuites, "--categories": True
+        "--ignore_suites_file": argsIgnoreSuites, "--categories": True
     }
     storeTrueVars = ["--debug", "--renumber", "--split", "--categories"]
     #copySysArgV = [arg for arg in sys.argv]

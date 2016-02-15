@@ -1,7 +1,7 @@
-02/15/2016 12:51:15 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_TestflowParser.log
-02/15/2016 12:51:15 PM INFO: Running TestflowParser.pyc...
-02/15/2016 12:51:16 PM INFO: Parsing testflow file: Final_RPC_flow.mfh .....
-02/15/2016 12:51:24 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.png
-02/15/2016 12:51:24 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.log
-02/15/2016 12:51:31 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
-02/15/2016 12:51:31 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0
+02/15/2016 06:30:40 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_TestflowParser.log
+02/15/2016 06:30:40 PM INFO: Running TestflowParser.pyc...
+02/15/2016 06:30:41 PM INFO: Parsing testflow file: Final_RPC_flow.mfh .....
+02/15/2016 06:30:48 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.png
+02/15/2016 06:30:48 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_Final_RPC_flow_TestflowParser.log
+02/15/2016 06:30:55 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
+02/15/2016 06:30:55 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0

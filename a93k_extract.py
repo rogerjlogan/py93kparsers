@@ -67,7 +67,7 @@ def parseArguments(defaultArgsDict=None):
     parser.add_argument('-tp','--testprog_file',required=False,default='', help='Name of testprog file (Example: F791857_Final_RPC.tpg)\
                         WARNING: THIS DOES NOT GO WITH -tt (--testtable_file) OR WITH -tf (--testflow_file)')
     parser.add_argument('-ignore','--ignore_suites',required=False, help='Ignore testsuites file. Place testsuites (\'\\n\' separated) in this text file to suppress in csv output')
-    parser.add_argument('-bin','--binning_csv',required=False, help='Path to binning csv file (Example: BinningKepler.csv (use only with -c option to use categories)')
+    parser.add_argument('-bin','--binning_csv',default='',required=False, help='Path to binning csv file (Example: BinningKepler.csv (use only with -c option to use categories)')
     parser.add_argument('-tt2c','--test_type_to_check',required=False,default='', help='Check this test type against binning groups (use only with -c option to use categories)')
     parser.add_argument('-pic','--pic_type',required=False,default='png',help='Type of pic desired for output (valid options: png[default], none)')
     parser.add_argument('-c','--categories',action='store_true',help='Add this option to use binning categories')
@@ -145,7 +145,7 @@ def parseTestFlow(args):
         log.error(err)
         sys.exit(err)
     elif len(args.binning_csv):
-        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE SUPPLIED not supplied the binning csv file (-bin).'
+        err = 'ILLEGAL ARGUMENT COMBINATION: You\'ve chosen NOT TO USE category binning (-c option passed) but HAVE NOT SUPPLIED the binning csv file (-bin).'
         log.error(err)
         sys.exit(err)
     else:

@@ -254,6 +254,10 @@ class TestTable(object):
                             self.unordered_limit_data[fn][row_key] = {}
                         # iterate over columns
                         for i,cell in enumerate(row):
+                            if i > (len(headers)-1):
+                                err = 'Row length does not match header length in file: {}'.format(fn)
+                                log.error(err)
+                                continue
                             if headers[i] in REPEATABLE_LIM_HEADERS and len(modes):
                                 header = (headers[i], modes[i])
                             else:
@@ -431,6 +435,12 @@ class TestTable(object):
                             self.binmap_err[Bin_s_name] = []
                         if "MISSING_HBIN_NAME" not in self.binmap_err[Bin_s_name]:
                             self.binmap_err[Bin_s_name].append("MISSING_HBIN_NAME")
+                        # adding testname info
+                        namekey = Bin_s_name+"MISSING_HBIN_NAME"
+                        if namekey not in self.binmap_err_tests:
+                            self.binmap_err_tests[namekey] = []
+                        if testname not in self.binmap_err_tests[namekey]:
+                            self.binmap_err_tests[namekey].append(testname)
                     self.testsuite_data[testsuite].append(
                         {
                             'Test name' : testname,

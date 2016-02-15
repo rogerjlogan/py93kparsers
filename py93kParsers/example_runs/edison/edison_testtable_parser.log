@@ -1,0 +1,238 @@
+02/15/2016 01:58:11 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting edison_testtable_parser.log
+02/15/2016 01:58:11 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_testtable_parser.log
+02/15/2016 01:58:11 PM INFO: Running testtable_parser.py...
+02/15/2016 01:58:11 PM INFO: Parsing testtable master file: Final_RPC_limits.csv.mfh .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: SupplyShortsPre_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: OSAndDieID_S.csv .....
+02/15/2016 01:58:11 PM WARNING: Max length of testname(max=30: I_B_SHRT_EVEN_DIFF_P_sgmii0clkp reached in file: OSAndDieID_S.csv.  Possible truncation in STDF
+02/15/2016 01:58:11 PM WARNING: Max length of testname(max=30: I_B_SHRT_EVEN_DIFF_P_sgmii0clkp reached in file: OSAndDieID_S.csv.  Possible truncation in STDF
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: IddqPre_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: OnDieStruc_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: FuseCtlr_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: DieID_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: FuncVmin_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: DieID_PartialProg_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: Mem_Repair_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: AtSpeedVmin_S.csv .....
+02/15/2016 01:58:11 PM ERROR: Duplicate occurrence of Row Key combination found in File: AtSpeedVmin_S.csv; Row Key combination: ('LED_PHY_PCIE_AtSpeedVmin_st', 'X_M_LED_PHY_PCIE')
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: AtSpeedVminOD_S.csv .....
+02/15/2016 01:58:11 PM ERROR: Duplicate occurrence of Row Key combination found in File: AtSpeedVminOD_S.csv; Row Key combination: ('LED_PHY_PCIE_AtSpeedVminOD_st', 'X_OM_LED_PHY_PCIE')
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: AtSpeedVskewPhi_S.csv .....
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM ERROR: Row length does not match header length in file: AtSpeedVskewPhi_S.csv
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: AtSpeedVskewPhiOD_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: FuncVnom_S.csv .....
+02/15/2016 01:58:11 PM ERROR: Duplicate Softbin Number found in: "FuncVnom_S.csv".... 
+	('SBIN=14', 'F_FUNC_SPEC', 'HBIN=13', 'F_FUNC')
+	('SBIN=14', 'F_FUNC_SPEC', 'HBIN=', '')
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: FuncVmax_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: FuncVmaxOD_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: EfusePostVerify_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: Leakage_S.csv .....
+02/15/2016 01:58:11 PM INFO: Parsing standard testtable file: SupplyShortsPost_S.csv .....
+02/15/2016 01:58:12 PM INFO: Parsing standard testtable file: BBT.csv .....
+02/15/2016 01:58:12 PM INFO: Parsing standard testtable file: Thermal.csv .....
+02/15/2016 01:58:46 PM INFO: Parsing standard testtable file: SmartReflex_S.csv .....
+02/15/2016 01:58:47 PM INFO: Parsing standard testtable file: Cres.csv .....
+02/15/2016 01:58:47 PM INFO: Skipping file: /db/edison_pe/v93k/prod_pgms/EDISON93K02/EDISON93K02/testtable/Final_RPC/BinningEdison.csv
+02/15/2016 01:58:47 PM INFO: Parsing standard testtable file: dummy.csv .....
+02/15/2016 01:58:47 PM INFO: Parsing standard testtable file: Search_S.csv .....
+02/15/2016 01:58:47 PM INFO: Parsing standard testtable file: RingOsc_S.csv .....
+02/15/2016 01:58:47 PM ERROR: Duplicate occurrence of Row Key combination found in File: RingOsc_S.csv; Row Key combination: ('ODP_RingOscTest_st', 'O_Empty_Index')
+02/15/2016 01:58:47 PM ERROR: Duplicate occurrence of Row Key combination found in File: RingOsc_S.csv; Row Key combination: ('ODP_RingOscTest_st', 'O_Empty_Index')
+02/15/2016 01:58:47 PM ERROR: Duplicate occurrence of Row Key combination found in File: RingOsc_S.csv; Row Key combination: ('ODP_RingOscTest_st', 'O_Empty_Index')
+02/15/2016 01:58:47 PM ERROR: Duplicate occurrence of Row Key combination found in File: RingOsc_S.csv; Row Key combination: ('ODP_RingOscTest_st', 'O_Empty_Index')
+02/15/2016 01:58:47 PM ERROR: Duplicate occurrence of Row Key combination found in File: RingOsc_S.csv; Row Key combination: ('ODP_RingOscTest_st', 'O_Empty_Index')
+02/15/2016 01:58:47 PM INFO: Parsing standard testtable file: ARP.csv .....
+02/15/2016 01:58:47 PM ERROR: 
+***********************************************
+Softbin NAME to Softbin NUMBERS errors listed below !!!!
+This is a ONE to MANY error !!!!
+Cannot use more than one !!!!
+***********************************************
+	SBIN NAME: F_CTCSMAX......................USES SBIN NUMS(testname(s)):
+								4019(CTCS_maximum)
+								4024(CTCS_minimum)
+								4015(CTCS_maximum)
+								4011(CTCS_maximum)
+								4007(CTCS_maximum)
+								4003(CTCS_maximum)
+								3999(CTCS_maximum)
+								
+	SBIN NAME: F_THERMDIODE...................USES SBIN NUMS(testname(s)):
+								4075(CTCS_maximum)
+								4095(T_TD1_0000,T_TD1_0001,T_TD1_0002,T_TD1_0003,T_TD1_0004,T_TD1_0005,T_TD1_0006,T_TD1_0007,T_TD1_0008,T_TD1_0009 ... and 19991 more)
+								4074(TD_maximum)
+								4073(CTCS_minimum)
+								4072(TD_minimum)
+								4071(DTC1_TS_DEG_TD_INITIAL)
+								4070(DTC1_TS1_DEG_INITIAL)
+								4069(DTC1_TS2_DEG_INITIAL)
+								4068(DTC2_TS_DEG_TD_INITIAL)
+								4067(DTC2_TS1_DEG_INITIAL)
+								4066(DTC2_TS2_DEG_INITIAL)
+								4065(DTC_TS1_BLOWN_CYCLE)
+								4064(DTC_TS1_BLOWN_OFFSET)
+								4063(DTC_TS2_BLOWN_CYCLE)
+								4062(DTC_TS2_BLOWN_OFFSET)
+								4061(DTC2_TS_DEG_TD_BLOWN_FINAL)
+								4060(DTC2_TS1_DEG_BLOWN_FINAL)
+								4059(DTC2_TS2_DEG_BLOWN_FINAL)
+								4058(DTC1_TS_DEG_TD_INITIAL)
+								4057(DTC1_TS1_DEG_INITIAL)
+								4056(DTC1_TS2_DEG_INITIAL)
+								4055(DTC1_TS_DEG_TD_BLOWN_INITIAL)
+								4054(DTC1_TS1_DEG_BLOWN_INITIAL)
+								4053(DTC1_TS2_DEG_BLOWN_INITIAL)
+								4052(DTC2_TS_DEG_TD_INITIAL)
+								4051(DTC2_TS1_DEG_INITIAL)
+								4050(DTC2_TS2_DEG_INITIAL)
+								4049(DTC2_TS_DEG_TD_BLOWN_INITIAL)
+								4048(DTC2_TS1_DEG_BLOWN_INITIAL)
+								4047(DTC2_TS2_DEG_BLOWN_INITIAL)
+								4046(DTC_TS1_CYCLE)
+								4045(DTC_TS2_CYCLE)
+								4044(DTC2_TS_DEG_TD_INTERMEDIATE)
+								4043(DTC2_TS1_DEG_INTERMEDIATE)
+								4042(DTC2_TS2_DEG_INTERMEDIATE)
+								4041(DTC_TS1_OFFSET)
+								4040(DTC_TS2_OFFSET)
+								4039(DTC_TS1_BLOWN_CYCLE)
+								4038(DTC_TS1_BLOWN_OFFSET)
+								4037(DTC_TS2_BLOWN_CYCLE)
+								4036(DTC_TS2_BLOWN_OFFSET)
+								4035(DTC2_TS_DEG_TD_BLOWN_FINAL)
+								4034(DTC2_TS1_DEG_BLOWN_FINAL)
+								4033(DTC2_TS2_DEG_BLOWN_FINAL)
+								4032(DTC_DEG_OUT_OF_RANGE)
+								3998(TD_minimum)
+								3997(TD_maximum)
+								
+	SBIN NAME: FUSE_DIEID_DesRev_F............USES SBIN NUMS(testname(s)):
+								32(DIEID_DESIGNREV)
+								28(devDesRev)
+								
+	SBIN NAME: FUSE_DIEID_WaferXY_F...........USES SBIN NUMS(testname(s)):
+								24(devY)
+								23(devX)
+								
+	SBIN NAME: F_CTCSMIN......................USES SBIN NUMS(testname(s)):
+								4020(CTCS_minimum)
+								4023(CTCS_maximum)
+								4016(CTCS_minimum)
+								4012(CTCS_minimum)
+								4008(CTCS_minimum)
+								4004(CTCS_minimum)
+								4000(CTCS_minimum)
+								
+	SBIN NAME: F_TDMAX........................USES SBIN NUMS(testname(s)):
+								4017(TD_maximum)
+								4021(TD_maximum)
+								4013(TD_maximum)
+								4009(TD_maximum)
+								4005(TD_maximum)
+								4001(TD_maximum)
+								
+	SBIN NAME: F_TDMIN........................USES SBIN NUMS(testname(s)):
+								4018(TD_minimum)
+								4022(TD_minimum)
+								4014(TD_minimum)
+								4010(TD_minimum)
+								4006(TD_minimum)
+								4002(TD_minimum)
+								
+	SBIN NAME: FUSE_DIEID_FabCode_F...........USES SBIN NUMS(testname(s)):
+								31(DIEID_FABCODE)
+								27(devFab)
+								
+	SBIN NAME: F_WARMUP.......................USES SBIN NUMS(testname(s)):
+								990(TimeToWarm)
+								989(TimeToWarm)
+								
+
+02/15/2016 01:58:47 PM ERROR: 
+***********************************************
+Hardbin NAME to Hardbin NUMBERS errors listed below !!!!
+This is a ONE to MANY error !!!!
+Cannot use more than one !!!!
+***********************************************
+	HBIN NAME: F_FUNC.........................USES HBIN NUMS(testname(s)):
+								7(BBT_rev,BBTOverTempFlag,BBTMaxTemp,BBTMinTemp,BBTTemp,thermdiodea2,TimeToWarm,CTCS_Purge_Flag_1,CTCS_Purge_Flag_1_1,CTCS_Purge_Flag_1_2 ... and 20164 more)
+								13(FF_InitCheck_1,FF_RunAutoload_1,XA_JB_SAF_FULCHP,XA_JB_SAF_DFTSS,XA_JB_SAF_P00,XA_JB_SAF_P01,XA_JB_SAF_P02,XA_JB_SAF_P03,XA_JB_SAF_P04,XA_JB_SAF_P05 ... and 868 more)
+								10(devX,devY,devWaf,devLot,devFab,devDesRev,devMemRepair,DIEID_PostRead,devSuccess,DIEID_FABCODE ... and 5 more)
+								
+	HBIN NAME: F_LEAK.........................USES HBIN NUMS(testname(s)):
+								11(O_GRO_7XH_3XNR2_1,O_IRO_7XH_ND2M2L_1,O_IRO_7XH_ND2M3L_1,O_IRO_7XH_ND2M4L_1,O_IRO_7XH_ND2M5L_1,O_IRO_7XS_ND2NL_1,O_IRO_7XS_ND2PL_1,O_IRO_7XS_ND2M1L_1,O_IRO_7XS_ND2M2L_1,O_IRO_7XS_ND2M3L_1 ... and 65 more)
+								12(X_JB_P1_S1,X_JB_P1_end,IQS_JB_vddcore_P1_S1,IQS_JB_vddddr_P1_S1,IQS_JB_vdddpll_P1_S1,IQS_JB_vddio_P1_S1,IQS_JB_vddnwa_P1_S1,IQS_JB_vddpll_P1_S1,IQS_JB_vddram_P1_S1,IQS_JB_vddshi_P1_S1 ... and 1078 more)
+								
+	HBIN NAME: F_OS...........................USES HBIN NUMS(testname(s)):
+								7(BBT_rev,BBTOverTempFlag,BBTMaxTemp,BBTMinTemp,BBTTemp,thermdiodea2,TimeToWarm,CTCS_Purge_Flag_1,CTCS_Purge_Flag_1_1,CTCS_Purge_Flag_1_2 ... and 20164 more)
+								8(I_B_SP_vddnwa,I_B_SP_vdddpll,I_B_SP_vddpll,I_B_SP_vddddr,I_B_SP_vdduhi1,I_B_SP_vddio,I_B_SP_vddulo1,I_B_SP_vddram,I_B_SP_vddulo0,I_B_SP_vddcore ... and 324 more)
+								
+
+02/15/2016 01:58:47 PM INFO: 
+***********************************************
+PASSED: Softbin NUMBER to Softbin NAMES check !!!!
+***********************************************
+
+02/15/2016 01:58:47 PM ERROR: 
+***********************************************
+Hardbin NUMBER to Hardbin NAMES errors listed below !!!!
+This is a ONE to MANY error !!!!
+Cannot use more than one !!!!
+***********************************************
+	HBIN NAME: F_FUNC.........................USES HBIN NUMS(testname(s)):
+								7(BBT_rev,BBTOverTempFlag,BBTMaxTemp,BBTMinTemp,BBTTemp,thermdiodea2,TimeToWarm,CTCS_Purge_Flag_1,CTCS_Purge_Flag_1_1,CTCS_Purge_Flag_1_2 ... and 20164 more)
+								13(FF_InitCheck_1,FF_RunAutoload_1,XA_JB_SAF_FULCHP,XA_JB_SAF_DFTSS,XA_JB_SAF_P00,XA_JB_SAF_P01,XA_JB_SAF_P02,XA_JB_SAF_P03,XA_JB_SAF_P04,XA_JB_SAF_P05 ... and 868 more)
+								10(devX,devY,devWaf,devLot,devFab,devDesRev,devMemRepair,DIEID_PostRead,devSuccess,DIEID_FABCODE ... and 5 more)
+								
+	HBIN NAME: F_LEAK.........................USES HBIN NUMS(testname(s)):
+								11(O_GRO_7XH_3XNR2_1,O_IRO_7XH_ND2M2L_1,O_IRO_7XH_ND2M3L_1,O_IRO_7XH_ND2M4L_1,O_IRO_7XH_ND2M5L_1,O_IRO_7XS_ND2NL_1,O_IRO_7XS_ND2PL_1,O_IRO_7XS_ND2M1L_1,O_IRO_7XS_ND2M2L_1,O_IRO_7XS_ND2M3L_1 ... and 65 more)
+								12(X_JB_P1_S1,X_JB_P1_end,IQS_JB_vddcore_P1_S1,IQS_JB_vddddr_P1_S1,IQS_JB_vdddpll_P1_S1,IQS_JB_vddio_P1_S1,IQS_JB_vddnwa_P1_S1,IQS_JB_vddpll_P1_S1,IQS_JB_vddram_P1_S1,IQS_JB_vddshi_P1_S1 ... and 1078 more)
+								
+	HBIN NAME: F_OS...........................USES HBIN NUMS(testname(s)):
+								7(BBT_rev,BBTOverTempFlag,BBTMaxTemp,BBTMinTemp,BBTTemp,thermdiodea2,TimeToWarm,CTCS_Purge_Flag_1,CTCS_Purge_Flag_1_1,CTCS_Purge_Flag_1_2 ... and 20164 more)
+								8(I_B_SP_vddnwa,I_B_SP_vdddpll,I_B_SP_vddpll,I_B_SP_vddddr,I_B_SP_vdduhi1,I_B_SP_vddio,I_B_SP_vddulo1,I_B_SP_vddram,I_B_SP_vddulo0,I_B_SP_vddcore ... and 324 more)
+								
+	HBIN NUM: 11.........USES HBIN NAMES(testname(s)):
+								F_LEAK(X_JB_P1_S1,X_JB_P1_end,IQS_JB_vddcore_P1_S1,IQS_JB_vddddr_P1_S1,IQS_JB_vdddpll_P1_S1,IQS_JB_vddio_P1_S1,IQS_JB_vddnwa_P1_S1,IQS_JB_vddpll_P1_S1,IQS_JB_vddram_P1_S1,IQS_JB_vddshi_P1_S1 ... and 1106 more)
+								F_PARA(O_GRO_7XH_3XNR2_1,O_IRO_7XH_ND2M2L_1,O_IRO_7XH_ND2M3L_1,O_IRO_7XH_ND2M4L_1,O_IRO_7XH_ND2M5L_1,O_IRO_7XS_ND2NL_1,O_IRO_7XS_ND2PL_1,O_IRO_7XS_ND2M1L_1,O_IRO_7XS_ND2M2L_1,O_IRO_7XS_ND2M3L_1 ... and 30 more)
+								
+	HBIN NUM: 10.........USES HBIN NAMES(testname(s)):
+								F_FUNC(FF_InitCheck_1,FF_RunAutoload_1,XA_JB_SAF_FULCHP,XA_JB_SAF_DFTSS,XA_JB_SAF_P00,XA_JB_SAF_P01,XA_JB_SAF_P02,XA_JB_SAF_P03,XA_JB_SAF_P04,XA_JB_SAF_P05 ... and 905 more)
+								F_FUSE(devX,devY,devWaf,devLot,devFab,devDesRev,devMemRepair,DIEID_PostRead,devSuccess,DIEID_FABCODE ... and 1 more)
+								
+	HBIN NUM: 12.........USES HBIN NAMES(testname(s)):
+								F_LEAK_HL(IQS_JB_VDDCORE_P1_Hardline,IQS_NB_VDDCORE_P1_Hardline,IQS_NB_VDDARR_P1_Hardline,IQS_NB_VDDCORE_P1_S1_Hardline,IQS_NB_VDDRAM_P1_S1_Hardline,Invalid_SmartReflexVoltage,dummy)
+								F_LEAK(X_JB_P1_S1,X_JB_P1_end,IQS_JB_vddcore_P1_S1,IQS_JB_vddddr_P1_S1,IQS_JB_vdddpll_P1_S1,IQS_JB_vddio_P1_S1,IQS_JB_vddnwa_P1_S1,IQS_JB_vddpll_P1_S1,IQS_JB_vddram_P1_S1,IQS_JB_vddshi_P1_S1 ... and 1106 more)
+								
+	HBIN NUM: 7..........USES HBIN NAMES(testname(s)):
+								F_ERROR(thermdiodea2,TimeToWarm,CTCS_Purge_Flag_1,CTCS_Purge_Flag_1_1,CTCS_Purge_Flag_1_2,CTCS_Purge_Flag_2,CTCS_Purge_Flag_2_1,CTCS_Purge_Flag_2_2,thermdiodea1,Sensor1 ... and 20031 more)
+								F_OS(I_B_SP_vddnwa,I_B_SP_vdddpll,I_B_SP_vddpll,I_B_SP_vddddr,I_B_SP_vdduhi1,I_B_SP_vddio,I_B_SP_vddulo1,I_B_SP_vddram,I_B_SP_vddulo0,I_B_SP_vddcore ... and 329 more)
+								F_FUNC(FF_InitCheck_1,FF_RunAutoload_1,XA_JB_SAF_FULCHP,XA_JB_SAF_DFTSS,XA_JB_SAF_P00,XA_JB_SAF_P01,XA_JB_SAF_P02,XA_JB_SAF_P03,XA_JB_SAF_P04,XA_JB_SAF_P05 ... and 905 more)
+								F_OS,bad(O_GRO_8XS_INVF1,O_GRO_8XS_INVX,O_GRO_8XS_INVF1FO3,O_GRO_8XS_INVF1FO5,O_GRO_8XS_INVF10,O_GRO_8XS_ND2F0P5,O_GRO_8XS_ND2F2P5,O_GRO_8XS_ND2F2P5FO5,O_GRO_8XS_NR2F0P5,O_GRO_8XS_NR2F2P5 ... and 101 more)
+								
+
+02/15/2016 01:58:47 PM ERROR: 
+***********************************************
+Softbin NAME to Hardbin NAMES errors listed below !!!!
+This is a ONE to MANY error !!!!
+Cannot use more than one !!!!
+***********************************************
+	SBIN NAME: F_FUNC_SPEC....................USES HBIN NAMES(testname(s)):
+								MISSING_HBIN_NAME(XA_NA_SAF_FULCHP)
+									SBIN NAME: F_THERMDIODE...................USES HBIN NAMES(testname(s)):
+								F_FUNC(DTC1_TS_DEG_TD_INITIAL,DTC1_TS1_DEG_INITIAL,DTC1_TS2_DEG_INITIAL,DTC1_TS_DEG_TD_BLOWN_INITIAL,DTC1_TS1_DEG_BLOWN_INITIAL,DTC1_TS2_DEG_BLOWN_INITIAL,DTC2_TS_DEG_TD_INITIAL,DTC2_TS1_DEG_INITIAL,DTC2_TS2_DEG_INITIAL,DTC2_TS_DEG_TD_BLOWN_INITIAL ... and 17 more)
+								F_ERROR(T_TD1_0000,T_TD1_0001,T_TD1_0002,T_TD1_0003,T_TD1_0004,T_TD1_0005,T_TD1_0006,T_TD1_0007,T_TD1_0008,T_TD1_0009 ... and 20008 more)
+								
+02/15/2016 01:58:47 PM INFO: Number of WARNINGS for "testtable_parser.py": 2
+02/15/2016 01:58:47 PM INFO: Number of ERRORS for "testtable_parser.py": 23

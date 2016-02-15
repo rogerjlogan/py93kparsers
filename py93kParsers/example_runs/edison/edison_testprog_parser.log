@@ -1,0 +1,15 @@
+02/15/2016 01:57:36 PM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting edison_testprog_parser.log
+02/15/2016 01:57:36 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_testprog_parser.log
+02/15/2016 01:57:36 PM INFO: Running testprog_parser.pyc...
+02/15/2016 01:57:36 PM INFO: Parsing testprog file: EDISON93K02.tpg .....
+02/15/2016 01:57:36 PM INFO: {   'Applicdata': 'usp_package_test',
+    'Dataform': '',
+    'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
+    'Pdi_lib': '',
+    'Profile': '../USP_datalog_ON.prf',
+    'Testflow': 'Final_RPC_flow.mfh',
+    'Testtable': 'Final_RPC_limits.csv.mfh',
+    'Userproc': '',
+    'Waferdescr': ''}
+02/15/2016 01:57:36 PM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+02/15/2016 01:57:36 PM INFO: Number of ERRORS for "testprog_parser.pyc": 0

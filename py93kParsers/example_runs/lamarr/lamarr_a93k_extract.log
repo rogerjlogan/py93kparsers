@@ -1,0 +1,164 @@
+02/15/2016 12:40:11 PM INFO: Creating new directory: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr
+02/15/2016 12:40:11 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr/lamarr_a93k_extract.log
+02/15/2016 12:40:11 PM INFO: Running a93k_extract.py...
+02/15/2016 12:40:11 PM INFO: IGNORING THE FOLLOWING TESTSUITES:
+	setUserVars
+	Init_framework
+	USP_WRITE_EEPROM
+	DISCONNECT_1
+	DISCONNECT_SupplyShortsPre
+	DISCONNECT_Conty
+	DISCONNECT_SupplyShortsPost
+	DISCONNECT_Cres
+	Final_Binning
+02/15/2016 12:41:08 PM INFO: Found categories_file: Binning_CategoriesOD.csv
+02/15/2016 12:41:08 PM INFO: Found bin_groups_file: Binning_Groups.csv
+02/15/2016 12:41:08 PM INFO: Found test_name_type_file: Lamarr_TestNameTypeList.csv
+02/15/2016 12:41:08 PM INFO: Found speed_sort_suites_file: SpeedSortSuites.csv
+02/15/2016 12:41:08 PM INFO: Found speed_sort_groups_file: SpeedSortGroups.csv
+02/15/2016 12:41:08 PM INFO: Parsing TI specific testtable file: BinningLamarr.csv .....
+02/15/2016 12:41:08 PM INFO: Parsing TI specific testtable file: Binning_Groups.csv .....
+02/15/2016 12:41:08 PM INFO: Parsing TI specific testtable file: SpeedSortGroups.csv .....
+02/15/2016 12:41:08 PM INFO: Parsing TI specific testtable file: Lamarr_TestNameTypeList.csv .....
+02/15/2016 12:41:08 PM INFO: Parsing TI specific testtable file: Binning_CategoriesOD.csv .....
+02/15/2016 12:41:08 PM WARNING: Extra tests in: "Binning_CategoriesOD.csv" that do not exist in: "Final_RPC_flow.mfh" OR in "Binning_Groups.csv"
+	T_TD_MAX_READ
+	TempStorageProg_st
+	VIDSpeedOutOfSpace_st
+	speedSortCorner2_st
+	CTCS_Control_st
+	T_TD_MIN_READ
+	GlobalCriticalTemperature
+	T_CRITICAL_TEMPERATURE
+	DeltaTemp
+	T_CTCS_MIN_READ
+	Time_Spend
+	Temperature_Read
+	GlobalRangeTemperature
+	VIDSpeedProg_st
+	MEMORYREPAIRED
+	VerifyProgramVIDSpeeds_st
+	speedSortCorner1_st
+	CTCS_Purge_CT_st
+	T_CTCS_MAX_READ
+	WARMUP
+	StableTemperatureRange
+	SRc0Power_st
+	speedSortCorner3_st
+	WARMUPPurge
+02/15/2016 12:41:08 PM WARNING: Extra tests in: "Final_RPC_flow.mfh" that do not exist in: "Binning_CategoriesOD.csv"
+	SRc0PowerTest
+	DISCONNECT_Cres
+	SpeedSortVert_LED_TETRIS
+	SetGlobalSRVoltages
+	PreReadSrc0
+	SpeedSortVert_TRANS_P08
+	setUserVars
+	CTCS_FuncVmax
+	USP_WRITE_EEPROM
+	SpeedSortVert_TRANS_1
+	SpeedSortVert_TRANS_FULLCHIP
+	IddqVmax_IqC08Ful_______LM10_006_st_CCE
+	USP_READ_EEPROM
+	DISCONNECT_SupplyShortsPre
+	CTCS_START_VskewVmax
+	CTCS_START_AtSpeedVmax
+	UHC4Connectivity
+	CTCS_START_Vmin
+	DISCONNECT_Conty
+	CTCS_START_FuncVmax
+	DISCONNECT_SupplyShortsPost
+	SetupBBT_st
+	DPS128Connectivity
+	CTCS_START_SearchVmin
+	Init_framework
+	Final_Binning
+	SpeedSortVert_TRANS
+	DISCONNECT_1
+	CTCS_START_AtSpeedVmin
+	UpdateGuardBand
+	CTCS_SearchFmax
+	CTCS_START_SearchFmax
+	CTCS_VskewVmax
+	CTCS_Vmin
+	SpeedSortVert_PBIST
+	CTCS_SearchVmin
+	SpeedSortVert_PBIST_TETRIS
+	CTCS_End_Of_Lot_st
+	ApplySRVminGBfromTDMeas
+	EfusePostVerify_st
+	CTCS_START_Thermal
+	CTCS_AtSpeedVmax
+	CTCS_Thermal
+	IddqVmax_IqC08Ful_______LM10_005_st_CCE
+	SpeedSortVert_LED
+	AdaptiveRepair_st
+	SpeedSortVert_TRANS_P08_1
+	CTCS_AtSpeedVmin
+02/15/2016 12:41:08 PM WARNING: SUITE: "setUserVars" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "Init_framework" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "UpdateGuardBand" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DPS128Connectivity" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "USP_WRITE_EEPROM" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "USP_READ_EEPROM" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_End_Of_Lot_st" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "UHC4Connectivity" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DISCONNECT_1" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SetupBBT_st" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DISCONNECT_SupplyShortsPre" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DISCONNECT_Conty" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_Thermal" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "PreReadSrc0" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SetGlobalSRVoltages" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SetGlobalSRVoltages" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVmin1_IqC08Ful_______LM10_005_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVmin1_IqC08Ful_______LM10_006_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVnom_IqC08Ful_______LM10_005_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVnom_IqC08Ful_______LM10_006_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVmax_IqC08Ful_______LM10_005_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "IddqVmax_IqC08Ful_______LM10_006_st_CCE" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SRc0PowerTest" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SRc0PowerTest" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "AdaptiveRepair_st" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_Vmin" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_AtSpeedVmin" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "ApplySRVminGBfromTDMeas" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_TRANS_P08" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_TRANS_P08_1" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_PBIST_TETRIS" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_LED_TETRIS" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_TRANS" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_TRANS_1" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_TRANS_FULLCHIP" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_PBIST" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "SpeedSortVert_LED" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_FuncVmax" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_AtSpeedVmax" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_AtSpeedVmax" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_VskewVmax" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_SearchFmax" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "CTCS_START_SearchVmin" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "ProgramVIDSpeeds" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "VerifyProgramVIDSpeeds" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "EfusePostVerify_st" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DISCONNECT_SupplyShortsPost" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "DISCONNECT_Cres" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM WARNING: SUITE: "Final_Binning" NOT IN "Lamarr_TestNameTypeList.csv"	NOTE: this WARNING is also in binning sheet
+02/15/2016 12:41:08 PM ERROR: No softbin 13 defined in: "BinningLamarr.csv"
+02/15/2016 12:41:08 PM INFO: ARGUMENTS:
+	--name=lamarr
+	--ignore_suites=lamarr.ignore
+	--testflow_file=/db/lamarr_pe/93k/working/kimc/lamarr/testflow/Final_RPC_flow.mfh
+	--binning_csv=BinningLamarr.csv
+	--testprog_file=/db/lamarr_pe/93k/working/kimc/lamarr/testprog/F791857_Final_RPC.tpg
+	--maxlogs=1
+	--test_type_to_check=FT_RPC_HT
+	--renumber=False
+	--split=False
+	--pic_type=png
+	--debug=False
+	--testtable_file=/db/lamarr_pe/93k/working/kimc/lamarr/testtable/Final_RPC_limits.csv.mfh
+	--categories=True
+	--output_dir=/db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/lamarr
+02/15/2016 12:41:08 PM INFO: Number of WARNINGS for "a93k_extract.py": 51
+02/15/2016 12:41:08 PM INFO: Number of ERRORS for "a93k_extract.py": 1

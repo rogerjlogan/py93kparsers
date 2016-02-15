@@ -1,3 +1,0 @@
-"Suite name","Test name","Test number","Lsl","Lsl","Lsl","Lsl","Lsl","Lsl_typ","Usl_typ","Usl","Usl","Usl","Usl","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
-"Test mode",,,"TEMP_105_DEG","TEMP_100_DEG","TEMP_25_DEG","TEMP_0_DEG","TEMP_N40_DEG",,,"TEMP_105_DEG","TEMP_100_DEG","TEMP_25_DEG","TEMP_0_DEG","TEMP_N40_DEG",,,,,,,,,
-"dummy","dummy",99999999,99999,99999,99999,99999,99999,"GE","LE",99999,99999,99999,99999,99999,"bool",99,"DUMMY",12,"F_LEAK_HL","bad",,"no",

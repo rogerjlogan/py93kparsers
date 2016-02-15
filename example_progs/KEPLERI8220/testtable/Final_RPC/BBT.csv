@@ -1,7 +1,0 @@
-"Suite name","Test name","Test number","Lsl","Lsl","Lsl","Lsl","Lsl","Lsl_typ","Usl_typ","Usl","Usl","Usl","Usl","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
-"Test mode","","","TEMP_105_DEG","TEMP_100_DEG","TEMP_25_DEG","TEMP_0_DEG","TEMP_N40_DEG","","","TEMP_105_DEG","TEMP_100_DEG","TEMP_25_DEG","TEMP_0_DEG","TEMP_N40_DEG","","","","","","","","",""
-"SetupBBT","BBT_rev","9001","57","57","57","57","57","GE","LE","200","200","200","200","200","","110","BBT_SHUTDOWN_F","7","F_OS","bad","","no",""
-"BBT_Status","BBTOverTempFlag","3219987","1","1","1","1","1","NA","LE","0","0","0","0","0","","11","F_ERROR","7","F_OS","bad","no","no",""
-"BBT_Status","BBTMaxTemp","3219986","1","1","1","1","1","NA","LE","500","500","500","500","500","celsius","11","F_ERROR","7","F_OS","bad","no","no",""
-"BBT_Status","BBTMinTemp","3219985","-50","-50","-50","-50","-50","GE","NA","0","0","0","0","0","celsius","11","F_ERROR","7","F_OS","bad","no","no",""
-"SetupBBT","BBTTemp","5320000","60","60","5","-10","-55","GE","LE","125","125","55","50","10","celsius","11","F_ERROR","7","F_OS","bad","no","no",""

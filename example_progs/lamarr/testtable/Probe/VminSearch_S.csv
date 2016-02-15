@@ -1,4 +1,0 @@
-"Suite name","Test name","Test number","Lsl","Lsl_typ","Usl_typ","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
-"Test mode","","","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","TEMP_25_DEG","","","","","","","",""
-BRDG_ALL_VminSearch_st,VLS_MA_BRDG_ALL,366,-2,GE,LE,8,V,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,
-LED_TETRIS_VminSearch_st,VLS_MA_LED_TETRIS,367,-2,GE,LE,8,V,13,F_FUNC_SPEC,19,F_FUNC_SPEC,bad,,,

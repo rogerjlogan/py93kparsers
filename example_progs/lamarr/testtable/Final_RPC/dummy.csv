@@ -1,3 +1,0 @@
-"Suite name","Test name","Test number","Lsl","Lsl","Lsl","Lsl_typ","Usl_typ","Usl","Usl","Usl","Units","Bin_s_num","Bin_s_name","Bin_h_num","Bin_h_name","Bin_type","Bin_reprobe","Bin_overon","Test_remarks"
-"Test mode","","","TEMP_COLD_DEG","TEMP_ROOM_DEG","TEMP_HOT_DEG","","","TEMP_COLD_DEG","TEMP_ROOM_DEG","TEMP_HOT_DEG","","","","","","","","",""
-"dummy","dummy","99999999","99999","99999","99999","GE","LE","99999","99999","99999","bool","99","DUMMY","12","F_LEAK","bad","","no",""

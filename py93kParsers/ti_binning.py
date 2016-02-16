@@ -105,6 +105,7 @@ testtable = None
 categories_file = None
 test_name_type_file = None
 speed_sort_groups_file = None
+speed_sort_suites_file = None
 binning_csv_file = None
 
 test_type_to_check = ''

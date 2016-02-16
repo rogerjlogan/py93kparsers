@@ -5,8 +5,12 @@ import logging
 import os
 import re
 import argparse
+import xlwt
 from pprint import pformat
+from genOut import titleLeft, titleStyle, bodyLeft, bodyStyle, _addTitle
+from collections import defaultdict
 import py93kParsers.ti_binning
+import py93kParsers.parseUtils as parseUtils
 from py93kParsers.TestflowParser import Testflow
 from py93kParsers.testprog_parser import ProgFile
 from py93kParsers.testtable_parser import TestTable, VALID_LIM_HEADERS
@@ -17,6 +21,7 @@ from py93kParsers.ti_binning import identify_ti_csv_files, parse_special_csv, \
     PARTIAL_BINNING_METHOD, test_type_to_check, binning_csv_file, OTHER_BIN, category_tests, testflow_binning, \
     testflow_bin_defs, speed_sort_groups
 __author__ = "Jacob"
+__debugMessage__ = """from a93k_extract import setUpLogging,parseArguments,parseTestFlow,determineSetups,evaluateLevels,evaluateTiming,createEnv,addEquEnv,evalPeriods,addPeriodSheet,evalSupplies,addSupplySheet,analyzeTestFlow,treeWalkFlow,onlyForDebugFromConsole"""
 
 
 def setUpLogging(debug=True, outputDir=os.path.curdir, outputName="", maxLogs=1):
@@ -28,7 +33,6 @@ def setUpLogging(debug=True, outputDir=os.path.curdir, outputName="", maxLogs=1)
     :param maxLogs, number of log files to create, defaults to 1
     :return log, an instance of logging object
     """
-
     if debug:
         logLevel = logging.DEBUG
     else:
@@ -73,15 +77,14 @@ def parseArguments(defaultArgsDict=None):
     parser.add_argument('-c','--categories',action='store_true',help='Add this option to use binning categories')
     if __name__ == "__main__" and defaultArgsDict:
         parser.set_defaults(**defaultArgsDict)
-
     return (parser)
-import xlwt
-def parseTestFlow(args):
-    # v93kProgPath = r"C:\work\Projects\TI\Shiva\1171shivatipi\SHIVAI03\SHIVAI03" #SHIVA
-    # argsTfFile = os.path.join(v93kProgPath, "testflow", "Final_flow.mfh") #SHIVA
-    # argsTtFile = os.path.join(v93kProgPath, "testtable", "Final_limits.csv.mfh") #SHIVA
-    # argsTestProgFile = "" #SHIVA
 
+
+def parseTestFlow(args):
+    """ v93kProgPath = r"C:\work\Projects\TI\Shiva\1171shivatipi\SHIVAI03\SHIVAI03" #SHIVA
+     argsTfFile = os.path.join(v93kProgPath, "testflow", "Final_flow.mfh") #SHIVA
+     argsTtFile = os.path.join(v93kProgPath, "testtable", "Final_limits.csv.mfh") #SHIVA
+     argsTestProgFile = "" #SHIVA """
     log = setUpLogging(debug=args.debug, outputDir=args.output_dir, outputName=args.name, maxLogs=args.maxlogs)
     py93kParsers.ti_binning.log = log
     if args.ignore_suites_file is not None:
@@ -162,7 +165,6 @@ def parseTestFlow(args):
     testtable = TestTable(pathfn=testtable_file, renum=args.renumber, debug=args.debug, progname=args.name,
                           maxlogs=args.maxlogs, outdir=args.output_dir, ignore_csv_files=[args.binning_csv])
     py93kParsers.ti_binning.testtable = testtable
-
 
     if use_cats:
         identify_ti_csv_files(testtable.special_testtables)
@@ -257,7 +259,7 @@ def determineSetups(testflow_file):
     }
     testflowPath = os.path.dirname(testflow_file)
     devicePath = testflowPath.rpartition(os.path.sep)[0]
-    f = util.FileUtils(args.testflow_file, True)
+    f = util.FileUtils(testflow_file, True)
     setupIndex = util.find_index(f.contents, "^\s*setup\s*:\s*[\.\\/\w]+")
     setupsDict = {}
     if setupIndex>-1:
@@ -275,7 +277,7 @@ def determineSetups(testflow_file):
     return setupsDict
 
 
-def evaluateLevels(setups_dict, spec_levels_groups, pin_list, pin_group_dict):
+def evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_group_dict):
     """
     go through all levels objects, and build a dictionary with the following structure:
     levels_dict = {"EQN":{}, "SPS":{}}
@@ -324,9 +326,7 @@ def evaluateLevels(setups_dict, spec_levels_groups, pin_list, pin_group_dict):
     return levels_dict
 
 
-
-
-def evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict):
+def evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_group_dict):
     """
     parse through all timing objects, build and return dictionary timing_dict.
     timing_dict = {"EQN":{}, "SPS":{}, "WVT":{}}
@@ -345,7 +345,8 @@ def evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict):
                             "pin_list" = list of pins after expanding pin groups and removing any -( <pins> } groups
                             "fields_dict" = {"field":"<equation>",...."d1":"0.5*GBper"....}
         "SPS" = {<str specificationName A>:{}, <str specificationName B>:{},...,<str specificationName N>:{}}
-            <str specificationName> = {<int eqnset A>:{}, <int eqnset B>:{},.....,<int eqnset N>:{}}
+            <str specificationName> = {"GLOBALS":{}, <int eqnset A>:{}, <int eqnset B>:{},.....,<int eqnset N>:{}}
+                "GLOBALS" = {"SPECS":{}}  # see "SPECS" description below <int_eqnset>
                 <int eqnset> = {"PORT":[<port(s) list>], "WAVETBL":"str wavetable reference", "name":"str eqn name",
                                 "sub_sections":["PORT", "WAVETBL", "name", "SPECS"],
                                 "SPECS":{}
@@ -377,7 +378,7 @@ def evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict):
             timing_dict["SPS"][eq_set] = eq_dict
     return timing_dict
 
-import py93kParsers.parseUtils as parseUtils
+
 def createEnv(inp):
     out = {}
     for spec in inp['SPECS']:
@@ -386,6 +387,8 @@ def createEnv(inp):
         except ValueError:
             continue
     return out
+
+
 def addEquEnv(envi, eqs):
     """ since equations are in a dictionary, they are not always evaluated in order, so need a complicated while loop"""
     retry = True
@@ -403,12 +406,12 @@ def addEquEnv(envi, eqs):
                 tryVals.append((val,expr))
 
 
-
 def evalPeriods(tims):
     out = {}
     for spec in tims['SPS']:
         out[spec]= {}
-        for ind in tims['SPS'][spec]:
+        indList = [ind for ind in tims["SPS"][spec] if not ind == "GLOBALS"]
+        for ind in indList:
             assert len(tims['SPS'][spec][ind]['PORT']) == 1
             port = tims['SPS'][spec][ind]['PORT'][0]
             try:
@@ -428,7 +431,8 @@ def evalPeriods(tims):
                     print "ERROR!!", spec, port, timeset
                     out[spec][port][timeset] = -1e7
     return out
-from genOut import titleLeft, titleStyle, bodyLeft, bodyStyle, _addTitle
+
+
 def addPeriodSheet(wkBook, pers):
     allPortLs = sum((x.keys() for x in pers.values()),[])
     allPorts = set(allPortLs)
@@ -461,7 +465,6 @@ def addPeriodSheet(wkBook, pers):
         currRow += 1
 
 
-
 def evalSupplies(levs):
     out = {}
     for eqInd in levs['EQN']:
@@ -487,6 +490,8 @@ def evalSupplies(levs):
                     print 'Value of ', err, 'unknown'
                     out[eqKey][specKey][pin] = -1e7
     return out
+
+
 def addSupplySheet(wkBook, pows):
     assert isinstance(wkBook, xlwt.Workbook)
     sheet = wkBook.add_sheet("SUPPLY_LEVELS")
@@ -518,9 +523,6 @@ def analyzeTestFlow(tf):
     hashTableNodeAndTestsuite = ["{0}:{1}".format(k, v["testsuite"]) for k,v in tsNodeData.iteritems() if "testsuite" in v]
 
 
-
-
-from collections import defaultdict
 def treeWalkFlow(tf, levs,tims):
     ignoreMeths = {'"ti_tml.Misc.Binning"','"miscellaneous_tml.TestControl.Disconnect"'}
     def getGroup(nd):
@@ -593,29 +595,39 @@ def treeWalkFlow(tf, levs,tims):
                 tmp['timSet'] = ''
                 continue
 
-
-
     return out
 
+def onlyForDebugFromConsole(setArgsDict, storeTrueVars):
+    copySysArgV = [arg for arg in sys.argv]
+    numParameters = len(sys.argv)-1
+    for i in xrange(numParameters):
+        sys.argv.pop(-1)
+    for i,(k,v) in enumerate(setArgsDict.iteritems()):
+        if (util.in_list(storeTrueVars,k) and v) or not util.in_list(storeTrueVars,k):
+            sys.argv.append("{0}{1}".format(
+                k,"{0}".format("" if util.in_list(storeTrueVars,k) else ("={0}".format(v if len(v) else ''))))
+            )
+
+
 if __name__ == "__main__":
-    v93kProgPath = r"C:\work\scratch\v93kAudit\py93kParsers\example_progs\KEPLERI8220" # KEPLER
+    v93kProgPath = r"/data/mkoe3/VAYU/USERS/cgreen/VAYU_FPC/VAYU" # VAYU
     argsTfFile = ""
     argsTtFile = ""
-    argsTestProgFile = os.path.join(v93kProgPath, "testprog", "KEPLERI8220.tpg")
+    argsTestProgFile = os.path.join(v93kProgPath, "testprog", "VAYUFPC.tpg")
     argsDebug = False
     argsSplit = False
-    argsName = "kepler_r20"
+    argsName = "vayuFPC"
     argsRenumber = False # arg param -r, stores true, Re-number "Test number" column across all STANDARD csv testtables
     argsMaxLogs = 1
-    argsOutputDir = r"c:\Temp"
-    argsTestTypeToCheck = "FT_RPC_HT" # arg param -tt2c, default is ""
+    argsOutputDir = r"/data/v93kapps/jacob.keezel/v93kaudit/py93kParsers/example_runs/vayuFPC"
+    argsTestTypeToCheck = "" # "FT_RPC_HT" # arg param -tt2c, default is ""
     # Check this test type against binning groups (use only with -c option to use categories)
     argsPicType = ""  # don't care about the graphical output rendering, just want the data container
-    argsBinningCsv = "BinningKepler_pg2.csv"
-    argsCategories = True # arg param -c, stores true (false if not included), option to use binning categories
-    argsIgnoreSuites = r"C:\work\scratch\v93kAudit\py93kParsers\example_runs\kepler.ignore"
+    argsBinningCsv = "" # "Binning_Categories.csv"
+    argsCategories = False # arg param -c, stores true (false if not included), option to use binning categories
+    argsIgnoreSuites = r"/db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler.ignore"
     argsDefault = {
-        "name": "bob", "debug": False, "output_dir": r"c:\Temp", "maxlogs": 1,
+        "name": "bob", "debug": False, "output_dir": r"/tmp", "maxlogs": 1,
         "renumber": False, "split": False, "testflow_file": "", "testtable_file": "",
         "testprog_file": "", "ignore_suites_file": "", "binning_csv": "", "test_type_to_check": "",
         "pic_type": "png", "categories": False
@@ -623,16 +635,10 @@ if __name__ == "__main__":
     setArgsDict = {
         "--testprog_file": argsTestProgFile, "--name": argsName, "--output_dir": argsOutputDir,
         "--test_type_to_check": argsTestTypeToCheck, "--pic_type": "", "--binning_csv": argsBinningCsv,
-        "--ignore_suites_file": argsIgnoreSuites, "--categories": True
+        "--ignore_suites_file": argsIgnoreSuites, "--categories": argsCategories
     }
     storeTrueVars = ["--debug", "--renumber", "--split", "--categories"]
-    #copySysArgV = [arg for arg in sys.argv]
-    #numParameters = len(sys.argv)-1
-    #for i in xrange(numParameters):
-    #    sys.argv.pop(-1)
-#    for i,(k,v) in enumerate(setArgsDict.iteritems()):
-#        sys.argv.append("{0}{1}".format(k,
-#                                       "{0}".format("" if util.in_list(storeTrueVars,k) else ("={0}".format(v if len(v) else '""')))))
+    # onlyForDebugFromConsole(setArgsDict, storeTrueVars)
     parser = parseArguments()
     args = parser.parse_args()
 
@@ -713,8 +719,8 @@ if __name__ == "__main__":
             "SPECS": "^\s*\w+"
         },
     }
-    levels_dict = evaluateLevels(setups_dict, spec_levels_groups, pin_list, pin_group_dict)
-    timing_dict = evaluateTiming(setups_dict, spec_timing_groups, pin_list, pin_group_dict)
+    levels_dict = evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_group_dict)
+    timing_dict = evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_group_dict)
     import py93kParsers.flowaudit
     py93kParsers.flowaudit.testflow = tf
     py93kParsers.flowaudit.testtable = testtable

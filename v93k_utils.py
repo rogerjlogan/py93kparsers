@@ -408,6 +408,45 @@ def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict):
     pass
 
 
+def _getTimingGlobalSpecVars(t_dict, eq_contents):
+    """
+    determine if we have any global variables in a timing SPECIFICATION object
+    """
+    spec_hdr_keys = ["specname", "actual", "minimum", "maximum", "units"]
+    eq_g = util.m_re(eq_contents)
+    eq_g.grep("[{}]")  #pull out {} blocks, such as SYNC { ..... }
+    if eq_g.pattern_count >= 2:
+        start_pts,stop_pts = util.find_blocks(eq_g.m_groups, "{", "}")
+        i_list = [
+            (int(float(eq_g.coordinates[s_a])-2), int(float(eq_g.coordinates[s_b])))
+            for s_a,s_b in zip(start_pts, stop_pts)
+            ]
+        del_indices=[]
+        for (x,y) in i_list:
+            del_indices += range(x,y)
+        eq_contents = [
+            eq_contents[i] for i in list(set(xrange(len(eq_contents))) - set(del_indices))
+            ]
+        eq_g = util.m_re(eq_contents)
+    else:
+        eq_g.clear_cache()
+    hdr_i = util.find_index(eq_contents, "# SPECNAME\s+\*+ACTUAL")
+    if hdr_i > -1:
+        hdr_slices = getSpecHeaderSpan(eq_contents[hdr_i])
+        spec_lines = util.remove_from_list(
+            [re.sub("\s*#\s*.*$", "", a_row) for a_row in eq_contents[hdr_i+1:]],
+            "^\s*$"
+        )
+        for a_line in spec_lines:
+            a_dict = dict([
+                (a_key, re.sub("[\[\]]", "", a_line[a_slice]).strip())
+                for a_key,a_slice in zip(spec_hdr_keys,hdr_slices)
+            ])
+            key_list = list(set(a_dict.iterkeys()) - {"specname"})
+            t_dict[a_dict["specname"]] = dict([(a_key, a_dict[a_key]) for a_key in key_list])
+    pass
+
+
 def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict):
     ref_dict = {"EQN":{}, "SPS":{}, "WVT":{}}
     f = util.FileUtils(timing_file, True)
@@ -429,7 +468,7 @@ def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict):
             b = util.m_re(contents)
             b.grep(spec_timing_groups["SPS"]["SPECIFICATION"])
             specName = re.sub("^\s*SPECIFICATION\s+\"|\"", "", b.m_groups[0]).strip()
-            ref_dict["SPS"] = {specName:{}}
+            ref_dict["SPS"] = {specName:{"GLOBALS":{}}}
         timing_dict = spec_timing_groups[timing_key]
         b = util.m_re(contents)
         for remove_expr in timing_dict["remove"]:
@@ -442,6 +481,9 @@ def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict):
             eqn_set_indices = [(a,b) for a,b in zip(i_list,i_list[1:]+[len(contents)])]
         else:
             eqn_set_indices = [(i_list[0], len(contents))]
+        if timing_key == "SPS": # let's check for globals
+            _getTimingGlobalSpecVars(ref_dict[timing_key][specName]["GLOBALS"], contents[util.find_index(contents,"{")+1:i_list[0]])
+
         for (eq_start,eq_stop) in eqn_set_indices:
             eq_m = re.search("^\s*EQNSET\s+(?P<eq_num>\d+)\s*\"?(?P<eq_name>[\w\s\-\.]+)?\"?", contents[eq_start])
             eq_num, eq_name = -99, ""

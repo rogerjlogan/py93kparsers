@@ -381,9 +381,9 @@ def evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_g
 
 def createEnv(inp):
     out = {}
-    for spec in inp['SPECS']:
+    for spec in inp:
         try:
-            out[spec] = float(inp['SPECS'][spec]['actual'])
+            out[spec] = float(inp[spec]['actual'])
         except ValueError:
             continue
     return out
@@ -404,21 +404,28 @@ def addEquEnv(envi, eqs):
                 retry = True
             except KeyError:
                 tryVals.append((val,expr))
-
+    if tryVals:
+        print tryVals
+        print envi
 
 def evalPeriods(tims):
     out = {}
     for spec in tims['SPS']:
         out[spec]= {}
         indList = [ind for ind in tims["SPS"][spec] if not ind == "GLOBALS"]
+        if "GLOBALS" in tims["SPS"][spec]:
+            envi = createEnv(tims['SPS'][spec]["GLOBALS"])
+        else:
+            envi = {}
         for ind in indList:
             assert len(tims['SPS'][spec][ind]['PORT']) == 1
             port = tims['SPS'][spec][ind]['PORT'][0]
             try:
-                envi = createEnv(tims['SPS'][spec][ind])
+                newEnv = createEnv(tims['SPS'][spec][ind]["SPECS"])
+                envi.update(newEnv)
             except KeyError:
                 print "spec:", spec, "port,", port, ind
-                envi = {}
+                
             out[spec][port] = {}
             if 'EQUATIONS' in tims['EQN'][ind]:
                 addEquEnv(envi, tims['EQN'][ind]['EQUATIONS'])
@@ -429,6 +436,7 @@ def evalPeriods(tims):
                 except KeyError, msg:
                     print msg
                     print "ERROR!!", spec, port, timeset
+                    print str(perExpr)
                     out[spec][port][timeset] = -1e7
     return out
 
@@ -478,7 +486,7 @@ def evalSupplies(levs):
         for specInd in levs['SPS'][eqInd]['SPECSET']:
             specKey = (specInd, levs['SPS'][eqInd]['SPECSET'][specInd]['specset_name'])
             out[eqKey][specKey] = {}
-            envi = createEnv(levs['SPS'][eqInd]['SPECSET'][specInd])
+            envi = createEnv(levs['SPS'][eqInd]['SPECSET'][specInd]["SPECS"])
             if 'EQUATIONS' in levs['EQN'][eqInd]:
                 addEquEnv(envi, levs['EQN'][eqInd]['EQUATIONS'])
             for pin in dspExprs:

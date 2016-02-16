@@ -82,7 +82,6 @@ class funcEval(object):
     _funDict['abs'] = abs
     _funDict['fract'] = lambda x, y,z : x/y*z
     def __init__(self,toks):
-        print "Processing function..." + toks[0]
         self.name = toks[0]
         self.params = toks[1:]
         self.repr = self.name + '(' +\

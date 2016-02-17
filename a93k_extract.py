@@ -277,7 +277,7 @@ def determineSetups(testflow_file):
     return setupsDict
 
 
-def evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_group_dict):
+def evaluateLevels(levels_setups_dict, spec_levels_groups, pin_list, pin_group_dict):
     """
     go through all levels objects, and build a dictionary with the following structure:
     levels_dict = {"EQN":{}, "SPS":{}}
@@ -308,14 +308,14 @@ def evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_g
                             "specname" = {"actual":"value", "maximimum":"value", "minimum":"value", "units":"<units>"}
                                 "value|units" is an empty string if nothing there, i.e. usually maximum and minimum
                                               would be empty
-    :param setups_dict:
+    :param levels_setups_dict:
     :param spec_levels_groups:
     :param pin_list:
     :param pin_group_dict:
     :return: levels_dict
     """
     ref_file_regexp = "^\s*(?P<ref_type>(?:EQNSET|WAVETABLE|MULTIPORT_SPEC))\s+(?P<ref_name>[\"\w]+)\s*:"
-    ref_dict = v93k_utils.parseMFH(setups_dict[setups_keys["levels"]], ref_file_regexp, ["EQNSET"])
+    ref_dict = v93k_utils.parseMFH(levels_setups_dict, ref_file_regexp, ["EQNSET"])
     levels_dict = {"EQN": {}, "SPS": {}}
     for ref,fn in ref_dict["EQNSET"].iteritems():
         a_dict = v93k_utils.getLevels(fn, spec_levels_groups, pin_list, pin_group_dict)
@@ -326,7 +326,7 @@ def evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_g
     return levels_dict
 
 
-def evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_group_dict):
+def evaluateTiming(timing_setups_dict, spec_timing_groups, pin_list, pin_group_dict):
     """
     parse through all timing objects, build and return dictionary timing_dict.
     timing_dict = {"EQN":{}, "SPS":{}, "WVT":{}}
@@ -356,7 +356,7 @@ def evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_g
                                 "value|units" is an empty string if nothing there, i.e. usually maximum and minimum
                                               would be empty
         "WVT" = NOT IMPLEMENTED AT THIS TIME
-    :param setups_dict:
+    :param timing_setups_dict:
     :param spec_timing_groups:
     :param pin_list:
     :param pin_group_dict:
@@ -364,7 +364,7 @@ def evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_g
     """
     ref_file_types = ["EQNSET", "WAVETABLE", "MULTIPORT_SPEC"]
     ref_file_regexp = "^\s*(?P<ref_type>(?:{0}))\s+(?P<ref_name>[\"\w\s]+)\s*:".format("|".join(ref_file_types))
-    ref_dict = v93k_utils.parseMFH(setups_dict[setups_keys["timing"]], ref_file_regexp, ref_file_types)
+    ref_dict = v93k_utils.parseMFH(timing_setups_dict, ref_file_regexp, ref_file_types)
     timing_dict = {"EQN":{}, "SPS":{}, "WVT":{}}
     file_list = []
     for type in ref_file_types:
@@ -727,8 +727,8 @@ if __name__ == "__main__":
             "SPECS": "^\s*\w+"
         },
     }
-    levels_dict = evaluateLevels(setups_dict, setups_keys, spec_levels_groups, pin_list, pin_group_dict)
-    timing_dict = evaluateTiming(setups_dict, setups_keys, spec_timing_groups, pin_list, pin_group_dict)
+    levels_dict = evaluateLevels(setups_dict[setups_keys["levels"]], spec_levels_groups, pin_list, pin_group_dict)
+    timing_dict = evaluateTiming(setups_dict[setups_keys["timing"]], spec_timing_groups, pin_list, pin_group_dict)
     import py93kParsers.flowaudit
     py93kParsers.flowaudit.testflow = tf
     py93kParsers.flowaudit.testtable = testtable

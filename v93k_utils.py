@@ -374,7 +374,7 @@ def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict):
         for (x,y) in i_list:
             del_indices += range(x,y)
         eq_contents = [
-            eq_contents[i] for i in list(set(xrange(len(eq_contents))) - set(del_indices))
+            eq_contents[i] for i in list(sorted(set(xrange(len(eq_contents))) - set(del_indices)))
             ]
         eq_g = util.m_re(eq_contents)
     else:

@@ -200,13 +200,13 @@ def parseTestFlow(args):
     if args.categories:
         py93kParsers.ti_binning.addCatIssues(wkBook)
 
-    if OTHER_BIN in testtable.sbin_nums:
+    if args.categories and OTHER_BIN in testtable.sbin_nums:
         err = '"#define sOtherBin \'13\'" defined in Binning_helper.cpp conflicts with standard testtable(s): "{}"' \
             .format(','.join(testtable.sbin_files[OTHER_BIN]))
         print 'ERROR!!! '+err
         log.error(err)
     ti_binning = py93kParsers.ti_binning.ti_binning
-    if OTHER_BIN not in ti_binning:
+    if args.categories and OTHER_BIN not in ti_binning:
         err = 'No softbin 13 defined in: "{}"'.format(binning_csv_file)
         print 'ERROR!!! '+err
         log.error(err)

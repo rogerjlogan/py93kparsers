@@ -2105,7 +2105,7 @@
                                                                                                                                        '"bistClk2Specs"': '""',
                                                                                                                                        '"coreOffsetSpecName"': '"vddcore_vddsram_skew"',
                                                                                                                                        '"imageNums"': '"100,110"',
-                                                                                                                                       '"numBistClks"': '"1"',
+                                                                                                                                       '"numBistClks"': '"2"',
                                                                                                                                        '"repCorners"': '"VC_VminNSp,VC_VskewPhiOD"',
                                                                                                                                        '"vddRamSpecName"': '"VDDRAM_PS"',
                                                                                                                                        '"voltageList"': '"0.765,0.790,0.810"'}},

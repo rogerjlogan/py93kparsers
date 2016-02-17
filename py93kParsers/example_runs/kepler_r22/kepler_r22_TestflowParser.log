@@ -1,7 +1,7 @@
-02/15/2016 06:32:33 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_TestflowParser.log
-02/15/2016 06:32:33 PM INFO: Running TestflowParser.pyc...
-02/15/2016 06:33:05 PM INFO: Parsing testflow file: Final_RPC_flow_x8_pg20_REVB.mfh .....
-02/15/2016 06:34:00 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_Final_RPC_flow_x8_pg20_REVB_TestflowParser.png
-02/15/2016 06:34:00 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_Final_RPC_flow_x8_pg20_REVB_TestflowParser.log
-02/15/2016 06:34:35 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
-02/15/2016 06:34:35 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0
+02/17/2016 04:17:32 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_TestflowParser.log
+02/17/2016 04:17:32 PM INFO: Running TestflowParser.pyc...
+02/17/2016 04:18:04 PM INFO: Parsing testflow file: Final_RPC_flow_x8_pg20_REVB.mfh .....
+02/17/2016 04:18:58 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_Final_RPC_flow_x8_pg20_REVB_TestflowParser.png
+02/17/2016 04:18:58 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_r22/kepler_r22_Final_RPC_flow_x8_pg20_REVB_TestflowParser.log
+02/17/2016 04:19:34 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
+02/17/2016 04:19:34 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0

@@ -1,7 +1,7 @@
-02/15/2016 06:36:48 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_TestflowParser.log
-02/15/2016 06:36:48 PM INFO: Running TestflowParser.pyc...
-02/15/2016 06:36:51 PM INFO: Parsing testflow file: Final_RPC_flow.mfh .....
-02/15/2016 06:37:10 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_Final_RPC_flow_TestflowParser.png
-02/15/2016 06:37:10 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_Final_RPC_flow_TestflowParser.log
-02/15/2016 06:37:23 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
-02/15/2016 06:37:23 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0
+02/17/2016 04:21:43 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_TestflowParser.log
+02/17/2016 04:21:43 PM INFO: Running TestflowParser.pyc...
+02/17/2016 04:21:51 PM INFO: Parsing testflow file: Final_RPC_flow.mfh .....
+02/17/2016 04:22:10 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_Final_RPC_flow_TestflowParser.png
+02/17/2016 04:22:10 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/edison/edison_Final_RPC_flow_TestflowParser.log
+02/17/2016 04:22:23 PM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
+02/17/2016 04:22:23 PM INFO: Number of ERRORS for "TestflowParser.pyc": 0

@@ -371,7 +371,7 @@ def evaluateTiming(timing_setups_dict, spec_timing_groups, pin_list, pin_group_d
         file_list += list(ref_dict[type].itervalues())
 
     for fn in file_list:
-        a_dict = v93k_utils.getTiming(fn, spec_timing_groups, pin_list, pin_group_dict)
+        a_dict = v93k_utils.getTiming(fn, spec_timing_groups, pin_list, pin_group_dict, timing_dict["EQN"])
         for eq_set, eq_dict in a_dict["EQN"].iteritems():
             timing_dict["EQN"][eq_set] = eq_dict
         for eq_set, eq_dict in a_dict["SPS"].iteritems():

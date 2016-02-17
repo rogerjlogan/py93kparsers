@@ -360,8 +360,9 @@ def _getTimingEqnSet(t_dict, contents, eq_start, eq_stop, specs_timing_dict, ful
         pass
 
 
-def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict):
-    spec_hdr_keys = ["specname", "actual", "minimum", "maximum", "units"]
+def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict, spec_list):
+    # spec_hdr_keys = ["specname", "actual", "minimum", "maximum", "units"]
+    spec_hdr_keys = ["specname", "actual", "units"]
     eq_g = util.m_re(eq_contents)
     eq_g.grep("[{}]")  #pull out {} blocks, such as SYNC { ..... }
     if eq_g.pattern_count >= 2:
@@ -381,6 +382,10 @@ def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict):
         eq_g.clear_cache()
     eq_g.grep(specs_timing_dict["subSections"]) # get all eqnset references with SPECIFICATION block
     t_dict["sub_sections"] = [a_row.split()[0].strip() for a_row in eq_g.m_groups]
+    if not util.in_list(t_dict["sub_sections"], "SPECNAME"):
+        t_dict["sub_sections"].append("SPECNAME, missing actual # SPECNAME comment")
+        eq_g.m_groups.append("# SPECNAME")
+        eq_g.coordinates.append("-1.1")
     for a_grp,i in zip(eq_g.m_groups, [int(float(a_num)-1) for a_num in eq_g.coordinates]):
         if not util.in_string(a_grp, "SPECNAME"):
             sub_section_type = a_grp.split()[0].strip()
@@ -392,17 +397,29 @@ def _getTimingSpsSet(t_dict, eq_contents, specs_timing_dict):
             t_dict[sub_section_type] = re.sub("^\s*PORT\s+", "", a_grp).split()
         elif sub_section_type == "SPECS":
             t_dict[sub_section_type] = {}
-            hdr_i = util.find_index(eq_contents, "# SPECNAME\s+\*+ACTUAL")
-            hdr_slices = getSpecHeaderSpan(eq_contents[hdr_i])
-            spec_lines = util.remove_from_list(
-                [re.sub("\s*#\s*.*$", "", a_row) for a_row in eq_contents[hdr_i+1:]],
-                "^\s*$"
-            )
+            # hdr_i = util.find_index(eq_contents, "# SPECNAME\s+\*+ACTUAL")
+            # hdr_slices = getSpecHeaderSpan(eq_contents[hdr_i])
+            # spec_lines = util.remove_from_list(
+            #     [re.sub("\s*#\s*.*$", "", a_row) for a_row in eq_contents[hdr_i+1:]],
+            #     "^\s*$"
+            # )
+            spec_lines = util.keep_in_list(eq_contents, "^\s*(?:{0})\s+".format("|".join(spec_list)))
             for a_line in spec_lines:
-                a_dict = dict([
-                    (a_key, re.sub("[\[\]]", "", a_line[a_slice]).strip())
-                    for a_key,a_slice in zip(spec_hdr_keys,hdr_slices)
-                ])
+                # a_dict = dict([
+                #     (a_key, re.sub("[\[\]]", "", a_line[a_slice]).strip())
+                #     for a_key,a_slice in zip(spec_hdr_keys,hdr_slices)
+                # ])
+                spec_name, _dummy, a_string = re.sub("\t","    ",a_line.strip()).partition(" ")
+                actual_value,_dummy, a_string = a_string.strip().partition(" ")
+                units = None
+                u_m = re.search("\[\s*(?P<units>\w+)?\s*\]",a_string)
+                if u_m:
+                    units = u_m.groupdict()["units"]
+                a_dict = {
+                    "specname": spec_name,
+                    "actual": actual_value,
+                    "units": units if not units is None else ""
+                }
                 key_list = list(set(a_dict.iterkeys()) - {"specname"})
                 t_dict[sub_section_type][a_dict["specname"]] = dict([(a_key, a_dict[a_key]) for a_key in key_list])
     pass
@@ -447,7 +464,12 @@ def _getTimingGlobalSpecVars(t_dict, eq_contents):
     pass
 
 
-def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict):
+def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict, ref_eqn_dict):
+    """
+    ref_eqn_dict is a running copy of the ref_dict["EQN"] dictionary, and is treated as "read-only",
+    with the sole purpose as a reference for the SPEC parameters that get determined in the 
+    ref_dict["SPS"] dictionary.
+    """
     ref_dict = {"EQN":{}, "SPS":{}, "WVT":{}}
     f = util.FileUtils(timing_file, True)
     g = util.m_re(f.contents)
@@ -505,7 +527,7 @@ def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict):
                 )
             elif timing_key == "SPS":
                 ref_dict[timing_key][specName][eq_num] = {"name":eq_name}
-                _getTimingSpsSet(ref_dict[timing_key][specName][eq_num], contents[eq_start:eq_stop], timing_dict)
+                _getTimingSpsSet(ref_dict[timing_key][specName][eq_num], contents[eq_start:eq_stop], timing_dict, ref_eqn_dict[eq_num]["SPECS"].keys())
     return ref_dict
 
 def sortByInt(wList):

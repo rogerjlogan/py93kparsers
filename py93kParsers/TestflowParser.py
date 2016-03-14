@@ -3107,7 +3107,7 @@ class Testflow(TestflowData):
 
             if self.nodeData[node_id]['type'] in ['RunStatement', 'RunAndBranchStatement']:
                 suite_name = node.name.split('-')[0]
-                if 'bypass' in self.nodeData[node_id][suite_name]['TestsuiteFlags']:
+                if 'TestsuiteFlags' in self.nodeData[node_id][suite_name] and 'bypass' in self.nodeData[node_id][suite_name]['TestsuiteFlags']:
                     ts_bypass = True
                 else:
                     ts_bypass = False

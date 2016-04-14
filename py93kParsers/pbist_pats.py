@@ -35,7 +35,7 @@ class PbistPats(object):
 
     # define regex for seaches
     dmasPat = re.compile(r'DMAS SQPG,SM,(?P<total_count>[0-9]+),\((?P<port>\S+)\)')
-    sqlbPat = re.compile(r'SQLB "(?P<mpb_name>[^"]+)",MPBU,(?P<start>\S+),(?P<stop>[0-9]+),"",\((?P<port>[^\)]+)\)')
+    sqlbPat = re.compile(r'SQLB "(?P<mpb_name>[^"]+)",MPBU,(?P<start>\S+),(?P<stop>[0-9]+),("")?,\((?P<port>[^\)]+)\)')
     sqpgPat = re.compile(r'SQPG (?P<address>[0-9]+),CALL,,"(?P<label>[^"]+)",,\((?P<port>\S+)\)')
     wvtPat = re.compile(r'SQLB "(?P<label_name>[^"]+)",MAIN,(?P<start>[0-9]+),(?P<stop>[0-9]+),"(?P<wavetable>[^"]+)",\((?P<port>[^\)]+)\)')
     stopPat = re.compile(r'SQPG (?P<address>[0-9]+),STOP,,,,\((?P<port>\S+)\)')

@@ -111,8 +111,10 @@ class MpbSplit(object):
                         continue
 
         for mpb_name in self.mpbs2split:
-            mpb1_pathfn = os.path.join(outdir,mpb_name+'_part1'+args.extension)
-            mpb2_pathfn = os.path.join(outdir,mpb_name+'_part2'+args.extension)
+            mpb1_name = mpb_name+'_init'
+            mpb2_name = mpb_name+'_main'
+            mpb1_pathfn = os.path.join(outdir,mpb1_name+args.extension)
+            mpb2_pathfn = os.path.join(outdir,mpb2_name+args.extension)
             mpb1 = myOpen(mpb1_pathfn,'w')
             mpb2 = myOpen(mpb2_pathfn,'w')
             mpb1.write(VECTOR_OPTFILE_HEADER+'\n')
@@ -129,7 +131,7 @@ class MpbSplit(object):
                         mpb1_total = num + 1
                         if loc == 0:
                             mpb1.write('DMAS SQPG,SM,'+str(mpb1_total)+',('+port+')\n')
-                            mpb1.write('SQLB "'+label+'",MPBU,0,'+str(mpb1_total-1)+',"",('+port+')\n')
+                            mpb1.write('SQLB "'+mpb1_name+'",MPBU,0,'+str(mpb1_total-1)+',"",('+port+')\n')
                         mpb1.write('SQPG '+str(loc)+',CALL,,"'+label+'",,('+port+')\n')
                         if loc == mpb1_total - 2:
                             mpb1.write('SQPG '+str(loc+1)+',BEND,,,,('+port+')\n')
@@ -138,7 +140,7 @@ class MpbSplit(object):
                         mpb2_total = (orig_total - num) + 1
                         if loc == 0:
                             mpb2.write('DMAS SQPG,SM,'+str(mpb2_total)+',('+port+')\n')
-                            mpb2.write('SQLB "'+label+'",MPBU,0,'+str(mpb2_total-1)+',"",('+port+')\n')
+                            mpb2.write('SQLB "'+mpb2_name+'",MPBU,0,'+str(mpb2_total-1)+',"",('+port+')\n')
                         mpb2.write('SQPG '+str(loc)+',CALL,,"'+label+'",,('+port+')\n')
                         if loc == mpb2_total - 2:
                             mpb2.write('SQPG '+str(loc+1)+',BEND,,,,('+port+')\n')

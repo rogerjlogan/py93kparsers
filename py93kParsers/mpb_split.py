@@ -20,14 +20,20 @@ class MpbSplit(object):
     dmasPat = re.compile(r'DMAS SQPG,SM,(?P<port_count>[0-9]+),\((?P<port>\S+)\)')
     sqlbPat = re.compile(r'SQLB "(?P<mpb_name>[^"]+)",MPBU,(?P<start>\S+),(?P<stop>[0-9]+),("")?,\((?P<port>[^\)]+)\)')
     sqpgPat = re.compile(r'SQPG (?P<number>[0-9]+),(?P<command>CALL|BEND)?,,(?:"(?P<label>[^"]+)")?,,\((?P<port>\S+)\)')
+    noopPat = re.compile(r'NOOP ("[^\"]*")?,,,')
 
     mpbs = {}
     mpbs2split = {}
 
-    def __init__(self,args,outdir):
+    def __init__(self,args,out_dir):
+        outdir,info_msg,warn_msg = get_valid_dir(name=args.name,outdir=out_dir)
+        for msg in warn_msg:
+            print 'WARNING!!! ',msg
+            log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
         for pathfn in glob.glob(args.mpb_dir+"/*_MPB*"):
             fn = os.path.basename(pathfn)
-            base = fn.split('.')[0]
 
             msg = 'Processing: '+fn+' ...'
             print msg
@@ -39,7 +45,7 @@ class MpbSplit(object):
             total = 0
 
             for line in myOpen(pathfn):
-                unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\toffending line: '+line
+                unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\t   offending line: '+line
                 if not hdr_found:
                     if -1 != line.find(VECTOR_OPTFILE_HEADER):
                         hdr_found = True
@@ -48,6 +54,7 @@ class MpbSplit(object):
                     dmasObj = re.search(self.dmasPat,line)
                     sqlbObj = re.search(self.sqlbPat,line)
                     sqpgObj = re.search(self.sqpgPat,line)
+                    noopObj = re.search(self.noopPat,line)
 
                     if dmasObj:
 
@@ -83,12 +90,25 @@ class MpbSplit(object):
                             self.mpbs[mpb_name][port].append(label)
                         elif command == 'BEND':
                             if label is not None:
-                                sys.exit(unknown_line_error)
+                                self.mpbs2split.pop(mpb_name,None)
+                                warn = unknown_line_error+'\tSkipping ...'
+                                log.warning(warn)
+                                print warn
+                                continue
                         else:
-                            # unknown command
-                            sys.exit(unknown_line_error)
+                            self.mpbs2split.pop(mpb_name,None)
+                            warn = unknown_line_error+'\tSkipping ...'
+                            log.warning(warn)
+                            print warn
+                            continue
+                    elif noopObj:
+                        pass
                     else:
-                        sys.exit(unknown_line_error)
+                        self.mpbs2split.pop(mpb_name,None)
+                        warn = unknown_line_error+'\tSkipping ...'
+                        log.warning(warn)
+                        print warn
+                        continue
 
         for mpb_name in self.mpbs2split:
             mpb1_pathfn = os.path.join(outdir,mpb_name+'_part1'+args.extension)
@@ -127,14 +147,6 @@ class MpbSplit(object):
             mpb2.close()
 
         return
-
-            # # let's create the MPB (and overwrite if already exists)
-            # mpb = self.create_open_file(mpb_file)
-            # mpb.write('DMAS SQPG,SM,2,('+port+')\n')
-            # mpb.write('SQLB "'+mpb_label+'",MPBU,0,1,"",('+port+')\n')
-            # mpb.write('SQPG 0,CALL,,"'+jsub_label+'",,('+port+')\n')
-            # mpb.write('SQPG 1,BEND,,,,('+port+')\n')
-            # mpb.close()
 
 
 if __name__ == "__main__":

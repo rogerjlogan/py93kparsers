@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 """
-    This script splits an mpb into many mpb's based on a search string match.
+    This script splits mpb's (must have '_MPB' in file name) into 2 mpb's if a match is found.
+    The match is the first label name that has a substring which is passed in.
+    For example, if the string to search for (-str <string> option) is found in any of the label names,
+    then the split happens on the first label that matches.  It also updates the label counts.
+    
+    Currently, this script only supports MPB's with the following FW commands and this supported structure:
+        DMAS SQPG,SM,<integer>,<string>
+        SQLB "<string>",MPBU,<integer>,<integer>,"",<string>
+        SQLB "<string>",MPBU,<integer>,<integer>,,<string>
+        SQPG <integer>,CALL,,"<string>",,<string>
+        SQPG <integer>,BEND,,,,<string>
+        NOOP "<string>",,,
+    MPB's with unsupported FW commands are skipped and noted in the log file (placed in the output directory)
 """
 import glob
 import time
@@ -24,6 +36,7 @@ class MpbSplit(object):
 
     mpbs = {}
     mpbs2split = {}
+    skiplist = []
 
     def __init__(self,args,out_dir):
         outdir,info_msg,warn_msg = get_valid_dir(name=args.name,outdir=out_dir)
@@ -35,7 +48,7 @@ class MpbSplit(object):
         for pathfn in glob.glob(args.mpb_dir+"/*_MPB*"):
             fn = os.path.basename(pathfn)
 
-            msg = 'Processing: '+fn+' ...'
+            msg = 'Analyzing: '+fn+' ...'
             print msg
             log.info(msg)
 
@@ -45,7 +58,7 @@ class MpbSplit(object):
             total = 0
 
             for line in myOpen(pathfn):
-                unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\t   offending line: '+line
+                unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\t   offending line: '+line + '\t(Use -h option to see what FW commands are supported)'
                 if not hdr_found:
                     if -1 != line.find(VECTOR_OPTFILE_HEADER):
                         hdr_found = True
@@ -86,30 +99,45 @@ class MpbSplit(object):
                                 sys.exit(unknown_line_error)
                             elif -1 != label.find(args.string2match):
                                 if mpb_name not in self.mpbs2split:
+                                    log.info('\t\t\t'+fn+' Criteria matched.  Will attempt to split (unless skipped due to unsupported FW commands) ....')
                                     self.mpbs2split[mpb_name] = number
                             self.mpbs[mpb_name][port].append(label)
                         elif command == 'BEND':
                             if label is not None:
                                 self.mpbs2split.pop(mpb_name,None)
-                                warn = unknown_line_error+'\tSkipping ...'
-                                log.warning(warn)
-                                print warn
+                                if fn not in self.skiplist:
+                                    self.skiplist.append(fn)
+                                    warn = unknown_line_error+'\tSkipping ...'
+                                    log.warning(warn)
+                                    print warn
                                 continue
                         else:
                             self.mpbs2split.pop(mpb_name,None)
-                            warn = unknown_line_error+'\tSkipping ...'
-                            log.warning(warn)
-                            print warn
+                            if fn not in self.skiplist:
+                                self.skiplist.append(fn)
+                                warn = unknown_line_error+'\tSkipping ...'
+                                log.warning(warn)
+                                print warn
                             continue
                     elif noopObj:
                         pass
                     else:
                         self.mpbs2split.pop(mpb_name,None)
-                        warn = unknown_line_error+'\tSkipping ...'
-                        log.warning(warn)
-                        print warn
+                        if fn not in self.skiplist:
+                            self.skiplist.append(fn)
+                            warn = unknown_line_error+'\tSkipping ...'
+                            log.warning(warn)
+                            print warn
                         continue
+            if fn in self.skiplist:
+                break
 
+        msg1 = 'NUMBER OF MPB\'s THAT WE ARE SPLITTING: '+str(len(self.mpbs2split))
+        msg2 = 'NUMBER OF MPB\'s THAT MATCHED BUT WERE SKIPPED (DUE TO UNSUPPORTED USE OF FW COMMANDS): '+str(len(self.skiplist))
+        print msg1
+        print msg2
+        log.info(msg1)
+        log.info(msg2)
         for mpb_name in self.mpbs2split:
             mpb1_name = mpb_name+'_init'
             mpb2_name = mpb_name+'_main'

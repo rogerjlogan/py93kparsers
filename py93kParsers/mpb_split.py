@@ -19,12 +19,23 @@ import time
 import logging
 from common import *
 import argparse
+import csv
+import collections
+
 _start_time = time.time()
 log = None
 
 __author__ = 'Roger'
 
 VECTOR_OPTFILE_HEADER = 'hp93000,vector,0.1'
+TESTFLOW_OPTFILE_HEADER = 'hp93000,testflow,0.1'
+TESTFLOW_LANGUAGE_HEADER = 'language_revision = 1;'
+DEFAULT_FUNC_TM = 'ti_tml.Digital.Functional'
+DEFAULT_CONN_TM = 'VAYU_tml.Misc.DcSigMultPinSetup'
+DEFAULT_DISC_TM = 'VAYU_tml.DcSigPinDisconnect'
+
+INIT_LABEL_ID = '_init'
+MAIN_LABEL_ID = '_main'
 
 class MpbSplit(object):
 
@@ -34,9 +45,17 @@ class MpbSplit(object):
     sqpgPat = re.compile(r'SQPG (?P<number>[0-9]+),(?P<command>CALL|BEND)?,,(?:"(?P<label>[^"]+)")?,,\((?P<port>\S+)\)')
     noopPat = re.compile(r'NOOP ("[^\"]*")?,,,')
 
-    mpbs = {}
-    mpbs2split = {}
+    # all mpbs that were read in and their data for each port
+    mpbs = collections.OrderedDict()
+
+    # list of mpbs that are to be split and label number of first label to begin the 2nd mpb
+    mpbs2split = collections.OrderedDict()
+
+    # list of mpbs that were skipped due to unsupported FW commands
     skiplist = []
+
+    # mpb label names that were created
+    mpb_label_names_created = []
 
     def __init__(self,args,out_dir):
         outdir,info_msg,warn_msg = get_valid_dir(name=args.name,outdir=out_dir)
@@ -56,6 +75,7 @@ class MpbSplit(object):
             hdr_found = False
             port = None
             total = 0
+            quiet_skip = False
 
             for line in myOpen(pathfn):
                 unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\t   offending line: '+line + '\t(Use -h option to see what FW commands are supported)'
@@ -84,7 +104,7 @@ class MpbSplit(object):
                         elif sqlbObj.group('port') != port:
                             sys.exit('Multiple ports found in MPB: '+sqlbObj.group('port')+' and '+port)
                         elif mpb_name not in self.mpbs:
-                            self.mpbs[mpb_name] = {}
+                            self.mpbs[mpb_name] = collections.OrderedDict()
                         if port not in self.mpbs[mpb_name]:
                             self.mpbs[mpb_name][port] = []
 
@@ -98,6 +118,9 @@ class MpbSplit(object):
                             if label is None:
                                 sys.exit(unknown_line_error)
                             elif -1 != label.find(args.string2match):
+                                if number == 0:
+                                    quiet_skip = True
+                                    continue
                                 if mpb_name not in self.mpbs2split:
                                     log.info('\t\t\t'+fn+' Criteria matched.  Will attempt to split (unless skipped due to unsupported FW commands) ....')
                                     self.mpbs2split[mpb_name] = number
@@ -129,7 +152,7 @@ class MpbSplit(object):
                             log.warning(warn)
                             print warn
                         continue
-            if fn in self.skiplist:
+            if fn in self.skiplist or quiet_skip:
                 break
 
         msg1 = 'NUMBER OF MPB\'s THAT WE ARE SPLITTING: '+str(len(self.mpbs2split))
@@ -139,10 +162,18 @@ class MpbSplit(object):
         log.info(msg1)
         log.info(msg2)
         for mpb_name in self.mpbs2split:
-            mpb1_name = mpb_name+'_init'
-            mpb2_name = mpb_name+'_main'
+            mpb1_name = mpb_name+INIT_LABEL_ID
+            mpb2_name = mpb_name+MAIN_LABEL_ID
+            self.mpb_label_names_created.append(mpb1_name)
+            self.mpb_label_names_created.append(mpb2_name)
             mpb1_pathfn = os.path.join(outdir,mpb1_name+args.extension)
             mpb2_pathfn = os.path.join(outdir,mpb2_name+args.extension)
+            msg = 'Creating: '+mpb1_pathfn+' ...'
+            print msg
+            log.info(msg)
+            msg = 'Creating: '+mpb2_pathfn+' ...'
+            print msg
+            log.info(msg)
             mpb1 = myOpen(mpb1_pathfn,'w')
             mpb2 = myOpen(mpb2_pathfn,'w')
             mpb1.write(VECTOR_OPTFILE_HEADER+'\n')
@@ -179,6 +210,111 @@ class MpbSplit(object):
         return
 
 
+class CreateTestFlow(object):
+
+    # unique testmethod id for each testsuite
+    __tm = 0
+
+    # container for all testsuites that we need to create and their relevant data
+    testsuites = collections.OrderedDict()
+
+    #empty sections
+    sect_top = '-'*65 + '\n'
+    sect_bot = '\n' + 'end' + '\n' + '-'*65
+    testmethodlimits = sect_top + 'testmethodlimits' + sect_bot
+    binning = sect_top + 'binning' + sect_bot
+    oocrule = sect_top + 'oocrule' + sect_bot
+    context = sect_top + 'context' + sect_bot
+    hardware_bin_descriptions = sect_top + 'hardware_bin_descriptions' + sect_bot
+
+    @staticmethod
+    def getTMId():
+        """Get unique testmethod id"""
+        CreateTestFlow.__tm += 1
+        return 'tm_'+str(CreateTestFlow.__tm)
+
+    def assignTMIds(self, mpbObj):
+        for mpb_label in mpbObj.mpb_label_names_created:
+            suite = mpb_label+'_st'
+            self.testsuites[suite] = self.getTMId()
+            if mpb_label[-len(INIT_LABEL_ID):] == INIT_LABEL_ID:
+                self.testsuites[mpb_label[:-5]+'_conn_st'] = self.getTMId()
+            if mpb_label[-len(MAIN_LABEL_ID):] == MAIN_LABEL_ID:
+                self.testsuites[mpb_label[:-5]+'_disc_st'] = self.getTMId()
+
+    def __init__(self,args,out_dir,mpbObj):
+        self.assignTMIds(mpbObj)
+        with open(args.tc_file) as tc_file:
+            for row in csv.DictReader(tc_file):
+                condition = row['TestCondition']
+                supplies = ','.join([s for s in row if s not in ['TestCondition','ShortName']])
+                voltages = ','.join([row[s] for s in row if s not in ['TestCondition','ShortName']])
+                ofile_pathfn = os.path.join(outdir,condition+'.tf')
+                with open(ofile_pathfn,'w') as ofile:
+                    ofile.write(TESTFLOW_OPTFILE_HEADER+'\n')
+                    ofile.write(TESTFLOW_LANGUAGE_HEADER+'\n\n')
+
+                    ofile.write('testmethodparameters\n\n')
+                    for ts,tm in self.testsuites.iteritems():
+                        ofile.write(tm+': -- '+ts+'\n')
+                        if ts[-8:] in ['_conn_st','_disc_st']:
+                            ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
+                            ofile.write('  "DcSig Volts" = "'+voltages+'";\n')
+                            ofile.write('  "Settle Time" = "0";\n')
+                        else:
+                            ofile.write('  "Dummy Param" = "0";\n')
+                    ofile.write('\nend\n')
+
+                    ofile.write(self.testmethodlimits+'\n')
+
+                    ofile.write('testmethods\n\n')
+                    for ts,tm in self.testsuites.iteritems():
+                        ofile.write(tm+': -- '+ts+'\n')
+                        if ts[-8:] == '_conn_st':
+                            ofile.write('  testmethod_class = "'+args.conn_tm+'";\n')
+                        elif ts[-8:] == '_disc_st':
+                            ofile.write('  testmethod_class = "'+args.disc_tm+'";\n')
+                        else:
+                            ofile.write('  testmethod_class = "'+args.func_tm+'";\n')
+                    ofile.write('\nend\n')
+
+                    ofile.write('-'*65+'\n')
+                    ofile.write('test_suites\n\n')
+                    for ts,tm in self.testsuites.iteritems():
+                        ofile.write(ts+':\n')
+                        if ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st':
+                            ofile.write('  override_seqlbl = "'+ts.split(INIT_LABEL_ID)[0]+INIT_LABEL_ID+'";\n')
+                        elif ts[-(len(MAIN_LABEL_ID)+3):] == MAIN_LABEL_ID+'_st':
+                            ofile.write('  override_seqlbl = "'+ts.split(MAIN_LABEL_ID)[0]+MAIN_LABEL_ID+'";\n')
+                        ofile.write('  override_testf = '+tm+';\n')
+                    ofile.write('\nend\n')
+
+                    ofile.write('-'*65+'\n')
+                    ofile.write('test_flow\n\n')
+                    ofile.write('{\n')
+                    for ts in self.testsuites:
+                        in_init = ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st'
+                        in_conn = ts[-8:] == '_conn_st'
+                        in_disc = ts[-8:] == '_disc_st'
+                        if in_init:
+                            ofile.write('  {\n')
+                        if in_conn or in_disc:
+                            ofile.write('    run('+ts+');\n')
+                        else:
+                            ofile.write('    run_and_branch('+ts+')\n    then\n    {\n    }\n    else\n    {\n      multi_bin;\n    }\n')
+                        if in_disc:
+                           ofile.write('  },open,"'+ts[:len(INIT_LABEL_ID)+3]+'_S",""\n')
+                    ofile.write('},open,"'+condition+'_S",""\n')
+                    ofile.write('\nend\n')
+
+                    ofile.write(self.binning)
+                    ofile.write(self.oocrule)
+                    ofile.write(self.context)
+                    ofile.write(self.hardware_bin_descriptions)
+
+                    ofile.close()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
     parser.add_argument('-name','--name',required=False,default='',help='Optional name used for output files/logs.')
@@ -188,6 +324,10 @@ if __name__ == "__main__":
     parser.add_argument('-mpb','--mpb_dir',required=True, help='Path to MPB files that you want to split')
     parser.add_argument('-str','--string2match',required=True,default='', help='Substring to search for in label names where MPB is to be split.')
     parser.add_argument('-ext','--extension',required=False,default='.mpb', help='Extension to give MPB output files.')
+    parser.add_argument('-tc','--tc_file',required=False,default='', help='Test conditions file.')
+    parser.add_argument('-func_tm','--func_tm',required=False,default=DEFAULT_FUNC_TM, help='Test method for functional tests.')
+    parser.add_argument('-conn_tm','--conn_tm',required=False,default=DEFAULT_CONN_TM, help='Test method for DCSig connect.')
+    parser.add_argument('-disc_tm','--disc_tm',required=False,default=DEFAULT_DISC_TM, help='Test method for DCSig disconnect.')
     args = parser.parse_args()
 
     if args.debug:
@@ -205,8 +345,10 @@ if __name__ == "__main__":
     print msg
     log.info(msg)
 
-    MpbSplit(args, outdir)
+    m = MpbSplit(args, outdir)
 
+    if len(args.tc_file):
+        tc = CreateTestFlow(args, outdir,m)
 
     log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
     msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)

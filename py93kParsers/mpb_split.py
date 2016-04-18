@@ -262,6 +262,7 @@ class CreateTestFlow(object):
 
                     ofile.write('testmethodparameters\n\n')
                     for ts,tm in self.testsuites.iteritems():
+                        ofile.write(tm+':\n')
                         if ts[-8:] in ['_conn_st','_disc_st']:
                             ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
                             ofile.write('  "DcSig Volts" = "'+voltages+'";\n')

@@ -279,12 +279,33 @@ class CreateTestFlow(object):
                         ofile.write('testmethodparameters\n\n')
                         for ts,tm in self.testsuites.iteritems():
                             ofile.write(tm+':\n')
-                            if ts[-8:] in ['_conn_st','_disc_st']:
+                            if ts[-8:] == '_conn_st':
+                                # Parameters for DCSig Connect Testsuite
                                 ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
                                 ofile.write('  "DcSig Volts" = "'+voltages+'";\n')
                                 ofile.write('  "Settle Time" = "0";\n')
+                            elif ts[-8:] == '_disc_st':
+                                # Parameter for DCSig Disconnect Testsuite
+                                ofile.write('  "SIG Pins" = "'+supplies+'";\n')
                             else:
-                                ofile.write('  "Dummy Param" = "0";\n')
+                                # Parameters for Functional Testsuite
+                                ofile.write('  "ComplementBurst" = "No";\n')
+                                ofile.write('  "ComplementBurstName" = "";\n')
+                                ofile.write('  "Corner" = "'+condition+'";\n')
+                                ofile.write('  "Func_limit_name" = "'+ts[:-3]+'";\n')
+                                ofile.write('  "Init_limit_name" = "";\n')
+                                ofile.write('  "Init_pattern" = "";\n')
+                                ofile.write('  "Interleave_init_pattern" = "No";\n')
+                                ofile.write('  "Mask_pins" = "";\n')
+                                ofile.write('  "Masked_pins" = "";\n')
+                                ofile.write('  "Results_per_label" = "Yes";\n')
+                                ofile.write('  "Retest" = "No";\n')
+                                ofile.write('  "Site_match_mode" = "No";\n')
+                                ofile.write('  "SpeedSort" = "No";\n')
+                                ofile.write('  "SpeedSortAdaptiveSpec" = "";\n')
+                                ofile.write('  "Stop_on_fail" = "No";\n')
+                                ofile.write('  "Util_purpose_off" = "";\n')
+                                ofile.write('  "Util_purpose_on" = "SuppliesOn";\n')
                         ofile.write('\nend\n')
 
                         ofile.write(self.testmethodlimits+'\n')
@@ -304,6 +325,8 @@ class CreateTestFlow(object):
                         ofile.write('test_suites\n\n')
                         for ts,tm in self.testsuites.iteritems():
                             ofile.write(ts+'__'+condition+':\n')
+                            ofile.write('local_flags = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;\n')
+                            ofile.write('  override = 1;\n')
                             if ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st':
                                 ofile.write('  override_seqlbl = "'+ts.split(INIT_LABEL_ID)[0]+INIT_LABEL_ID+'";\n')
                             elif ts[-(len(MAIN_LABEL_ID)+3):] == MAIN_LABEL_ID+'_st':

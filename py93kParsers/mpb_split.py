@@ -275,6 +275,7 @@ class CreateTestFlow(object):
 
                     ofile.write('testmethods\n\n')
                     for ts,tm in self.testsuites.iteritems():
+                        ofile.write(tm+':\n')
                         if ts[-8:] == '_conn_st':
                             ofile.write('  testmethod_class = "'+args.conn_tm+'";\n')
                         elif ts[-8:] == '_disc_st':

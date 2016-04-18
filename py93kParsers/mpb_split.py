@@ -256,7 +256,6 @@ class CreateTestFlow(object):
 
                     ofile.write('testmethodparameters\n\n')
                     for ts,tm in self.testsuites.iteritems():
-                        ofile.write(tm+': -- '+ts+'\n')
                         if ts[-8:] in ['_conn_st','_disc_st']:
                             ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
                             ofile.write('  "DcSig Volts" = "'+voltages+'";\n')
@@ -303,7 +302,7 @@ class CreateTestFlow(object):
                         else:
                             ofile.write('    run_and_branch('+ts+')\n    then\n    {\n    }\n    else\n    {\n      multi_bin;\n    }\n')
                         if in_disc:
-                           ofile.write('  },open,"'+ts[:len(INIT_LABEL_ID)+3]+'_S",""\n')
+                            ofile.write('  },open,"'+ts[:-(len('_disc_st')+4)]+'_S",""\n')
                     ofile.write('},open,"'+condition+'_S",""\n')
                     ofile.write('\nend\n')
 

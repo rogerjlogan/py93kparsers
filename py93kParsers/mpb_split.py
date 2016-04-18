@@ -29,10 +29,18 @@ __author__ = 'Roger'
 
 VECTOR_OPTFILE_HEADER = 'hp93000,vector,0.1'
 TESTFLOW_OPTFILE_HEADER = 'hp93000,testflow,0.1'
+TESTFLOW_MFH_OPTFILE_HEADER = 'hp93000,testflow_master_file,0.1'
 TESTFLOW_LANGUAGE_HEADER = 'language_revision = 1;'
 DEFAULT_FUNC_TM = 'ti_tml.Digital.Functional'
 DEFAULT_CONN_TM = 'VAYU_tml.Misc.DcSigMultPinSetup'
 DEFAULT_DISC_TM = 'VAYU_tml.DcSigPinDisconnect'
+MFH_FILENAME = 'split.mfh'
+DEFAULT_MFH_CONTENT = 'testerfile : Final_flow\n'\
+                      'information : common/information.tf\n'\
+                      'flags : common/flags.tf\n'\
+                      'bins : common/bins.tf\n'\
+                      'setup : Final/setup.tf\n'\
+                      'var_default : Final/var_default.tf\n'
 
 INIT_LABEL_ID = '_init'
 MAIN_LABEL_ID = '_main'
@@ -244,81 +252,93 @@ class CreateTestFlow(object):
 
     def __init__(self,args,out_dir,mpbObj):
         self.assignTMIds(mpbObj)
-        with open(args.tc_file) as tc_file:
-            msg = 'Reading: '+args.tc_file+' ...'
+
+        mfh_pathfn = os.path.join(outdir,MFH_FILENAME)
+        with open(mfh_pathfn,'w') as splitfn:
+            msg = 'Creating: '+mfh_pathfn+' ...'
             print msg
             log.info(msg)
-            for row in csv.DictReader(tc_file):
-                condition = row['TestCondition']
-                supplies = ','.join([s for s in row if s not in ['TestCondition','ShortName']])
-                voltages = ','.join([row[s] for s in row if s not in ['TestCondition','ShortName']])
-                ofile_pathfn = os.path.join(outdir,condition+'.tf')
-                with open(ofile_pathfn,'w') as ofile:
-                    msg = 'Creating: '+ofile_pathfn+' ...'
-                    print msg
-                    log.info(msg)
-                    ofile.write(TESTFLOW_OPTFILE_HEADER+'\n')
-                    ofile.write(TESTFLOW_LANGUAGE_HEADER+'\n\n')
+            splitfn.write(TESTFLOW_MFH_OPTFILE_HEADER+'\n')
+            splitfn.write(DEFAULT_MFH_CONTENT)
 
-                    ofile.write('testmethodparameters\n\n')
-                    for ts,tm in self.testsuites.iteritems():
-                        ofile.write(tm+':\n')
-                        if ts[-8:] in ['_conn_st','_disc_st']:
-                            ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
-                            ofile.write('  "DcSig Volts" = "'+voltages+'";\n')
-                            ofile.write('  "Settle Time" = "0";\n')
-                        else:
-                            ofile.write('  "Dummy Param" = "0";\n')
-                    ofile.write('\nend\n')
+            with open(args.tc_file) as tc_file:
+                msg = 'Reading: '+args.tc_file+' ...'
+                print msg
+                log.info(msg)
+                for row in csv.DictReader(tc_file):
+                    condition = row['TestCondition']
+                    supplies = ','.join([s for s in row if s not in ['TestCondition','ShortName']])
+                    voltages = ','.join([row[s] for s in row if s not in ['TestCondition','ShortName']])
+                    ofile_pathfn = os.path.join(outdir,condition+'.tf')
+                    with open(ofile_pathfn,'w') as ofile:
+                        msg = 'Creating: '+ofile_pathfn+' ...'
+                        print msg
+                        log.info(msg)
+                        ofile.write(TESTFLOW_OPTFILE_HEADER+'\n')
+                        ofile.write(TESTFLOW_LANGUAGE_HEADER+'\n\n')
 
-                    ofile.write(self.testmethodlimits+'\n')
+                        ofile.write('testmethodparameters\n\n')
+                        for ts,tm in self.testsuites.iteritems():
+                            ofile.write(tm+':\n')
+                            if ts[-8:] in ['_conn_st','_disc_st']:
+                                ofile.write('  "DcSig Pins" = "'+supplies+'";\n')
+                                ofile.write('  "DcSig Volts" = "'+voltages+'";\n')
+                                ofile.write('  "Settle Time" = "0";\n')
+                            else:
+                                ofile.write('  "Dummy Param" = "0";\n')
+                        ofile.write('\nend\n')
 
-                    ofile.write('testmethods\n\n')
-                    for ts,tm in self.testsuites.iteritems():
-                        ofile.write(tm+':\n')
-                        if ts[-8:] == '_conn_st':
-                            ofile.write('  testmethod_class = "'+args.conn_tm+'";\n')
-                        elif ts[-8:] == '_disc_st':
-                            ofile.write('  testmethod_class = "'+args.disc_tm+'";\n')
-                        else:
-                            ofile.write('  testmethod_class = "'+args.func_tm+'";\n')
-                    ofile.write('\nend\n')
+                        ofile.write(self.testmethodlimits+'\n')
 
-                    ofile.write('-'*65+'\n')
-                    ofile.write('test_suites\n\n')
-                    for ts,tm in self.testsuites.iteritems():
-                        ofile.write(ts+':\n')
-                        if ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st':
-                            ofile.write('  override_seqlbl = "'+ts.split(INIT_LABEL_ID)[0]+INIT_LABEL_ID+'";\n')
-                        elif ts[-(len(MAIN_LABEL_ID)+3):] == MAIN_LABEL_ID+'_st':
-                            ofile.write('  override_seqlbl = "'+ts.split(MAIN_LABEL_ID)[0]+MAIN_LABEL_ID+'";\n')
-                        ofile.write('  override_testf = '+tm+';\n')
-                    ofile.write('\nend\n')
+                        ofile.write('testmethods\n\n')
+                        for ts,tm in self.testsuites.iteritems():
+                            ofile.write(tm+':\n')
+                            if ts[-8:] == '_conn_st':
+                                ofile.write('  testmethod_class = "'+args.conn_tm+'";\n')
+                            elif ts[-8:] == '_disc_st':
+                                ofile.write('  testmethod_class = "'+args.disc_tm+'";\n')
+                            else:
+                                ofile.write('  testmethod_class = "'+args.func_tm+'";\n')
+                        ofile.write('\nend\n')
 
-                    ofile.write('-'*65+'\n')
-                    ofile.write('test_flow\n\n')
-                    ofile.write('{\n')
-                    for ts in self.testsuites:
-                        in_init = ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st'
-                        in_conn = ts[-8:] == '_conn_st'
-                        in_disc = ts[-8:] == '_disc_st'
-                        if in_init:
-                            ofile.write('  {\n')
-                        if in_conn or in_disc:
-                            ofile.write('    run('+ts+');\n')
-                        else:
-                            ofile.write('    run_and_branch('+ts+')\n    then\n    {\n    }\n    else\n    {\n      multi_bin;\n    }\n')
-                        if in_disc:
-                            ofile.write('  },open,"'+ts[:-(len('_disc_st')+4)]+'_S",""\n')
-                    ofile.write('},open,"'+condition+'_S",""\n')
-                    ofile.write('\nend\n')
+                        ofile.write('-'*65+'\n')
+                        ofile.write('test_suites\n\n')
+                        for ts,tm in self.testsuites.iteritems():
+                            ofile.write(ts+'__'+condition+':\n')
+                            if ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st':
+                                ofile.write('  override_seqlbl = "'+ts.split(INIT_LABEL_ID)[0]+INIT_LABEL_ID+'";\n')
+                            elif ts[-(len(MAIN_LABEL_ID)+3):] == MAIN_LABEL_ID+'_st':
+                                ofile.write('  override_seqlbl = "'+ts.split(MAIN_LABEL_ID)[0]+MAIN_LABEL_ID+'";\n')
+                            ofile.write('  override_testf = '+tm+';\n')
+                        ofile.write('\nend\n')
 
-                    ofile.write(self.binning)
-                    ofile.write(self.oocrule)
-                    ofile.write(self.context)
-                    ofile.write(self.hardware_bin_descriptions)
+                        ofile.write('-'*65+'\n')
+                        ofile.write('test_flow\n\n')
+                        ofile.write('{\n')
+                        for ts in self.testsuites:
+                            in_init = ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st'
+                            in_conn = ts[-8:] == '_conn_st'
+                            in_disc = ts[-8:] == '_disc_st'
+                            if in_init:
+                                ofile.write('  {\n')
+                            if in_conn or in_disc:
+                                ofile.write('    run('+ts+'__'+condition+');\n')
+                            else:
+                                ofile.write('    run_and_branch('+ts+'__'+condition+')\n    then\n    {\n    }\n    else\n    {\n      multi_bin;\n    }\n')
+                            if in_disc:
+                                ofile.write('  },open,"'+ts[:-(len('_disc_st')+4)]+'_S",""\n')
+                        ofile.write('},open,"'+condition+'_S",""\n')
+                        ofile.write('\nend\n')
 
-                    ofile.close()
+                        ofile.write(self.binning)
+                        ofile.write(self.oocrule)
+                        ofile.write(self.context)
+                        ofile.write(self.hardware_bin_descriptions)
+
+                        ofile.close()
+
+                        splitfn.write('GROUP '+condition+'_S [open] : '+os.path.basename(os.path.normpath(out_dir))+'/'+condition+'.tf\n')
+
 
 
 if __name__ == "__main__":

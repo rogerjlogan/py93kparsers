@@ -245,12 +245,18 @@ class CreateTestFlow(object):
     def __init__(self,args,out_dir,mpbObj):
         self.assignTMIds(mpbObj)
         with open(args.tc_file) as tc_file:
+            msg = 'Reading: '+args.tc_file+' ...'
+            print msg
+            log.info(msg)
             for row in csv.DictReader(tc_file):
                 condition = row['TestCondition']
                 supplies = ','.join([s for s in row if s not in ['TestCondition','ShortName']])
                 voltages = ','.join([row[s] for s in row if s not in ['TestCondition','ShortName']])
                 ofile_pathfn = os.path.join(outdir,condition+'.tf')
                 with open(ofile_pathfn,'w') as ofile:
+                    msg = 'Creating: '+ofile_pathfn+' ...'
+                    print msg
+                    log.info(msg)
                     ofile.write(TESTFLOW_OPTFILE_HEADER+'\n')
                     ofile.write(TESTFLOW_LANGUAGE_HEADER+'\n\n')
 

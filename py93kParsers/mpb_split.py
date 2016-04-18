@@ -83,7 +83,6 @@ class MpbSplit(object):
             hdr_found = False
             port = None
             total = 0
-            quiet_skip = False
 
             for line in myOpen(pathfn):
                 unknown_line_error = 'Unknown line found in MPB: '+fn+'\n\t   offending line: '+line + '\t(Use -h option to see what FW commands are supported)'
@@ -127,8 +126,8 @@ class MpbSplit(object):
                                 sys.exit(unknown_line_error)
                             elif -1 != label.find(args.string2match):
                                 if number == 0:
-                                    quiet_skip = True
-                                    continue
+                                    #this binl does not need to be split (match starts on first label)
+                                    break
                                 if mpb_name not in self.mpbs2split:
                                     log.info('\t\t\t'+fn+' Criteria matched.  Will attempt to split (unless skipped due to unsupported FW commands) ....')
                                     self.mpbs2split[mpb_name] = number
@@ -160,7 +159,7 @@ class MpbSplit(object):
                             log.warning(warn)
                             print warn
                         continue
-            if fn in self.skiplist or quiet_skip:
+            if fn in self.skiplist:
                 break
 
         msg1 = 'NUMBER OF MPB\'s THAT WE ARE SPLITTING: '+str(len(self.mpbs2split))

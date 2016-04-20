@@ -28,6 +28,7 @@ log = None
 __author__ = 'Roger'
 
 VECTOR_OPTFILE_HEADER = 'hp93000,vector,0.1'
+PMFL_OPTFILE_HEADER = 'hp93000,pattern_master_file,0.1'
 TESTFLOW_OPTFILE_HEADER = 'hp93000,testflow,0.1'
 TESTFLOW_MFH_OPTFILE_HEADER = 'hp93000,testflow_master_file,0.1'
 TESTFLOW_LANGUAGE_HEADER = 'language_revision = 1;'
@@ -44,6 +45,8 @@ DEFAULT_MFH_CONTENT = 'testerfile : Final_flow\n'\
 
 INIT_LABEL_ID = '_init'
 MAIN_LABEL_ID = '_main'
+VECTORS_SUBDIR = 'vectors'
+TESTFLOW_SUBDIR = 'tf_files'
 
 class MpbSplit(object):
 
@@ -63,17 +66,21 @@ class MpbSplit(object):
     skiplist = []
 
     # mpb label names that were created
-    mpb_label_names_created = []
+    mpb_label_names_created = collections.OrderedDict()
 
-    def __init__(self,args,out_dir):
+    def __init__(self,args,out_dir,brstObj):
         outdir,info_msg,warn_msg = get_valid_dir(name=args.name,outdir=out_dir)
         for msg in warn_msg:
             print 'WARNING!!! ',msg
             log.warning(msg)
         for msg in info_msg:
             log.info(msg)
+
         for pathfn in glob.glob(args.mpb_dir+"/*_MPB*"):
             fn = os.path.basename(pathfn)
+            labelFromFileName = fn.split('.')[0]
+            if labelFromFileName not in brstObj.burst_corners:
+                continue
 
             msg = 'Analyzing: '+fn+' ...'
             print msg
@@ -104,6 +111,8 @@ class MpbSplit(object):
                     elif sqlbObj:
 
                         mpb_name = sqlbObj.group('mpb_name')
+                        if mpb_name not in brstObj.burst_corners:
+                            break
                         start = int(sqlbObj.group('start'))
                         stop = int(sqlbObj.group('stop'))
                         if (stop-start)+1 != total:
@@ -168,13 +177,37 @@ class MpbSplit(object):
         print msg2
         log.info(msg1)
         log.info(msg2)
+
+        pmfl_pathfn = os.path.join(outdir,'mpb_split.pmfl')
+        msg = 'Creating: '+pmfl_pathfn+' ...'
+        print msg
+        log.info(msg)
+        pmfl = myOpen(pmfl_pathfn,'w')
+        pmfl.write(PMFL_OPTFILE_HEADER+'\n\n')
+        pmfl.write('path:\n')
+        pmfl.write('../'+VECTORS_SUBDIR+'\n\n')
+        pmfl.write('files:\n\n')
+
+        vectors_dir,info_msg,warn_msg = get_valid_dir(name=args.name, outdir=os.path.join(outdir, VECTORS_SUBDIR))
+        for msg in warn_msg:
+            print 'WARNING!!! ',msg
+            log.warning(msg)
+        for msg in info_msg:
+            log.info(msg)
+
         for mpb_name in self.mpbs2split:
             mpb1_name = mpb_name+INIT_LABEL_ID
             mpb2_name = mpb_name+MAIN_LABEL_ID
-            self.mpb_label_names_created.append(mpb1_name)
-            self.mpb_label_names_created.append(mpb2_name)
-            mpb1_pathfn = os.path.join(outdir,mpb1_name+args.extension)
-            mpb2_pathfn = os.path.join(outdir,mpb2_name+args.extension)
+            if mpb1_name in self.mpb_label_names_created:
+                sys.exit("Duplicate label found: "+mpb1_name)
+            if mpb2_name in self.mpb_label_names_created:
+                sys.exit("Duplicate label found: "+mpb2_name)
+            self.mpb_label_names_created[mpb1_name] = mpb_name
+            self.mpb_label_names_created[mpb2_name] = mpb_name
+            mpb1_pathfn = os.path.join(vectors_dir,mpb1_name+args.extension)
+            mpb2_pathfn = os.path.join(vectors_dir,mpb2_name+args.extension)
+            pmfl.write('  '+mpb1_name+args.extension+'\n')
+            pmfl.write('  '+mpb2_name+args.extension+'\n')
             msg = 'Creating: '+mpb1_pathfn+' ...'
             print msg
             log.info(msg)
@@ -213,7 +246,7 @@ class MpbSplit(object):
 
             mpb1.close()
             mpb2.close()
-
+        pmfl.close()
         return
 
 
@@ -224,6 +257,7 @@ class CreateTestFlow(object):
 
     # container for all testsuites that we need to create and their relevant data
     testsuites = collections.OrderedDict()
+    ts_orig_labels = {}
 
     #empty sections
     sect_top = '-'*65 + '\n'
@@ -240,17 +274,29 @@ class CreateTestFlow(object):
         CreateTestFlow.__tm += 1
         return 'tm_'+str(CreateTestFlow.__tm)
 
-    def assignTMIds(self, mpbObj):
-        for mpb_label in mpbObj.mpb_label_names_created:
+    def assignTMIds(self,brstObj,mpbObj):
+        for mpb_label,orig_label in mpbObj.mpb_label_names_created.iteritems():
+
+            if orig_label not in brstObj.burst_corners:
+                continue
+
+            # init and main testsuites
             suite = mpb_label+'_st'
             self.testsuites[suite] = self.getTMId()
-            if mpb_label[-len(INIT_LABEL_ID):] == INIT_LABEL_ID:
-                self.testsuites[mpb_label[:-5]+'_conn_st'] = self.getTMId()
-            if mpb_label[-len(MAIN_LABEL_ID):] == MAIN_LABEL_ID:
-                self.testsuites[mpb_label[:-5]+'_disc_st'] = self.getTMId()
+            self.ts_orig_labels[suite] = orig_label
 
-    def __init__(self,args,out_dir,mpbObj):
-        self.assignTMIds(mpbObj)
+            # create connect and disconnect testsuites
+            if mpb_label[-len(INIT_LABEL_ID):] == INIT_LABEL_ID:
+                suite = mpb_label[:-5]+'_conn_st'
+                self.testsuites[suite] = self.getTMId()
+                self.ts_orig_labels[suite] = orig_label
+            if mpb_label[-len(MAIN_LABEL_ID):] == MAIN_LABEL_ID:
+                suite = mpb_label[:-5]+'_disc_st'
+                self.testsuites[suite] = self.getTMId()
+                self.ts_orig_labels[suite] = orig_label
+
+    def __init__(self,args,out_dir,brstObj,mpbObj):
+        self.assignTMIds(brstObj,mpbObj)
 
         mfh_pathfn = os.path.join(outdir,MFH_FILENAME)
         with open(mfh_pathfn,'w') as splitfn:
@@ -265,10 +311,28 @@ class CreateTestFlow(object):
                 print msg
                 log.info(msg)
                 for row in csv.DictReader(tc_file):
-                    condition = row['TestCondition']
-                    supplies = ','.join([s for s in row if s not in ['TestCondition','ShortName']])
-                    voltages = ','.join([row[s] for s in row if s not in ['TestCondition','ShortName']])
-                    ofile_pathfn = os.path.join(outdir,condition+'.tf')
+                    condition = row['TestCondition'].strip()
+
+                    # check for any labels that have this condition
+                    matched_labels = [label for label,cond in brstObj.burst_corners.iteritems() if cond == condition]
+                    if not len(matched_labels):
+                        continue
+                    else:
+                        msg = "\tMATCHED Condition : Label(s) => {} : {}".format(condition,','.join(matched_labels))
+                        print msg
+                        log.info(msg)
+
+                    supplies = ','.join([s.strip() for s in row if s.strip() not in ['TestCondition','ShortName']])
+                    voltages = ','.join([row[s].strip() for s in row if s.strip() not in ['TestCondition','ShortName']])
+
+                    flows_dir,info_msg,warn_msg = get_valid_dir(name=args.name, outdir=os.path.join(outdir, TESTFLOW_SUBDIR))
+                    for msg in warn_msg:
+                        print 'WARNING!!! ',msg
+                        log.warning(msg)
+                    for msg in info_msg:
+                        log.info(msg)
+
+                    ofile_pathfn = os.path.join(flows_dir,condition+'.tf')
                     with open(ofile_pathfn,'w') as ofile:
                         msg = 'Creating: '+ofile_pathfn+' ...'
                         print msg
@@ -278,6 +342,10 @@ class CreateTestFlow(object):
 
                         ofile.write('testmethodparameters\n\n')
                         for ts,tm in self.testsuites.iteritems():
+                            if ts not in self.ts_orig_labels:
+                                sys.exit("Unknown testsuite: "+ts)
+                            elif self.ts_orig_labels[ts] not in matched_labels:
+                                continue
                             ofile.write(tm+':\n')
                             if ts[-8:] == '_conn_st':
                                 # Parameters for DCSig Connect Testsuite
@@ -312,6 +380,10 @@ class CreateTestFlow(object):
 
                         ofile.write('testmethods\n\n')
                         for ts,tm in self.testsuites.iteritems():
+                            if ts not in self.ts_orig_labels:
+                                sys.exit("Unknown testsuite: "+ts)
+                            elif self.ts_orig_labels[ts] not in matched_labels:
+                                continue
                             ofile.write(tm+':\n')
                             if ts[-8:] == '_conn_st':
                                 ofile.write('  testmethod_class = "'+args.conn_tm+'";\n')
@@ -324,6 +396,10 @@ class CreateTestFlow(object):
                         ofile.write('-'*65+'\n')
                         ofile.write('test_suites\n\n')
                         for ts,tm in self.testsuites.iteritems():
+                            if ts not in self.ts_orig_labels:
+                                sys.exit("Unknown testsuite: "+ts)
+                            elif self.ts_orig_labels[ts] not in matched_labels:
+                                continue
                             ofile.write(ts+'__'+condition+':\n')
                             ofile.write('local_flags = output_on_pass, output_on_fail, value_on_pass, value_on_fail, per_pin_on_pass, per_pin_on_fail;\n')
                             ofile.write('  override = 1;\n')
@@ -338,6 +414,10 @@ class CreateTestFlow(object):
                         ofile.write('test_flow\n\n')
                         ofile.write('{\n')
                         for ts in self.testsuites:
+                            if ts not in self.ts_orig_labels:
+                                sys.exit("Unknown testsuite: "+ts)
+                            elif self.ts_orig_labels[ts] not in matched_labels:
+                                continue
                             in_init = ts[-(len(INIT_LABEL_ID)+3):] == INIT_LABEL_ID+'_st'
                             in_conn = ts[-8:] == '_conn_st'
                             in_disc = ts[-8:] == '_disc_st'
@@ -361,7 +441,14 @@ class CreateTestFlow(object):
 
                         splitfn.write('GROUP '+condition+'_S [open] : '+os.path.basename(os.path.normpath(out_dir))+'/'+condition+'.tf\n')
 
-
+class GetBursts(object):
+    def __init__(self,brst_file):
+        with open(brst_file) as file:
+            msg = 'Reading: '+brst_file+' ...'
+            print msg
+            log.info(msg)
+            # skip the first row which has headers and create dictionary with {key : value} from {1st column : 2nd column}
+            self.burst_corners = dict([x for i,x in enumerate(csv.reader(file)) if i != 0])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
@@ -372,7 +459,8 @@ if __name__ == "__main__":
     parser.add_argument('-mpb','--mpb_dir',required=True, help='Path to MPB files that you want to split')
     parser.add_argument('-str','--string2match',required=True,default='', help='Substring to search for in label names where MPB is to be split.')
     parser.add_argument('-ext','--extension',required=False,default='.mpb', help='Extension to give MPB output files.')
-    parser.add_argument('-tc','--tc_file',required=False,default='', help='Test conditions file.')
+    parser.add_argument('-tc','--tc_file',required=True,default='', help='Test conditions file.')
+    parser.add_argument('-brst','--burst_file',required=True,default='', help='Burst needed to split file.')
     parser.add_argument('-func_tm','--func_tm',required=False,default=DEFAULT_FUNC_TM, help='Test method for functional tests.')
     parser.add_argument('-conn_tm','--conn_tm',required=False,default=DEFAULT_CONN_TM, help='Test method for DCSig connect.')
     parser.add_argument('-disc_tm','--disc_tm',required=False,default=DEFAULT_DISC_TM, help='Test method for DCSig disconnect.')
@@ -393,10 +481,9 @@ if __name__ == "__main__":
     print msg
     log.info(msg)
 
-    m = MpbSplit(args, outdir)
-
-    if len(args.tc_file):
-        tc = CreateTestFlow(args, outdir,m)
+    b = GetBursts(args.burst_file)
+    m = MpbSplit(args, outdir,b)
+    tc = CreateTestFlow(args, outdir,b,m)
 
     log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k,v in args.__dict__.iteritems()]))
     msg = 'Number of WARNINGS for "{}": {}'.format(os.path.basename(sys.modules[__name__].__file__),log.warning.counter)

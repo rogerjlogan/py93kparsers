@@ -35,7 +35,6 @@ TESTFLOW_LANGUAGE_HEADER = 'language_revision = 1;'
 DEFAULT_FUNC_TM = 'ti_tml.Digital.Functional'
 DEFAULT_CONN_TM = 'VAYU_tml.Misc.DcSigMultPinSetup'
 DEFAULT_DISC_TM = 'VAYU_tml.DcSigPinDisconnect'
-MFH_FILENAME = 'split.mfh'
 DEFAULT_MFH_CONTENT = 'testerfile : Final_flow\n'\
                       'information : common/information.tf\n'\
                       'flags : common/flags.tf\n'\
@@ -178,7 +177,7 @@ class MpbSplit(object):
         log.info(msg1)
         log.info(msg2)
 
-        pmfl_pathfn = os.path.join(outdir,'mpb_split.pmfl')
+        pmfl_pathfn = os.path.join(outdir,os.path.basename(sys.modules[__name__].__file__.split('.')[0]+'.pmfl'))
         msg = 'Creating: '+pmfl_pathfn+' ...'
         print msg
         log.info(msg)
@@ -298,7 +297,7 @@ class CreateTestFlow(object):
     def __init__(self,args,out_dir,brstObj,mpbObj):
         self.assignTMIds(brstObj,mpbObj)
 
-        mfh_pathfn = os.path.join(outdir,MFH_FILENAME)
+        mfh_pathfn = os.path.join(outdir,os.path.basename(sys.modules[__name__].__file__.split('.')[0]+'.mfh'))
         with open(mfh_pathfn,'w') as splitfn:
             msg = 'Creating: '+mfh_pathfn+' ...'
             print msg

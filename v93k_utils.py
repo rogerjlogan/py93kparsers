@@ -489,7 +489,14 @@ def getTiming(timing_file, spec_timing_groups, full_pin_list, pin_group_dict, re
             timing_key = "SPS"
             b = util.m_re(contents)
             b.grep(spec_timing_groups["SPS"]["SPECIFICATION"])
-            specName = re.sub("^\s*SPECIFICATION\s+\"|\"", "", b.m_groups[0]).strip()
+#-----------------------------------------------------------------------------------------------------------
+# rlogan .. 26apr2016 wrapped in try/catch to display offending code for OMAP5 FPC
+            try:
+                specName = re.sub("^\s*SPECIFICATION\s+\"|\"", "", b.m_groups[0]).strip()
+            except KeyError:
+                import sys
+                sys.exit(contents)
+#-----------------------------------------------------------------------------------------------------------
             ref_dict["SPS"] = {specName:{"GLOBALS":{}}}
         timing_dict = spec_timing_groups[timing_key]
         b = util.m_re(contents)

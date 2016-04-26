@@ -513,7 +513,9 @@ def addSupplySheet(wkBook, pows):
         sheet.write_merge(currRow, currRow+len(specDict)-1, 0,0, str(key[0]) + ':' +key[1], style=bodyStyle)
         rowIter = 0
         for specKey, supVals in sorted(specDict.items()):
-            sheet.row(currRow+rowIter).write(1, str(specKey[0])+ ':' + specKey[1], style = bodyStyle)
+            sk0 = '' if specKey[0] is None else specKey[0]
+            sk1 = '' if specKey[1] is None else specKey[1]
+            sheet.row(currRow+rowIter).write(1, str(sk0)+ ':' + sk1, style = bodyStyle)
             for suplies, val in supVals.items():
                 for sup in suplies:
                     sheet.row(currRow+rowIter).write(supDict[sup], str(val), style = bodyLeft)

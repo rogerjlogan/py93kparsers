@@ -1,0 +1,10 @@
+05/24/2016 09:30:38 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting kepler_pg3_Q00_TestflowParser.log
+05/24/2016 09:30:38 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3_Q00/kepler_pg3_Q00_TestflowParser.log
+05/24/2016 09:30:38 AM INFO: Running TestflowParser.pyc...
+05/24/2016 09:30:56 AM INFO: Parsing testflow file: QUAL_flow_x8_pg30_REVB.mfh .....
+05/24/2016 09:31:45 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting kepler_pg3_Q00_QUAL_flow_x8_pg30_REVB_TestflowParser.png
+05/24/2016 09:31:45 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3_Q00/kepler_pg3_Q00_QUAL_flow_x8_pg30_REVB_TestflowParser.png
+05/24/2016 09:31:45 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting kepler_pg3_Q00_QUAL_flow_x8_pg30_REVB_TestflowParser.log
+05/24/2016 09:31:45 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3_Q00/kepler_pg3_Q00_QUAL_flow_x8_pg30_REVB_TestflowParser.log
+05/24/2016 09:32:25 AM INFO: Number of WARNINGS for "TestflowParser.pyc": 0
+05/24/2016 09:32:25 AM INFO: Number of ERRORS for "TestflowParser.pyc": 0

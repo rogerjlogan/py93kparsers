@@ -266,8 +266,10 @@ def parse_special_csv(pathfn, csv_type=None):
             for row in csv.DictReader(csvFile):
                 test_name_type[row[TESTSUITE_COLUMN_NAME]] = {x:row[x] for x in row.keys() if x not in VALID_LIM_HEADERS}
             if len(test_type_to_check):
-                valid_testtypes = [x.strip('"') for x in testflow.variables['@TITESTTYPE_valid'].split(',')]
+                valid_testtypes = [x.strip('" ') for x in testflow.variables['@TITESTTYPE_valid'].split(',')]
                 if test_type_to_check not in valid_testtypes:
+                    print "\""+test_type_to_check+"\""
+                    pprint(valid_testtypes)
                     err = 'TestType To Check you gave (-tt2c) not valid in Testflow: "{}". Skipping check ...\n\t(@TITESTTYPE_valid = "{}").'\
                         .format(test_type_to_check,', '.join(valid_testtypes))
                     print 'ERROR!!! '+err
@@ -830,8 +832,8 @@ def addCatIssues(wkBook):
             set_fail = 'set_fail' in testflow.testsuite_data[ts]['TestsuiteFlags']
             set_pass = 'set_pass' in testflow.testsuite_data[ts]['TestsuiteFlags']
             bang = ts in suites_w_exclamation
-        # else:
-        #     continue
+        else:
+            continue
         InCategories = ts in category_tests
         InTestTypes = ts in test_name_type
         if InTestTypes:

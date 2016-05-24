@@ -1,0 +1,15 @@
+05/24/2016 09:30:38 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting kepler_pg3_Q00_testprog_parser.log
+05/24/2016 09:30:38 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3_Q00/kepler_pg3_Q00_testprog_parser.log
+05/24/2016 09:30:38 AM INFO: Running testprog_parser.pyc...
+05/24/2016 09:30:38 AM INFO: Parsing testprog file: KEPLERI83Q00.tpg .....
+05/24/2016 09:30:38 AM INFO: {   'Applicdata': 'usp_package_test',
+    'Dataform': '',
+    'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
+    'Pdi_lib': '',
+    'Profile': '../USP_datalog_ON.prf',
+    'Testflow': 'QUAL_flow_x8_pg30_REVB.mfh',
+    'Testtable': 'QUAL_limits_pg3.csv.mfh',
+    'Userproc': '',
+    'Waferdescr': ''}
+05/24/2016 09:30:38 AM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+05/24/2016 09:30:38 AM INFO: Number of ERRORS for "testprog_parser.pyc": 0

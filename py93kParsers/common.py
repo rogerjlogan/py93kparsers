@@ -250,3 +250,11 @@ def _zero_pad(match):
 
 def zero_pad_numbers(s):
     return _num_re.sub(_zero_pad, s)
+
+def getFiles(directory,*args):
+    matches = []
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename.endswith(tuple(args)):
+                matches.append(os.path.join(root, filename))
+    return matches

@@ -1,7 +1,8 @@
-04/19/2016 01:13:55 PM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3/kepler_pg3_testprog_parser.log
-04/19/2016 01:13:55 PM INFO: Running testprog_parser.pyc...
-04/19/2016 01:13:55 PM INFO: Parsing testprog file: KEPLERI8324.tpg .....
-04/19/2016 01:13:55 PM INFO: {   'Applicdata': 'usp_package_test',
+05/24/2016 07:34:08 AM INFO: maxlogs=1 (default=1) Consider moving/deleting previous files (logs,png's,csv's,etc) between runs. Overwriting kepler_pg3_testprog_parser.log
+05/24/2016 07:34:08 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg3/kepler_pg3_testprog_parser.log
+05/24/2016 07:34:08 AM INFO: Running testprog_parser.pyc...
+05/24/2016 07:34:08 AM INFO: Parsing testprog file: KEPLERI8325.tpg .....
+05/24/2016 07:34:08 AM INFO: {   'Applicdata': 'usp_package_test',
     'Dataform': '',
     'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
     'Pdi_lib': '',
@@ -10,5 +11,5 @@
     'Testtable': 'Final_RPC_limits_pg3.csv.mfh',
     'Userproc': '',
     'Waferdescr': ''}
-04/19/2016 01:13:55 PM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
-04/19/2016 01:13:55 PM INFO: Number of ERRORS for "testprog_parser.pyc": 0
+05/24/2016 07:34:08 AM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+05/24/2016 07:34:08 AM INFO: Number of ERRORS for "testprog_parser.pyc": 0

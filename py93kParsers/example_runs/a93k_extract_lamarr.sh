@@ -2,7 +2,10 @@
 unsetenv PYTHONPATH
 unsetenv LD_LIBRARY_PATH
 set path = ( /db/kepler_pe/93k/anaconda_ete/bin $path )
-/db/kepler_pe/93k/anaconda_ete/bin/python /db/kepler_pe/93k/working/py93kParsers/a93k_extract.py\
+set python = /db/kepler_pe/93k/anaconda_ete/bin/python
+set script = /db/kepler_pe/93k/working/py93kParsers/a93k_extract.py
+
+$python $script\
     -tp /db/lamarr_pe/93k/working/kimc/lamarr/testprog/F791857_Final_RPC.tpg\
     -name lamarr\
     -bin BinningLamarr.csv\

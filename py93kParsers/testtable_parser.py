@@ -164,6 +164,9 @@ class TestTable(object):
         writer = csv.writer(csv_out)
 
         for r,row in enumerate(reader):
+            if not len(row):
+                #discard empty rows
+                continue
             if 0 == r or row[0].strip() == 'Test mode':
                 writer.writerow(row)
             else:
@@ -245,6 +248,9 @@ class TestTable(object):
 
                 # using csv.reader() for slice indexing
                 for row in csv.reader(csvFile):
+                    if not len(row):
+                        #discard empty rows
+                        continue
                     if row[0] == 'Test mode':
                         # this row is reserved for mode settings
                         modes = row

@@ -1,0 +1,14 @@
+06/01/2016 07:23:14 AM INFO: Creating file: /db/kepler_pe/93k/working/py93kParsers/py93kParsers/example_runs/kepler_pg2_r24/kepler_pg2_r24_testprog_parser.log
+06/01/2016 07:23:14 AM INFO: Running testprog_parser.pyc...
+06/01/2016 07:23:14 AM INFO: Parsing testprog file: KEPLERI8224.tpg .....
+06/01/2016 07:23:14 AM INFO: {   'Applicdata': 'usp_package_test',
+    'Dataform': '',
+    'Hp_lib': '/u/TI_apps/93K/usp/USP/production/usp_ph_lib',
+    'Pdi_lib': '',
+    'Profile': '../USP_datalog_ON.prf',
+    'Testflow': 'Final_RPC_flow_x8_pg20_REVB.mfh',
+    'Testtable': 'Final_RPC_limits_pg2.csv.mfh',
+    'Userproc': '',
+    'Waferdescr': ''}
+06/01/2016 07:23:14 AM INFO: Number of WARNINGS for "testprog_parser.pyc": 0
+06/01/2016 07:23:14 AM INFO: Number of ERRORS for "testprog_parser.pyc": 0

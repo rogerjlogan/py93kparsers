@@ -4,23 +4,32 @@ from pprint import *
 import logging
 import gzip
 from itertools import islice
+from tempfile import mkstemp
+from shutil import move
+from os import remove, close
+from sys import maxint
+import re
+import traceback
+
 
 class color:
-   PURPLE = '\033[95m'
-   CYAN = '\033[96m'
-   DARKCYAN = '\033[36m'
-   BLUE = '\033[94m'
-   GREEN = '\033[92m'
-   YELLOW = '\033[93m'
-   RED = '\033[91m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
-   END = '\033[0m'
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
 
 def myOpen(fn, mode="r"):
     if fn.endswith('.gz'):
         return gzip.open(fn,mode)
     return open(fn,mode)
+
 
 def progress_tracker(lineno):
     if lineno%1000 == 0:
@@ -33,20 +42,24 @@ def progress_tracker(lineno):
             sys.stdout.write(' ')
         sys.stdout.flush()
 
+
 def get_linecount(pathfn):
     # TODO: need windows equivalent
     return os.popen("wc -l "+pathfn).readline().split()[0]
+
 
 def humanize_time(secs):
     mins, secs = divmod(secs, 60)
     hours, mins = divmod(mins, 60)
     return '%02dh:%02dm:%02ds' % (hours, mins, secs)
 
+
 def get_recursive_files(item,extension=".csv",zipped_ok=False):
     for dir_,_,files in os.walk(item):
         for fn in files:
             if fn.endswith(extension) or (zipped_ok and fn.endswith(extension+"gz")):
                 yield os.path.join(dir_,fn)
+
 
 def get_files(items,recursive=True,extension=".csv",zipped_ok=False):
     myfiles = []
@@ -60,6 +73,7 @@ def get_files(items,recursive=True,extension=".csv",zipped_ok=False):
         sys.exit("ERROR! No files passed")
     return myfiles,numfiles
 
+
 def is_number(s):
     try:
         float(s)
@@ -67,12 +81,14 @@ def is_number(s):
     except ValueError:
         return False
 
+
 def splitfile_delim(filename,delim=''):
     import itertools as it
     with open(filename,'r') as f:
         for key,group in it.groupby(f,lambda line: line.startswith(delim)):
             if not key:
                 return list(group)
+
 
 class LineSplitter(object):
         def __init__(self, token):
@@ -84,10 +100,12 @@ class LineSplitter(object):
             self.prev = token
             return self.count
 
+
 def print2file(ostring, ofile="debug.out"):
     f = open(ofile,"wb")
     pprint(ostring,f, indent=4)
     f.close()
+
 
 def get_valid_dir(name,outdir=''):
 
@@ -118,6 +136,7 @@ def get_valid_dir(name,outdir=''):
                 raise IOError
     return outdir,info_msg,warn_msg
 
+
 def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),name='',outdir='',maxlogs=1,ext='.log'):
     outdir,info_msg,warn_msg = get_valid_dir(name=name,outdir=outdir)
     if len(name):
@@ -142,6 +161,7 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
     print msg
     info_msg.append(msg)
     return pathfn,outdir,info_msg,warn_msg
+
 
 def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', maxlogs=1 ,level=logging.INFO):
 
@@ -172,9 +192,6 @@ def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), ou
 
     return logger_name,outdir
 
-from tempfile import mkstemp
-from shutil import move
-from os import remove, close
 
 def replace(file_path, pattern, subst):
     #Create temp file
@@ -217,6 +234,7 @@ def prompt_user(query,errmsg,choices):
     else:
         return ans
 
+
 class callcounted(object):
     """Decorator to determine number of calls for a method"""
 
@@ -228,8 +246,6 @@ class callcounted(object):
         self.counter+=1
         return self.method(*args,**kwargs)
 
-from sys import maxint
-import re
 
 # optional '-' to support negative numbers
 _num_re = re.compile(r'-?\d+')
@@ -248,8 +264,10 @@ def _zero_pad(match):
     return _zero_pad_int_fmt.format(n) \
         if n > -1 else _zero_pad_neg_int_fmt.format(n + maxint)
 
+
 def zero_pad_numbers(s):
     return _num_re.sub(_zero_pad, s)
+
 
 def getFiles(directory,*args):
     matches = []
@@ -258,3 +276,87 @@ def getFiles(directory,*args):
             if filename.endswith(tuple(args)):
                 matches.append(os.path.join(root, filename))
     return matches
+
+
+def byte2hex(byteStr):
+    """
+    Convert a byte string to it's hex string representation e.g. for output.
+    """
+
+    # Uses list comprehension which is a fractionally faster implementation than
+    # the alternative, more readable, implementation below
+    #
+    #    hex = []
+    #    for aChar in byteStr:
+    #        hex.append( "%02X " % ord( aChar ) )
+    #
+    #    return ''.join( hex ).strip()
+
+    return ''.join(["%02X" % ord(x) for x in byteStr]).strip()
+
+
+# -------------------------------------------------------------------------------
+
+def hex2byte(hexStr):
+    """
+    Convert a string hex byte values into a byte string. The Hex Byte values may
+    or may not be space separated.
+    """
+    # The list comprehension implementation is fractionally slower in this case
+    #
+    #    hexStr = ''.join( hexStr.split(" ") )
+    #    return ''.join( ["%c" % chr( int ( hexStr[i:i+2],16 ) ) \
+    #                                   for i in range(0, len( hexStr ), 2) ] )
+
+    bytes = []
+
+    hexStr = ''.join(hexStr.split(" "))
+
+    for i in range(0, len(hexStr), 2):
+        bytes.append(chr(int(hexStr[i:i + 2], 16)))
+
+    return ''.join(bytes)
+
+
+def pr(print_msg, level='info', debug=False, log=None):
+    """
+    Print and log decorator
+    :param print_msg: string to print/log
+    :param level: determines color and in the case of 'error' it will exit
+    :param debug: bool determines print level
+    :param log: object used for logging to log file
+    :return:
+    """
+    if level.lower() == 'info':
+        print_pre_msg = "INFO: "
+        if log is not None:
+            log.info(print_msg)
+        print color.BLUE + print_pre_msg + print_msg + color.END
+    elif level.lower() == 'debug':
+        if debug:
+            print_pre_msg = "DEBUG: "
+            if log is not None:
+                log.debug(print_msg)
+            print print_pre_msg + print_msg
+    elif level.lower() in ['warn', 'warning']:
+        print_pre_msg = "WARNING: "
+        if log is not None:
+            log.debug(print_msg)
+        print color.YELLOW + print_pre_msg + print_msg + color.END
+    elif level.lower() == 'error':
+        print_pre_msg = "NON FATAL ERROR: "
+        if log is not None:
+            log.error(print_msg)
+        print color.RED + print_pre_msg + print_msg + color.RED
+    elif level.lower() == 'fatal':
+        print_pre_msg = "FATAL ERROR: "
+        if log is not None:
+            log.error(print_msg)
+        sys.exit(print_pre_msg + print_msg)
+    else:
+        err = 'Unknown print level: '+level
+        if log is not None:
+            log.error(err)
+        traceback.print_exc(file=sys.stdout)
+        pprint(traceback.extract_stack())
+        sys.exit(err)

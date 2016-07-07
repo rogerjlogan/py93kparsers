@@ -11,7 +11,6 @@ from sys import maxint
 import re
 import traceback
 
-
 class color:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
@@ -327,6 +326,8 @@ def pr(print_msg, level='info', debug=False, log=None):
     :param log: object used for logging to log file
     :return:
     """
+    if not isinstance(print_msg, basestring):
+        print_msg = pformat(print_msg)
     if level.lower() == 'info':
         print_pre_msg = "INFO: "
         if log is not None:
@@ -360,3 +361,22 @@ def pr(print_msg, level='info', debug=False, log=None):
         traceback.print_exc(file=sys.stdout)
         pprint(traceback.extract_stack())
         sys.exit(err)
+
+
+# A.KA. gcf and hcf
+def gcd(a, b):
+    """Return greatest common divisor using Euclid's Algorithm."""
+    while b:
+        a, b = b, a % b
+    return a
+
+
+def lcm(a, b):
+    """Return lowest common multiple."""
+    return a * b // gcd(a, b)
+
+
+def lcmm(*args):
+    """Return lcm of args."""
+    return reduce(lcm, args)
+

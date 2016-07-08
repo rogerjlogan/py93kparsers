@@ -51,6 +51,7 @@ else
 fi
 
 $python $script\
+    -d\
     -name omap5\
     -out /var/opt/hp93000/soc/MatchLoopFixer\
     -comm_port pOTHER\

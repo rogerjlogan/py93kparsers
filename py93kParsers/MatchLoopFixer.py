@@ -297,15 +297,15 @@ class MatchLoopFixer(object):
         pr('Running ' + os.path.basename(sys.modules[__name__].__file__) + '...', log=log)
 
         # get burst name and ports
-        self.burst, self.ports = fw.sqsl_q(debug=debug, log=log)
+        self.burst, self.ports = fw.sqsl_q(debug=self.debug, log=log)
 
         # execute functional test
-        if not args.skip_func and not fw.ftst_q(self.burst, debug=debug, log=log):
+        if not args.skip_func and not fw.ftst_q(self.burst, debug=self.debug, log=log):
             pr("this may be normal, especially if there are flaky patterns as they are not considered here", log=log)
             time.sleep(1)
 
         for port in self.ports:
-            self.periods[port] = fw.pclk_q(port, debug=debug, log=log)
+            self.periods[port] = fw.pclk_q(port, debug=self.debug, log=log)
             self.labels_by_port[port], self.xmodes[port] = self.get_labels_xmodes(port)
             self.rptv_data[port] = self.get_rptv_from_getv(port)
             self.get_rptv_cmd_no_from_sqpg(port)
@@ -320,9 +320,8 @@ class MatchLoopFixer(object):
         # use the absolute time found above to find match repeats for all the ports now
         self.find_corr_match_rptv_data()
 
-        for label in self.labels_by_port[self.comment_port]:
-            print label
-        sys.exit()
+        # for label in self.labels_by_port[self.comment_port]:
+        #     print fw.ftst_q(debug=debug)
 
 
         # curr_rptv, last_rptv = {}, {}  # init

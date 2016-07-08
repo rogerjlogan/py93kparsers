@@ -2,6 +2,7 @@
 """
     Dynamically modifies the RPTV counts to find the first passing condition of an MATCHLOOP flattened pattern.
     Considers the fact that these patterns have multiple ports and the modulo behavior needs to be preserved for LMAP.
+    Doesn't hurt BFLM either.
 """
 import time
 from common import *
@@ -319,7 +320,9 @@ class MatchLoopFixer(object):
         # use the absolute time found above to find match repeats for all the ports now
         self.find_corr_match_rptv_data()
 
-        # for port in self.ports:
+        for label in self.labels_by_port[self.comment_port]:
+            print label
+        sys.exit()
 
 
         # curr_rptv, last_rptv = {}, {}  # init
@@ -345,8 +348,8 @@ if __name__ == "__main__":
     parser.add_argument('-cmt_offst', '--comment_offset', type=int, default=1, required=False,
                         help='Vector comment address offset from matchloop. '
                              '(0=comm_srch_str is on matchloop repeat vector; '
-                             '-1=comm_srch_str is one vector BEFORE matchloop; '
-                             ' 1=comm_srch_str is one vector AFTER matchloop)')
+                             '-1=comm_srch_str is one vector BEFORE matchloop START; '
+                             ' 1=comm_srch_str is one vector AFTER matchloop END)')
     parser.add_argument('-comm_srch_str', '--comment_search_string', required=False,
                         default='turn strobe(s) back on for final loop cycle',
                         help='String to search for in comments')
@@ -368,15 +371,13 @@ if __name__ == "__main__":
                          srchstr=args.comment_search_string,
                          comment_port=args.comment_port)
 
-    log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
-    msg = 'Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter)
-    print msg
-    log.info(msg)
-    msg = 'Number of ERRORS for "{}": {}'.format(__script__, log.error.counter)
-    print msg
-    log.info(msg)
+    pr('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]), log=log)
+    pr('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter, log=log), log=log)
+    pr('Number of ERRORS for "{}": {}'.format(__script__, log.error.counter), log=log)
 
     time = time.time()-_start_time
-    msg = 'Script took ' + str(round(time, 3)) + ' seconds (' + humanize_time(time) + ')'
-    log.info(msg)
-    print '\n' + msg
+    pr('Script took ' + str(round(time, 3)) + ' seconds (' + humanize_time(time) + ')', log=log)
+    pr('Everything printed here was also printed to your log file(s) in the output directory.')
+    new_files = os.popen('ls -lrt {}'.format(args.output_dir)).read()
+    pr("Displaying Output Directory: {}\n\tContents: \n\t\t{}"
+       .format(args.output_dir, '\n\t\t'.join(new_files.split('\n'))))

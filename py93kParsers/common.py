@@ -11,6 +11,7 @@ from sys import maxint
 import re
 import traceback
 
+
 class color:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
@@ -18,6 +19,7 @@ class color:
     BLUE = '\033[94m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
+    GREY = '\033[90m'
     RED = '\033[91m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
@@ -338,12 +340,12 @@ def pr(print_msg, level='info', debug=False, log=None):
             print_pre_msg = "DEBUG: "
             if log is not None:
                 log.debug(print_msg)
-            print print_pre_msg + print_msg
+            print color.GREY + print_pre_msg + print_msg + color.END
     elif level.lower() in ['warn', 'warning']:
         print_pre_msg = "WARNING: "
         if log is not None:
             log.debug(print_msg)
-        print color.YELLOW + print_pre_msg + print_msg + color.END
+        print color.RED + print_pre_msg + print_msg + color.END
     elif level.lower() == 'error':
         print_pre_msg = "NON FATAL ERROR: "
         if log is not None:

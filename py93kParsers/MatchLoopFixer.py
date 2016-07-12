@@ -6,16 +6,15 @@
 """
 import time
 from common import *
-import argparse
 import sys
 import firmware as fw
-from pprint import pprint
 import math
 from collections import OrderedDict
+from copy import deepcopy
+import numpy as np
 
 _start_time = time.time()
 log = None
-# USE_XOC_SESSION = True
 
 __author__ = 'Roger'
 __script__ = os.path.basename(sys.modules[__name__].__file__)
@@ -25,45 +24,7 @@ __script__ = os.path.basename(sys.modules[__name__].__file__)
 # GLOBAL CONSTANTS/VARS
 
 _COMM_SRCH_STR_ = 'turn strobe(s) back on for final loop cycle'
-
-
-def roundup_rptv(val, mod):
-    """
-    Round up to nearest modulus integer
-    :param val: int RPTV value
-    :param mod: int modulus for that port
-    :return: int updated RPTV value
-    """
-    return int(math.ceil(val / mod) * mod)
-
-
-def get_labelname_parts(label, port):
-    """
-    Assumption: labels are named with port name and xmode at end (if not xmode, then xmode is x1)
-    Example:
-        some_label_pASYNC1    => port: pASYNC1 and xmode: x1
-        other_label_pOTHER_X2 => port: pOTHER  and xmode: x2
-        scan_label_pSCANIN_X4 => port: pSCANIN and xmode: x4
-
-    :param label: string name of label to parse
-    :param port: string name of port to find delimiter of tdl_name and xmode (if not x1)
-    :param debug: determines print level
-    :param log:
-    :return: string tdl_name, int (1-9) xmode
-    """
-    if port not in label:
-        pr('Incongruent port: {} for label: {}'.format(port, label), 'fatal', log=log)
-    tdl_name = label[:label.find(port) - 1]
-    # clever slicing to get xmode after port name if found
-    end = label[label.find(port):]
-    xmode = 1  # default value when no xmode found at end of label name
-    if end != port:
-        raw_xmode_str = end[end.find('_X'):]
-        if len(raw_xmode_str) - len(port) > 3:
-            pr("Invalid end: {} in label name: '{}'".format(end, label), 'fatal', log=log)
-        else:
-            xmode = int(raw_xmode_str[-1:])
-    return tdl_name, xmode
+_MIN_MARGIN_RATIO_ = 5
 
 
 class MatchLoopFixer(object):
@@ -72,12 +33,15 @@ class MatchLoopFixer(object):
     """
     debug = False
     comment_port = ''
+    memory = 'SH'
+    margin = 0.1
+    bin = False
     burst = ''
     periods = {}
+    aligned_periods = {}
     labels_by_port = {}
-    xmodes = {}
     ports = []
-    match_rptv_data_lst = {}
+    match_rptv_data = {}
     rptv_data = {}
     match_rptv_times = []
     mod = {}
@@ -106,13 +70,12 @@ class MatchLoopFixer(object):
                         srch_rslts[label].append(vec_addr)
         return srch_rslts
 
-    def get_labels_xmodes(self, port):
+    def get_labels(self, port):
         """
         Get all labels for each port in current burst
         There is only a query version of this command, so no need for 'get_'
         """
         labels = []
-        prev_xmode, xmode = None, None
         getl_ptn = re.compile(r'getl (?P<idx>\d+),\"(?P<label>.*)\",(?P<start>\d+),(?P<stop>\d+),\(', re.IGNORECASE)
         for getl_rslt in fw.getl_q(0, port, debug=self.debug, log=log).split('\n'):
             if not len(getl_rslt):
@@ -122,24 +85,7 @@ class MatchLoopFixer(object):
                 pr("Unable to parse GETL result: " + getl_rslt, 'fatal', log=log)
             label = getl_obj.group('label').strip()
             labels.append(label)
-            tdl, xmode = get_labelname_parts(label, port)
-            if prev_xmode is not None and xmode != prev_xmode:
-                pr("Unbalanced xmodes: ({} and {}) from label names on port: {}"
-                   .format(prev_xmode, xmode, port), 'fata', log=log)
-        return labels, xmode
-
-    def set_mod(self):
-        """
-        Set modification for each port based on the xmode setting for that port keeping to an 8-byte boundary
-        """
-        xmodes_lst = [xmode for port, xmode in self.xmodes.iteritems()]
-
-        # we need to find the LCM of all xmodes (for each port) times 8 bytes
-        dividend = 8*lcmm(*set(xmodes_lst))
-        for port in self.ports:
-            self.mod[port] = dividend / self.xmodes[port]
-            pr("Setting port: '{}' to mod: '{}' due to xmode: '{}'"
-               .format(port, self.mod[port], self.xmodes[port]), 'info', debug=self.debug, log=log)
+        return labels
 
     def find_match_rptv_time(self, offset=0):
         """
@@ -237,54 +183,265 @@ class MatchLoopFixer(object):
                         rptv_no += 1
                         self.rptv_data[port][rptv_no]['cmd_no'] = int(sqpg_obj.group('cmd_no'))
 
+    @staticmethod
+    def get_cyc2num(port, rptv_data):
+        return {this_rptv_data['start_cycle']: rptv_no for rptv_no, this_rptv_data in rptv_data[port].iteritems()}
+
+    @staticmethod
+    def get_closest_rptv_num(cyc2num, ideal_rptv_cyc):
+        return cyc2num.get(ideal_rptv_cyc, cyc2num[min(cyc2num.keys(), key=lambda x: abs(x-ideal_rptv_cyc))])
+
     def find_corr_match_rptv_data(self):
         """
         This routine uses the matchloop repeats found in the control port (comment_port) to find the corresponding
         match repeats on the other ports.  It does this by calcalating the time (time = cycle * period) where the repeat
-        starts and uses that in the other ports to find the correct cycle (cycle = time / period).  If no repeat is
-        found on that cycle, then it looks for the closest repeat in either direction and gives warning that vectors are
-        not aligned. It also gives you the current per for that port and what the per would be to align the vectors.
+        starts and uses that in the other ports to find the correct cycle (cycle = time / period).
+        If no repeat is found on that cycle, then it looks for the closest repeat in either direction and gives warning
+        that vectors are not aligned. It also gives you the current period for that port and what the period would be to
+        align the vectors.
         """
+        aligned_periods = {}
         for port in self.ports:
+            if port not in aligned_periods:
+                aligned_periods[port] = []
             # create a simple dictionary on this port to map cycles to rptv_no for easier access below
-            cyc2num = {this_rptv_data['start_cycle']: rptv_no
-                       for rptv_no, this_rptv_data in self.rptv_data[port].iteritems()}
+            cyc2num = self.get_cyc2num(port, self.rptv_data)
+
             for m_rptv_time in self.match_rptv_times:
                 ideal_rptv_cyc = int(m_rptv_time / self.periods[port])
                 # Find the rptv_no that has the closest 'start_cycle' to our ideal 'start_cycle' which is really just
                 # this port's equivalent to the 'start_cycle' in our control port (comment_port)
-                closest_rptv_num = cyc2num.get(ideal_rptv_cyc,
-                                               cyc2num[min(cyc2num.keys(), key=lambda x: abs(x-ideal_rptv_cyc))])
+                closest_rptv_num = self.get_closest_rptv_num(cyc2num, ideal_rptv_cyc)
                 closest_rptv_cyc = self.rptv_data[port][closest_rptv_num]['start_cycle']
                 if closest_rptv_cyc != ideal_rptv_cyc:
                     # okay, we're not aligned, so we need to generate a warning
-                    aligned_period = round(m_rptv_time / closest_rptv_cyc,4)
+                    aligned_period = round(m_rptv_time / closest_rptv_cyc, 4)
+                    if aligned_period not in aligned_periods[port]:
+                        aligned_periods[port].append(aligned_period)
                     delta = abs(closest_rptv_cyc-ideal_rptv_cyc)
                     pr("Vector misalignment at matchloop repeat on port: '{}' label: '{}'\n"
-                       "\t(Assuming aligned period in order to find corresponding match repeat on this port).\n"
+                       "\t(Assuming aligned period for all future calculations in this script).\n"
                        "\tCycle deviation from actual to aligned cycle is: '{} cycles'\n"
                        "\tActual period: '{} ns' Aligned period: '{} ns'\n"
                        "\t(You may want to change the period on this port to the aligned value)."
                        .format(port, self.rptv_data[port][closest_rptv_num]['label'], delta,
                                self.periods[port], aligned_period), 'warn', log=log)
                 # deliver the payload
-                if port not in self.match_rptv_data_lst:
-                    self.match_rptv_data_lst[port] = []
-                self.match_rptv_data_lst[port].append(self.rptv_data[port][closest_rptv_num])
-        pr(self.match_rptv_data_lst, 'debug', self.debug, log=log)
+                if m_rptv_time not in self.match_rptv_data:
+                    self.match_rptv_data[m_rptv_time] = {}
+                self.match_rptv_data[m_rptv_time][port] = self.rptv_data[port][closest_rptv_num]
+        for port, periods in aligned_periods.iteritems():
+            if len(periods):
+                per = round(np.mean(periods), 2)
+            else:
+                per = self.periods[port]
+            self.aligned_periods[port] = per
+        pr(self.match_rptv_data, 'debug', self.debug, log=log)
 
-    def __init__(self, debug=False, progname='', maxlogs=1,
-                 outdir=os.path.dirname(os.path.realpath(__file__)), offset=0, srchstr='', comment_port=''):
+    def get_min_time(self, m_rptv_data):
+        return max([self.aligned_periods[p] / data['no_of_vectors'] for p, data in m_rptv_data.iteritems()])
+
+    def get_min_rptv_steps(self, min_time, port, no_of_vectors):
+        return int(math.ceil(min_time / (self.aligned_periods[port] / no_of_vectors)))
+
+    def set_final_values(self, step_size_t, m_rptv_data, original_rptv, current_rptv):
+        all_new_rptv = {}
+        for port in self.ports:
+            total_steps = original_rptv[port] - current_rptv[port]
+            start_cycle_t = self.aligned_periods[port]*current_rptv[port]
+            pr("Total steps traversed: {} for port: '{}'".format(total_steps, port), 'debug', debug=self.debug, log=log)
+            pr("Last fail port/cycle(time): {}/{}({})"
+               .format(port, current_rptv[port], start_cycle_t), 'debug', debug=self.debug, log=log)
+
+            rptv_step_size = self.get_min_rptv_steps(step_size_t, port, m_rptv_data[port]['no_of_vectors'])
+            pr("Step size (time)    used: {}".format(step_size_t), 'debug', debug=self.debug, log=log)
+            pr("Step size (repeats) used: {}".format(rptv_step_size), 'debug', debug=self.debug, log=log)
+
+            raw_value = current_rptv[port] * (1 + self.margin)
+            pr("Desired repeat with margin (needs to be rounded to nearest stepsize): {}".format(raw_value),
+               'debug', self.debug, log=log)
+            # round up to nearest step for this port
+            new_rptv = roundup2mod(raw_value, rptv_step_size)
+
+            if new_rptv < original_rptv[port]:
+                # let's only go down for now
+
+                all_new_rptv[port] = new_rptv
+                rptv_t = new_rptv * self.aligned_periods[port]
+                pr("For port: {} New RPTV value: {} (amount of time: {})"
+                   .format(port, new_rptv, rptv_t), 'debug', self.debug, log=log)
+
+                pr("First Fail at: {}  Setting with margin to: {}"
+                   .format(current_rptv[port], new_rptv), 'debug', debug=self.debug, log=log)
+                net_time_savings = (self.aligned_periods[port]*(original_rptv[port]-new_rptv))/1000/1000  # ms
+                pr("Final update to label: '{}' Setting RPTV to: {} from {} (with net time savings: {})"
+                   .format(m_rptv_data[port]['label'], new_rptv, original_rptv[port], net_time_savings))
+            else:
+                # Margin above Fail location would make the repeat increase, so abort
+                new_rptv = original_rptv[port]
+                pr("Not enough room to add margin (set to {}). Restoring label: '{}'. Setting RPTV back to: {} from {}"
+                   .format(self.margin, m_rptv_data[port]['label'], original_rptv[port], current_rptv[port]),
+                   'warn', log=log)
+
+            # okay, let's go modify the label with the new rptv value with margin added
+            fw.sqpg(cmd_no=m_rptv_data[port]['cmd_no'], instr='rptv', param_1=m_rptv_data[port]['no_of_vectors'],
+                    param_2=new_rptv, memory=self.memory, port=port, debug=self.debug, log=log)
+
+        # sanity checks for debug mode only after final modification
+        if self.debug:
+            for p, rptv in all_new_rptv.iteritems():
+                rptv_t = rptv * self.aligned_periods[p]
+                pr("For port: {} New RPTV value: {} (amount of time: {})"
+                   .format(p, rptv, rptv_t), 'debug', self.debug, log=log)
+            if not fw.ftst_q(self.burst, debug=self.debug, log=log):
+                pr("Failed Func test after final modification to burst", 'fatal', log=log)
+
+    def do_search(self, m_rptv_time, m_rptv_data, step_size_t, original_rptv, current_rptv):
+
+        if self.binary:  # binary search
+
+            left_t = m_rptv_time  # init max value
+            right_t = step_size_t  # init min value
+            found = False
+            while left_t > right_t and not found:
+                # average and then round up to nearest step size in time
+                midpoint_t = roundup2mod((left_t + right_t) / 2, step_size_t)
+                for port in self.ports:
+                    label = m_rptv_data[port]['label']
+                    start_vector = m_rptv_data[port]['start_vector']
+                    no_of_vectors = m_rptv_data[port]['no_of_vectors']
+                    no_of_repeats = m_rptv_data[port]['no_of_repeats']
+                    cmd_no = m_rptv_data[port]['cmd_no']
+
+                    rptv_cyc = int(m_rptv_time / self.aligned_periods[port])
+
+
+
+
+                    current_rptv[port] -= min_repeat_steps
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                if not fw.ftst_q(self.burst, debug=self.debug, log=log):
+                    if passed == 0:
+                        pr("Did not pass at least at once", 'fatal', log=log)
+                    self.set_final_values(step_size_t, m_rptv_data, original_rptv, current_rptv)
+                    keep_going = False
+                    pr("Found P/F transition on burst: '{}' at t(ns) = {}"
+                       .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
+                else:
+                    passed += 1
+                    pr("Trying next repeat (count={})".format(passed), 'debug', debug=self.debug, log=log)
+
+                    for port in self.ports:
+                        label = m_rptv_data[port]['label']
+                        start_vector = m_rptv_data[port]['start_vector']
+                        no_of_vectors = m_rptv_data[port]['no_of_vectors']
+                        no_of_repeats = m_rptv_data[port]['no_of_repeats']
+                        cmd_no = m_rptv_data[port]['cmd_no']
+
+                        min_repeat_steps = self.get_min_rptv_steps(step_size_t, port, no_of_vectors)
+                        current_rptv[port] -= min_repeat_steps
+
+                        if current_rptv[port] <= 0:
+                            pr("On port: '{}'. Invalid repeat setting: '{}'"
+                               .format(port, current_rptv[port]), 'fatal', log=log)
+
+                        pr("Label: '{}' on vector: '{}' beging changed from 'RPTV {},{}' to  'RPTV {},{}' (stepsize={})"
+                           .format(label, start_vector, no_of_vectors, no_of_repeats, no_of_vectors, current_rptv[port],
+                                   min_repeat_steps), 'debug', debug=self.debug, log=log)
+                        if current_rptv[port] < 0:
+                            pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
+                        pr("Updating label: '{}' Setting RPTV to: {} (original={})"
+                           .format(label, current_rptv[port], original_rptv[port]))
+                        fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=current_rptv[port],
+                                memory=self.memory, port=port, debug=self.debug, log=log)
+
+        else:  # linear search
+
+            passed = 0
+            keep_going = True
+            while keep_going:
+                # keep going until functional test fails
+                if not fw.ftst_q(self.burst, debug=self.debug, log=log):
+                    if passed == 0:
+                        pr("Did not pass at least at once", 'fatal', log=log)
+                    self.set_final_values(step_size_t, m_rptv_data, original_rptv, current_rptv)
+                    keep_going = False
+                    pr("Found P/F transition on burst: '{}' at t(ns) = {}"
+                       .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
+                else:
+                    passed += 1
+                    pr("Trying next repeat (count={})".format(passed), 'debug', debug=self.debug, log=log)
+
+                    for port in self.ports:
+                        label = m_rptv_data[port]['label']
+                        start_vector = m_rptv_data[port]['start_vector']
+                        no_of_vectors = m_rptv_data[port]['no_of_vectors']
+                        no_of_repeats = m_rptv_data[port]['no_of_repeats']
+                        cmd_no = m_rptv_data[port]['cmd_no']
+
+                        min_repeat_steps = self.get_min_rptv_steps(step_size_t, port, no_of_vectors)
+                        current_rptv[port] -= min_repeat_steps
+
+                        if current_rptv[port] <= 0:
+                            pr("On port: '{}'. Invalid repeat setting: '{}'"
+                               .format(port, current_rptv[port]), 'fatal', log=log)
+
+                        pr("Label: '{}' on vector: '{}' beging changed from 'RPTV {},{}' to  'RPTV {},{}' (stepsize={})"
+                           .format(label, start_vector, no_of_vectors, no_of_repeats, no_of_vectors, current_rptv[port],
+                                   min_repeat_steps), 'debug', debug=self.debug, log=log)
+                        if current_rptv[port] < 0:
+                            pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
+                        pr("Updating label: '{}' Setting RPTV to: {} (original={})"
+                           .format(label, current_rptv[port], original_rptv[port]))
+                        fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=current_rptv[port],
+                                memory=self.memory, port=port, debug=self.debug, log=log)
+
+    def do_parametric_ftest(self):
+        for m_rptv_time, m_rptv_data in sorted(self.match_rptv_data.iteritems()):
+            pr("Modifying match repeats for burst: '{}' across ports found at time (ns): {}"
+               .format(self.burst, m_rptv_time), 'debug', self.debug, log=log)
+
+            step_size_t = self.get_min_time(m_rptv_data)
+            original_rptv = {port: data['no_of_repeats'] for port, data in m_rptv_data.iteritems()}
+            current_rptv = deepcopy(original_rptv)  # init
+
+            self.do_search(m_rptv_time, m_rptv_data, step_size_t, original_rptv, current_rptv)
+
+    def __init__(self, debug=False, progname='', maxlogs=1, outdir=os.path.dirname(os.path.realpath(__file__)),
+                 offset=0, srchstr='', comment_port='', memory='SH', lmap=False, marg=0.1, bin=False):
         """
         Constructor for MatchLoopFixer
         :param debug: bool determines whether to print/log 'debug' statements in pr() functions
         :param progname: string used for appending to output file names and output directory
         :param maxlogs: int determines whether to have 1 log file per module or just 1 overall (default)
         :param outdir: string destination of all output files.  if not exist, it will be created
+        :param offset:
+        :param srchstr:
+        :param comment_port:
+        :param lmap:
         """
         global log
         self.debug = debug
+        self.lmap = lmap
         self.comment_port = comment_port
+        self.memory = memory
+        self.margin = marg
+        self.binary = bin
         if self.debug:
             log_level = logging.DEBUG
         else:
@@ -296,43 +453,35 @@ class MatchLoopFixer(object):
         log.error = callcounted(log.error)
         pr('Running ' + os.path.basename(sys.modules[__name__].__file__) + '...', log=log)
 
+        if self.lmap:
+            pr("Currently does not support LMAP mode!  Please re-generate your patterns with BFLM and remove switch",
+               'fatal', log=log)
+
         # get burst name and ports
         self.burst, self.ports = fw.sqsl_q(debug=self.debug, log=log)
 
         # execute functional test
-        if not args.skip_func and not fw.ftst_q(self.burst, debug=self.debug, log=log):
+        if not args.skip_func and not fw.ftst_q(self.burst, lmap=self.lmap, debug=self.debug, log=log):
             pr("this may be normal, especially if there are flaky patterns as they are not considered here", log=log)
             time.sleep(1)
 
         for port in self.ports:
             self.periods[port] = fw.pclk_q(port, debug=self.debug, log=log)
-            self.labels_by_port[port], self.xmodes[port] = self.get_labels_xmodes(port)
+            self.labels_by_port[port] = self.get_labels(port)
             self.rptv_data[port] = self.get_rptv_from_getv(port)
             self.get_rptv_cmd_no_from_sqpg(port)
 
-        self.set_mod()
-
+        # get the vector number for the comment port vector
         self.commport_match_rpt_vec_no = self.find_commport_match_rpt_vec_no(srch_str=srchstr)
 
         # get the absolute time for the match repeats on the comment port only
         self.find_match_rptv_time(offset)
 
-        # use the absolute time found above to find match repeats for all the ports now
+        # use the absolute time found above to find corresponding match repeats for all the ports now
         self.find_corr_match_rptv_data()
 
-        # for label in self.labels_by_port[self.comment_port]:
-        #     print fw.ftst_q(debug=debug)
-
-
-        # curr_rptv, last_rptv = {}, {}  # init
-        #
-        #                     curr_rptv[tdl][label] = rptv - self.mod[port]
-        #                     last_rptv[tdl][label] = rptv
-        #     keep_going = True
-        #     while keep_going:
-        #         for port in self.ports:
-        #             for label, rptv in curr_rptv.iteritems():
-        #                 pr("\tSetting RPTV for port: '{}' to '{}'".format(port,))
+        # modify match repeats and continually check for P/F
+        self.do_parametric_ftest()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Description: "+sys.modules[__name__].__doc__)
@@ -352,12 +501,20 @@ if __name__ == "__main__":
     parser.add_argument('-comm_srch_str', '--comment_search_string', required=False,
                         default='turn strobe(s) back on for final loop cycle',
                         help='String to search for in comments')
-    parser.add_argument('-keep_temp_burst', '--keep_temp_burst', required=False,
-                        help='Do not delete the temporary burst at the end of the script exeuction (not the default)')
+    parser.add_argument('-mem', '--memory', required=False,
+                        default='SH',
+                        help="Set to 'SH' or 'SHMEM'")
+    # parser.add_argument('-keep_temp_burst', '--keep_temp_burst', required=False,
+    #                     help='Do not delete the temporary burst at the end of the script exeuction (not the default)')
     parser.add_argument('-skip_func', '--skip_func', action='store_true', required=False,
                         help='Do not run an initial functional test... not the default !')
     parser.add_argument('-bin', '--bin', action='store_true', required=False,
-                        help='Dse a binary search algorithm instead of linear... not the default !')
+                        help='Use binary method to search P/F (default=Linear) !')
+    parser.add_argument('-lmap', '--lmap', action='store_true',
+                        help='Patterns were generated with LMAP (not supported at this time. BFLM is default)')
+    parser.add_argument('-marg', '--margin', type=restricted_float, default=0.1, required=False,
+                        help='Decimal margin to allow for padding above P/F location'
+                             'Set to 1 to keep only one log (subsequent runs will overwrite).')
     args = parser.parse_args()
 
     fw.check_xoc_session(log)
@@ -368,7 +525,11 @@ if __name__ == "__main__":
                          maxlogs=args.maxlogs,
                          offset=args.comment_offset,
                          srchstr=args.comment_search_string,
-                         comment_port=args.comment_port)
+                         comment_port=args.comment_port,
+                         memory=args.memory,
+                         lmap=args.lmap,
+                         marg=args.margin,
+                         bin=args.bin)
 
     pr('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]), log=log)
     pr('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter, log=log), log=log)

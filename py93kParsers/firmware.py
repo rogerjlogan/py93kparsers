@@ -7,10 +7,12 @@ import os
 import re
 import time
 
+
 def check_xoc_session(log=None):
     """
     Check XOC_SESSION environmental variable.  This must be set prior to executing this script.
-    Setting it in the Python code is not possible since the parent shell is no longer accessible by hpt
+    Setting it in the Python code is not possible since the parent shell is no longer accessible.
+    By the time the script is run, python only has a copy of the parent environment and therefore can't change it.
     """
     session_finder = '/opt/hp93000/soc/system/bin/sessionfinder.ksh'
     if os.path.exists(session_finder):
@@ -21,17 +23,16 @@ def check_xoc_session(log=None):
                .format(session), 'warn', log=log)
             time.sleep(5)
 
-def fwc(cmd, escape=False, debug_output_char_limit=None, debug=False, log=None):
+
+def fwc(cmd, suppress_error=False, debug_output_char_limit=None, debug=False, log=None):
     """
     Execute FW command.  Must have SmarTest loaded and primaries set (run func test before running script)
     """
     hpt_cmd = "/opt/hp93000/soc/fw/bin/hpt -q"
-    if escape:
+    if suppress_error:
         hpt_cmd += " 2>/dev/null"
     echo_cmd = "echo '{}'".format(cmd)
     command = "{} | {}".format(echo_cmd, hpt_cmd)
-    if escape:
-        command += " 2>/dev/null"
     rslt = os.popen(command).read()
     pr("FW COMMAND: {}".format(cmd), 'debug', debug=debug, log=log)
     if debug_output_char_limit is None:
@@ -40,6 +41,11 @@ def fwc(cmd, escape=False, debug_output_char_limit=None, debug=False, log=None):
         pr("FW  RESULT[maxchars={}]: {}".format(debug_output_char_limit, rslt[:debug_output_char_limit].strip()),
            'debug', debug=debug, log=log)
     return rslt
+
+
+def sqpg(port, cmd_no, instr, param_1='', param_2='', memory='', debug=False, log=None):
+    return fwc('sqpg {}, {}, {}, {},{},({});'
+               .format(cmd_no, instr, param_1, param_2, memory, port), debug=debug, log=log)
 
 
 def sqlb_q(label, debug=False, log=None):
@@ -57,10 +63,10 @@ def sqsl_q(debug=False, log=None):
     """
     Get the current mpb burst name and the ports it uses.
     :param debug: determines print level
-    :param log:
+    :param log: object logger used for writing to log file(s)
     """
     sqsl_ptn = re.compile(r'sqsl \"(?P<burst>[^"]+)\",MPBU,\((?P<ports>[^\)]+)\)', re.IGNORECASE)
-    sqsl_rslt = fwc("sqsl? type;", escape=True, debug=debug, log=log)
+    sqsl_rslt = fwc("sqsl? type;", suppress_error=True, debug=debug, log=log)
     sqsl_obj = sqsl_ptn.search(sqsl_rslt)
     if not sqsl_obj:
         pr("no pattern defined in the primaries, are you trying to fool me?  aborting...", 'fatal', log=log)
@@ -71,16 +77,18 @@ def sqsl_q(debug=False, log=None):
         return burst, ports
 
 
-def ftst_q(mpb, debug=False, log=None):
+def ftst_q(mpb, lmap=False, debug=False, log=None):
     """
     Run functional test on current primaries set.
     :param mpb: string name of mpb.  Not really needed except for print statement to show which MPB func was just run.
+    :param lmap:
     :param debug: determines print level
     :param log:
     :return: bool True if func test passed, False if func test failed
     """
     pr("Running functional test '{}'...".format(mpb), log=log)
-    fwc("Dcrm ovem,lmap,,(@@);", debug=debug, log=log)
+    if lmap:
+        fwc("Dcrm ovem,lmap,,(@@);", debug=debug, log=log)
     ftst_ptn = re.compile(r'ftst p', re.IGNORECASE)
     ftst_rslt = fwc("ftst?;", debug=debug, log=log)
     ftst_obj = ftst_ptn.search(ftst_rslt)
@@ -89,7 +97,7 @@ def ftst_q(mpb, debug=False, log=None):
     else:
         ret = False
     pr("Func test: '" + mpb + "': " + ("PASSED" if ret else "FAILED"), 'debug', debug=debug, log=log)
-    fwc("Sqgb acff,0; ", debug=debug, log=log)
+    fwc("Sqgb acqf,0; ", debug=debug, log=log)
     return ret
 
 
@@ -138,5 +146,5 @@ def dlts(label, debug=False, log=None):
     :param label: string
     """
     fwc('diag 20;', debug=debug, log=log)
-    fwc('dlts "'+label+'";',escape=True, debug=debug, log=log)
+    fwc('dlts "{}";'.format(label), suppress_error=True, debug=debug, log=log)
     fwc('diag -20;', debug=debug, log=log)

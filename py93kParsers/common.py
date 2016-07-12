@@ -10,7 +10,8 @@ from os import remove, close
 from sys import maxint
 import re
 import traceback
-
+import argparse
+import math
 
 class color:
     PURPLE = '\033[95m'
@@ -382,3 +383,37 @@ def lcmm(*args):
     """Return lcm of args."""
     return reduce(lcm, args)
 
+
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def isEmpty(self):
+        return self.items == []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        return self.items.pop()
+
+    def peek(self):
+        return self.items[len(self.items) - 1]
+
+    def size(self):
+        return len(self.items)
+
+def restricted_float(x):
+    x = float(x)
+    if x < 0.0 or x > 1.0:
+        raise argparse.ArgumentTypeError("%r not in range [0.0, 1.0]"%(x,))
+    return x
+
+def roundup2mod(val, mod):
+    """
+    Round up to nearest modulus integer
+    :param val: int RPTV value
+    :param mod: int modulus for that port
+    :return: int updated RPTV value
+    """
+    return int(math.ceil(val / mod) * mod)

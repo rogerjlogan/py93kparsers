@@ -33,6 +33,7 @@ class MatchLoopFixer(object):
     """
     debug = False
     comment_port = ''
+    commport_match_rpt_vec_no = {}
     memory = 'SH'
     margin = 0.1
     bin = False
@@ -45,6 +46,8 @@ class MatchLoopFixer(object):
     rptv_data = {}
     match_rptv_times = []
     mod = {}
+    step_size_t = 0.0  # init same value for every port
+    step_size_n = {}  # init unique value for every port
 
     def find_commport_match_rpt_vec_no(self, srch_str):
         """
@@ -160,7 +163,7 @@ class MatchLoopFixer(object):
 
     def get_rptv_cmd_no_from_sqpg(self, port):
         """
-        Since couldn't get everything we wanted from GETV, we need to use SQPG? to get cmd_no.
+        Since we couldn't get everything we wanted from GETV, we need to use SQPG? to get cmd_no.
         We will modify the data structure "self.rptv_data" that should already be started from GETV?
         :param port: string name of given port to get info on
         """
@@ -200,7 +203,7 @@ class MatchLoopFixer(object):
         that vectors are not aligned. It also gives you the current period for that port and what the period would be to
         align the vectors.
         """
-        aligned_periods = {}
+        aligned_periods = {}  # keep this local until we can compare with original periods
         for port in self.ports:
             if port not in aligned_periods:
                 aligned_periods[port] = []
@@ -238,34 +241,43 @@ class MatchLoopFixer(object):
             self.aligned_periods[port] = per
         pr(self.match_rptv_data, 'debug', self.debug, log=log)
 
-    def get_min_time(self, m_rptv_data):
-        return max([self.aligned_periods[p] / data['no_of_vectors'] for p, data in m_rptv_data.iteritems()])
+    def calc_step_size(self, m_rptv_data):
+        """
+        Calculate min step size in time for all ports.  Must have calculated aligned periods first.
+        :param m_rptv_data:
+        :return:
+        """
+        pr("Formula for calculating step size for each port: int(ceil(step_size_t / (period / no_of_vectors)))", log=log)
+        pr("Aligned period (which may differ from actual) is used for calculating step size.", log=log)
+        if not self.aligned_periods:
+            pr("Can't calculate step size until Aligned periods have been calculated!", 'fatal', log=log)
+        self.step_size_t = max([self.aligned_periods[p] / data['no_of_vectors'] for p, data in m_rptv_data.iteritems()])
+        pr("Step size (time) for all ports: %r ns" % (self.step_size_t,), 'debug', self.debug, log=log)
 
-    def get_min_rptv_steps(self, min_time, port, no_of_vectors):
-        return int(math.ceil(min_time / (self.aligned_periods[port] / no_of_vectors)))
+        for port in self.ports:
+            no_of_vectors = m_rptv_data[port]['no_of_vectors']
+            self.step_size_n[port] = int(math.ceil(self.step_size_t / (self.aligned_periods[port] / no_of_vectors)))
+            pr("Port: '{}' Aligned Period: '{} ns' no_of_vectors: '{}' Step size (for no_of_repeats) : '{}'"
+               .format(port, self.aligned_periods[port], no_of_vectors, self.step_size_n[port]), 'debug', self.debug, log=log)
 
-    def set_final_values(self, step_size_t, m_rptv_data, original_rptv, current_rptv):
+    def set_final_values(self, m_rptv_data, original_rptv, current_rptv):
         all_new_rptv = {}
         for port in self.ports:
             total_steps = original_rptv[port] - current_rptv[port]
             start_cycle_t = self.aligned_periods[port]*current_rptv[port]
             pr("Total steps traversed: {} for port: '{}'".format(total_steps, port), 'debug', debug=self.debug, log=log)
-            pr("Last fail port/cycle(time): {}/{}({})"
+            pr("Last pass for port/cycle(time): {}/{}({})"
                .format(port, current_rptv[port], start_cycle_t), 'debug', debug=self.debug, log=log)
 
-            rptv_step_size = self.get_min_rptv_steps(step_size_t, port, m_rptv_data[port]['no_of_vectors'])
-            pr("Step size (time)    used: {}".format(step_size_t), 'debug', debug=self.debug, log=log)
-            pr("Step size (repeats) used: {}".format(rptv_step_size), 'debug', debug=self.debug, log=log)
+            pr("Step size (time)    used: {}".format(self.step_size_t), 'debug', debug=self.debug, log=log)
+            pr("Step size (repeats) used: {}".format(self.step_size_n[port]), 'debug', debug=self.debug, log=log)
+            pr("Margin set to: {}".format(self.margin), 'debug', self.debug, log=log)
 
-            raw_value = current_rptv[port] * (1 + self.margin)
-            pr("Desired repeat with margin (needs to be rounded to nearest stepsize): {}".format(raw_value),
-               'debug', self.debug, log=log)
-            # round up to nearest step for this port
-            new_rptv = roundup2mod(raw_value, rptv_step_size)
+            # adding margin
+            new_rptv = current_rptv[port] * (1 + self.margin)
 
             if new_rptv < original_rptv[port]:
                 # let's only go down for now
-
                 all_new_rptv[port] = new_rptv
                 rptv_t = new_rptv * self.aligned_periods[port]
                 pr("For port: {} New RPTV value: {} (amount of time: {})"
@@ -283,147 +295,113 @@ class MatchLoopFixer(object):
                    .format(self.margin, m_rptv_data[port]['label'], original_rptv[port], current_rptv[port]),
                    'warn', log=log)
 
-            # okay, let's go modify the label with the new rptv value with margin added
-            fw.sqpg(cmd_no=m_rptv_data[port]['cmd_no'], instr='rptv', param_1=m_rptv_data[port]['no_of_vectors'],
-                    param_2=new_rptv, memory=self.memory, port=port, debug=self.debug, log=log)
+            # okay, let's go modify the label with the new rptv value with margin added (or set back to original)
+            self.update_port_label("FINAL update to label", port, m_rptv_data, new_rptv)
 
-        # sanity checks for debug mode only after final modification
+        # sanity check for debug mode only after final modification
         if self.debug:
             for p, rptv in all_new_rptv.iteritems():
                 rptv_t = rptv * self.aligned_periods[p]
                 pr("For port: {} New RPTV value: {} (amount of time: {})"
                    .format(p, rptv, rptv_t), 'debug', self.debug, log=log)
+
+    def get_port_repeat(self, original_rptv, cport_midpt, port):
+        """
+        Calculate repeats for port passed in based on control port's repeat count
+        """
+        # get num steps traversed (decreased) by comment port
+        unit_steps_delta = (original_rptv[self.comment_port] - cport_midpt) / self.step_size_n[self.comment_port]
+        pr("Units steps delta from original (factoring out step size): {}".format(unit_steps_delta), 'debug', self.debug, log=log)
+        if port == self.comment_port:
+            new_rptv = cport_midpt
+        else:
+            # calculate number of cycles to decrease based on comment port change
+            new_rptv = original_rptv[port] - unit_steps_delta * self.step_size_n[port]
+        pr("New RPTV value on port: {} is: {}".format(port, new_rptv), 'debug', self.debug, log=log)
+        return new_rptv
+
+    def update_port_label(self, msg, port, m_rptv_data, new_repeat):
+        label = m_rptv_data[port]['label']
+        start_vector = m_rptv_data[port]['start_vector']
+        no_of_vectors = m_rptv_data[port]['no_of_vectors']
+        no_of_repeats = m_rptv_data[port]['no_of_repeats']
+        cmd_no = m_rptv_data[port]['cmd_no']
+        pr("{msg}: '{label}' on Port: '{port}' at vector: '{vector}' beging changed to 'RPTV {new_num},{new_rep}'"
+           "(orig: RPTV {old_num}, {old_rep} with stepsize={step})"
+           .format(msg=msg, label=label, port=port, vector=start_vector, new_num=no_of_vectors, old_num=no_of_vectors,
+                   old_rep=no_of_repeats, new_rep=new_repeat, step=self.step_size_n[port]), log=log)
+        fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=new_repeat,
+                memory=self.memory, port=port, debug=self.debug, log=log)
+
+    def do_parametric_ftest(self):
+
+        # iterate through each matchloop repeat across all ports found earlier
+        for m_rptv_time, m_rptv_data in sorted(self.match_rptv_data.iteritems()):
+            pr("START Repeat modification search for burst: '{}'".format(self.burst), log=log)
+
+            self.calc_step_size(m_rptv_data)
+            original_rptv = {port: data['no_of_repeats'] for port, data in m_rptv_data.iteritems()}
+            current_rptv = deepcopy(original_rptv)  # init
+            last_passing_rptv = {}
+
+            if self.binary:  # binary search
+
+                # init upper/lower boundaries for RPTV(no_of_repeats) for control port (comment port)
+                cport_upper = original_rptv[self.comment_port]
+                cport_lower = self.step_size_n[self.comment_port]
+
+                count = 0
+                while (cport_upper-cport_lower) > self.step_size_n[self.comment_port]:
+                    count += 1
+                    pr("Trying next repeat (count={})".format(count), log=log)
+                    # calculate midpoint: average and then round up to nearest repeat step size
+                    cport_midpt = roundup2mod((cport_upper + cport_lower) / 2, self.step_size_n[self.comment_port])
+                    pr("New midpoint for comment port({}): {} (original repeat={})"
+                       .format(self.comment_port, cport_midpt, original_rptv[self.comment_port]), 'debug', debug=self.debug, log=log)
+
+                    for port in self.ports:
+                        current_rptv[port] = self.get_port_repeat(original_rptv, cport_midpt, port)
+                        self.update_port_label("BINARY search change to label", port, m_rptv_data, current_rptv[port])
+                    if fw.ftst_q(self.burst, debug=self.debug, log=log):
+                        # passed at midpoint, search bottom half
+                        cport_upper = cport_midpt
+                        last_passing_rptv = deepcopy(current_rptv)
+                    else:
+                        # failed at midpoint, search top half
+                        cport_lower = cport_midpt
+                if not last_passing_rptv:
+                    pr("NO PASS FOUND FOR BURST: '{}'!".format(self.burst), 'warn', log=log)
+                    self.update_port_label("No Pass found!  Resetting repeats back to original values.", port, m_rptv_data, current_rptv[port])
+                else:
+                    pr(last_passing_rptv, 'debug', debug=self.debug, log=log)
+                    self.set_final_values(m_rptv_data, original_rptv, last_passing_rptv)
+
+            else:  # linear search
+                passed = 0
+                keep_going = True
+                while keep_going:
+                    # keep going until functional test fails
+                    if not fw.ftst_q(self.burst, debug=self.debug, log=log):
+                        if passed == 0:
+                            pr("Did not pass at least at once", 'fatal', log=log)
+                        self.set_final_values(m_rptv_data, original_rptv, current_rptv)
+                        keep_going = False
+                        pr("Found P/F transition on burst: '{}' at t(ns) = {}"
+                           .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
+                    else:
+                        passed += 1
+                        pr("Trying next repeat (count={})".format(passed), log=log)
+                        for port in self.ports:
+                            label = m_rptv_data[port]['label']
+                            current_rptv[port] -= self.step_size_n[port]
+                            if current_rptv[port] < 0:
+                                pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
+                            self.update_port_label("LINEAR search change to label", port, m_rptv_data, current_rptv[port])
             if not fw.ftst_q(self.burst, debug=self.debug, log=log):
                 pr("Failed Func test after final modification to burst", 'fatal', log=log)
 
-    def do_search(self, m_rptv_time, m_rptv_data, step_size_t, original_rptv, current_rptv):
-
-        if self.binary:  # binary search
-
-            left_t = m_rptv_time  # init max value
-            right_t = step_size_t  # init min value
-            found = False
-            while left_t > right_t and not found:
-                # average and then round up to nearest step size in time
-                midpoint_t = roundup2mod((left_t + right_t) / 2, step_size_t)
-                for port in self.ports:
-                    label = m_rptv_data[port]['label']
-                    start_vector = m_rptv_data[port]['start_vector']
-                    no_of_vectors = m_rptv_data[port]['no_of_vectors']
-                    no_of_repeats = m_rptv_data[port]['no_of_repeats']
-                    cmd_no = m_rptv_data[port]['cmd_no']
-
-                    rptv_cyc = int(m_rptv_time / self.aligned_periods[port])
-
-
-
-
-                    current_rptv[port] -= min_repeat_steps
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                if not fw.ftst_q(self.burst, debug=self.debug, log=log):
-                    if passed == 0:
-                        pr("Did not pass at least at once", 'fatal', log=log)
-                    self.set_final_values(step_size_t, m_rptv_data, original_rptv, current_rptv)
-                    keep_going = False
-                    pr("Found P/F transition on burst: '{}' at t(ns) = {}"
-                       .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
-                else:
-                    passed += 1
-                    pr("Trying next repeat (count={})".format(passed), 'debug', debug=self.debug, log=log)
-
-                    for port in self.ports:
-                        label = m_rptv_data[port]['label']
-                        start_vector = m_rptv_data[port]['start_vector']
-                        no_of_vectors = m_rptv_data[port]['no_of_vectors']
-                        no_of_repeats = m_rptv_data[port]['no_of_repeats']
-                        cmd_no = m_rptv_data[port]['cmd_no']
-
-                        min_repeat_steps = self.get_min_rptv_steps(step_size_t, port, no_of_vectors)
-                        current_rptv[port] -= min_repeat_steps
-
-                        if current_rptv[port] <= 0:
-                            pr("On port: '{}'. Invalid repeat setting: '{}'"
-                               .format(port, current_rptv[port]), 'fatal', log=log)
-
-                        pr("Label: '{}' on vector: '{}' beging changed from 'RPTV {},{}' to  'RPTV {},{}' (stepsize={})"
-                           .format(label, start_vector, no_of_vectors, no_of_repeats, no_of_vectors, current_rptv[port],
-                                   min_repeat_steps), 'debug', debug=self.debug, log=log)
-                        if current_rptv[port] < 0:
-                            pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
-                        pr("Updating label: '{}' Setting RPTV to: {} (original={})"
-                           .format(label, current_rptv[port], original_rptv[port]))
-                        fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=current_rptv[port],
-                                memory=self.memory, port=port, debug=self.debug, log=log)
-
-        else:  # linear search
-
-            passed = 0
-            keep_going = True
-            while keep_going:
-                # keep going until functional test fails
-                if not fw.ftst_q(self.burst, debug=self.debug, log=log):
-                    if passed == 0:
-                        pr("Did not pass at least at once", 'fatal', log=log)
-                    self.set_final_values(step_size_t, m_rptv_data, original_rptv, current_rptv)
-                    keep_going = False
-                    pr("Found P/F transition on burst: '{}' at t(ns) = {}"
-                       .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
-                else:
-                    passed += 1
-                    pr("Trying next repeat (count={})".format(passed), 'debug', debug=self.debug, log=log)
-
-                    for port in self.ports:
-                        label = m_rptv_data[port]['label']
-                        start_vector = m_rptv_data[port]['start_vector']
-                        no_of_vectors = m_rptv_data[port]['no_of_vectors']
-                        no_of_repeats = m_rptv_data[port]['no_of_repeats']
-                        cmd_no = m_rptv_data[port]['cmd_no']
-
-                        min_repeat_steps = self.get_min_rptv_steps(step_size_t, port, no_of_vectors)
-                        current_rptv[port] -= min_repeat_steps
-
-                        if current_rptv[port] <= 0:
-                            pr("On port: '{}'. Invalid repeat setting: '{}'"
-                               .format(port, current_rptv[port]), 'fatal', log=log)
-
-                        pr("Label: '{}' on vector: '{}' beging changed from 'RPTV {},{}' to  'RPTV {},{}' (stepsize={})"
-                           .format(label, start_vector, no_of_vectors, no_of_repeats, no_of_vectors, current_rptv[port],
-                                   min_repeat_steps), 'debug', debug=self.debug, log=log)
-                        if current_rptv[port] < 0:
-                            pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
-                        pr("Updating label: '{}' Setting RPTV to: {} (original={})"
-                           .format(label, current_rptv[port], original_rptv[port]))
-                        fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=current_rptv[port],
-                                memory=self.memory, port=port, debug=self.debug, log=log)
-
-    def do_parametric_ftest(self):
-        for m_rptv_time, m_rptv_data in sorted(self.match_rptv_data.iteritems()):
-            pr("Modifying match repeats for burst: '{}' across ports found at time (ns): {}"
-               .format(self.burst, m_rptv_time), 'debug', self.debug, log=log)
-
-            step_size_t = self.get_min_time(m_rptv_data)
-            original_rptv = {port: data['no_of_repeats'] for port, data in m_rptv_data.iteritems()}
-            current_rptv = deepcopy(original_rptv)  # init
-
-            self.do_search(m_rptv_time, m_rptv_data, step_size_t, original_rptv, current_rptv)
-
     def __init__(self, debug=False, progname='', maxlogs=1, outdir=os.path.dirname(os.path.realpath(__file__)),
-                 offset=0, srchstr='', comment_port='', memory='SH', lmap=False, marg=0.1, bin=False):
+                 offset=0, srchstr='', comment_port='', memory='SH', lmap=False, marg=0.1, binary=False):
         """
         Constructor for MatchLoopFixer
         :param debug: bool determines whether to print/log 'debug' statements in pr() functions
@@ -441,7 +419,7 @@ class MatchLoopFixer(object):
         self.comment_port = comment_port
         self.memory = memory
         self.margin = marg
-        self.binary = bin
+        self.binary = binary
         if self.debug:
             log_level = logging.DEBUG
         else:
@@ -529,7 +507,7 @@ if __name__ == "__main__":
                          memory=args.memory,
                          lmap=args.lmap,
                          marg=args.margin,
-                         bin=args.bin)
+                         binary=args.bin)
 
     pr('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]), log=log)
     pr('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter, log=log), log=log)

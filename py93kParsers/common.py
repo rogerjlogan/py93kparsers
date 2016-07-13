@@ -12,19 +12,21 @@ import re
 import traceback
 import argparse
 import math
+import platform
+
 
 class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    GREY = '\033[90m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = '\033[95m'    # '\x1b[95m'
+    CYAN = '\033[96m'      # '\x1b[96m'
+    DARKCYAN = '\033[36m'  # '\x1b[36m'
+    BLUE = '\033[94m'      # '\x1b[94m'
+    GREEN = '\033[92m'     # '\x1b[92m'
+    YELLOW = '\033[33m'    # '\x1b[33m'
+    GREY = '\033[90m'      # '\x1b[90m'
+    RED = '\033[91m'       # '\x1b[91m'
+    BOLD = '\033[1m'       # '\x1b[1m'
+    UNDERLINE = '\033[4m'  # '\x1b[4m'
+    END = '\033[0m'        # '\x1b[0m'
 
 
 def myOpen(fn, mode="r"):
@@ -164,48 +166,146 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
     info_msg.append(msg)
     return pathfn,outdir,info_msg,warn_msg
 
+def add_coloring_to_emit_windows(fn):
+        # add methods we need to the class
+    def _out_handle(self):
+        import ctypes
+        return ctypes.windll.kernel32.GetStdHandle(self.STD_OUTPUT_HANDLE)
+        out_handle = property(_out_handle)
+
+    def _set_color(self, code):
+        import ctypes
+        # Constants from the Windows API
+        self.STD_OUTPUT_HANDLE = -11
+        hdl = ctypes.windll.kernel32.GetStdHandle(self.STD_OUTPUT_HANDLE)
+        ctypes.windll.kernel32.SetConsoleTextAttribute(hdl, code)
+
+    setattr(logging.StreamHandler, '_set_color', _set_color)
+
+    def new(*args):
+        FOREGROUND_BLUE      = 0x0001 # text color contains blue.
+        FOREGROUND_GREEN     = 0x0002 # text color contains green.
+        FOREGROUND_RED       = 0x0004 # text color contains red.
+        FOREGROUND_INTENSITY = 0x0008 # text color is intensified.
+        FOREGROUND_WHITE     = FOREGROUND_BLUE|FOREGROUND_GREEN |FOREGROUND_RED
+       # winbase.h
+        STD_INPUT_HANDLE = -10
+        STD_OUTPUT_HANDLE = -11
+        STD_ERROR_HANDLE = -12
+
+        # wincon.h
+        FOREGROUND_BLACK     = 0x0000
+        FOREGROUND_BLUE      = 0x0001
+        FOREGROUND_GREEN     = 0x0002
+        FOREGROUND_CYAN      = 0x0003
+        FOREGROUND_RED       = 0x0004
+        FOREGROUND_MAGENTA   = 0x0005
+        FOREGROUND_YELLOW    = 0x0006
+        FOREGROUND_GREY      = 0x0007
+        FOREGROUND_INTENSITY = 0x0008 # foreground color is intensified.
+
+        BACKGROUND_BLACK     = 0x0000
+        BACKGROUND_BLUE      = 0x0010
+        BACKGROUND_GREEN     = 0x0020
+        BACKGROUND_CYAN      = 0x0030
+        BACKGROUND_RED       = 0x0040
+        BACKGROUND_MAGENTA   = 0x0050
+        BACKGROUND_YELLOW    = 0x0060
+        BACKGROUND_GREY      = 0x0070
+        BACKGROUND_INTENSITY = 0x0080 # background color is intensified.
+
+        levelno = args[1].levelno
+        if(levelno>=50):
+            color = BACKGROUND_YELLOW | FOREGROUND_RED | FOREGROUND_INTENSITY | BACKGROUND_INTENSITY
+        elif(levelno>=40):
+            color = FOREGROUND_RED | FOREGROUND_INTENSITY
+        elif(levelno>=30):
+            color = FOREGROUND_YELLOW | FOREGROUND_INTENSITY
+        elif(levelno>=20):
+            color = FOREGROUND_GREEN
+        elif(levelno>=10):
+            color = FOREGROUND_MAGENTA
+        else:
+            color =  FOREGROUND_WHITE
+        args[0]._set_color(color)
+
+        ret = fn(*args)
+        args[0]._set_color( FOREGROUND_WHITE )
+        return ret
+    return new
+
+
+def add_coloring_to_emit_ansi(fn):
+    # add methods we need to the class
+    def new(*args):
+        levelno = args[1].levelno
+        if levelno >= 50:
+            this_color = color.RED
+        elif levelno >= 40:
+            this_color = color.RED
+        elif levelno >= 30:
+            this_color = color.YELLOW
+        elif levelno >= 20:
+            this_color = color.BLUE
+        elif levelno >= 10:
+            this_color = color.GREY
+        else:
+            this_color = color.END
+        if not isinstance(args[1].msg, basestring):
+            args[1].msg = pformat(args[1].msg)
+        args[1].msg = this_color + args[1].msg + color.END
+        return fn(*args)
+    return new
+
 
 def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', maxlogs=1 ,level=logging.INFO):
 
     logger_name = 'log'
     if maxlogs > 0:
 
-        pathfn,outdir,info_msg,warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxlogs,ext='.log')
+        pathfn, outdir, info_msg, warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxlogs,ext='.log')
 
         basename = os.path.basename(pathfn).split('.')[0]
         logger_name = 'log_'+basename
-        l = logging.getLogger(logger_name)
-        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
-        fileHandler = logging.FileHandler(pathfn, mode='w')
-        fileHandler.setFormatter(formatter)
 
-        l.setLevel(level)
-        l.addHandler(fileHandler)
+        # FIXME: damn, really wish i could get this to print with color encoding to file
+        if platform.system() == 'Windows':
+            # Windows does not support ANSI escapes and we are using API calls to set the console color
+            logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
+        else:
+            # all non-Windows platforms are supporting ANSI escapes so we use them
+            logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
 
         log = logging.getLogger(logger_name)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
+        file_handler = logging.FileHandler(pathfn, mode='w')
+        file_handler.setFormatter(formatter)
 
-        for msg in warn_msg:
-            print 'WARNING!!! ',msg
-            log.warning(msg)
-        for msg in info_msg:
-            log.info(msg)
+        log.setLevel(level)
+        log.addHandler(file_handler)
+
+        stream_handler = logging.StreamHandler(stream=sys.stdout)
+        formatter = logging.Formatter('%(levelname)s: %(message)s')
+        stream_handler.setFormatter(formatter)
+        log.addHandler(stream_handler)
+
     else:
         logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=level, datefmt='%m/%d/%Y %I:%M:%S %p')
 
-    return logger_name,outdir
+    return logger_name, outdir, pathfn
 
 
 def replace(file_path, pattern, subst):
-    #Create temp file
+    # Create temp file
     fh, abs_path = mkstemp()
     with gzip.open(abs_path,'wb') as new_file:
         with myOpen(file_path) as old_file:
             for line in old_file:
                 new_file.write(line.replace(pattern, subst))
     close(fh)
-    #Remove original file
+    # Remove original file
     remove(file_path)
-    #Move new file
+    # Move new file
     move(abs_path, file_path)
 
 
@@ -217,7 +317,7 @@ def take(n, iterable):
 class TextException(Exception): pass
 
 
-def prompt_user(query,errmsg,choices):
+def prompt_user(query, errmsg, choices):
     my_exit = False
     while 1:
         try:
@@ -318,52 +418,6 @@ def hex2byte(hexStr):
         bytes.append(chr(int(hexStr[i:i + 2], 16)))
 
     return ''.join(bytes)
-
-
-def pr(print_msg, level='info', debug=False, log=None):
-    """
-    Print and log decorator
-    :param print_msg: string to print/log
-    :param level: determines color and in the case of 'error' it will exit
-    :param debug: bool determines print level
-    :param log: object used for logging to log file
-    :return:
-    """
-    if not isinstance(print_msg, basestring):
-        print_msg = pformat(print_msg)
-    if level.lower() == 'info':
-        print_pre_msg = "INFO: "
-        if log is not None:
-            log.info(print_msg)
-        print color.BLUE + print_pre_msg + print_msg + color.END
-    elif level.lower() == 'debug':
-        if debug:
-            print_pre_msg = "DEBUG: "
-            if log is not None:
-                log.debug(print_msg)
-            print color.GREY + print_pre_msg + print_msg + color.END
-    elif level.lower() in ['warn', 'warning']:
-        print_pre_msg = "WARNING: "
-        if log is not None:
-            log.debug(print_msg)
-        print color.RED + print_pre_msg + print_msg + color.END
-    elif level.lower() == 'error':
-        print_pre_msg = "NON FATAL ERROR: "
-        if log is not None:
-            log.error(print_msg)
-        print color.RED + print_pre_msg + print_msg + color.RED
-    elif level.lower() == 'fatal':
-        print_pre_msg = "FATAL ERROR: "
-        if log is not None:
-            log.error(print_msg)
-        sys.exit(print_pre_msg + print_msg)
-    else:
-        err = 'Unknown print level: '+level
-        if log is not None:
-            log.error(err)
-        traceback.print_exc(file=sys.stdout)
-        pprint(traceback.extract_stack())
-        sys.exit(err)
 
 
 # A.KA. gcf and hcf

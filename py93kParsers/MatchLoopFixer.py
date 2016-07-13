@@ -15,6 +15,7 @@ import numpy as np
 
 _start_time = time.time()
 log = None
+logfn = None
 
 __author__ = 'Roger'
 __script__ = os.path.basename(sys.modules[__name__].__file__)
@@ -49,20 +50,27 @@ class MatchLoopFixer(object):
     step_size_t = 0.0  # init same value for every port
     step_size_n = {}  # init unique value for every port
 
+    @staticmethod
+    def setup_logger(logger_name):
+        global log
+        log = logging.getLogger(logger_name)
+        log.warning = callcounted(log.warning)
+        log.error = callcounted(log.error)
+
     def find_commport_match_rpt_vec_no(self, srch_str):
         """
         This function searches each vector comment for srch_str, if provided.
         """
-        pr("Running tcmt()... (This may take a few minutes!)", log=log)
+        log.info("Running tcmt()... (This may take a few minutes!)")
         tcmt_ptn = re.compile(r'tcmt (?P<vec_addr>\d+),"(?P<comment>[^"]+)"', re.IGNORECASE)
         srch_rslts = {}
 
         for label in self.labels_by_port[self.comment_port]:
-            pr("\tGetting comments for label: '{}'".format(label), log=log)
+            log.info("\tGetting comments for label: '{}'".format(label))
             # set focus to label for this port before quering comments
-            fw.tstl(label, self.comment_port, debug=self.debug, log=log)
+            fw.tstl(label, self.comment_port, log=log)
             # okay, now we query comments
-            for tcmt_rslt in fw.tcmt_q(0, debug=self.debug, log=log).split('\n'):
+            for tcmt_rslt in fw.tcmt_q(0, log=log).split('\n'):
                 tcmt_obj = tcmt_ptn.search(tcmt_rslt)
                 if tcmt_obj:
                     vec_addr = int(tcmt_obj.group('vec_addr'))
@@ -80,12 +88,13 @@ class MatchLoopFixer(object):
         """
         labels = []
         getl_ptn = re.compile(r'getl (?P<idx>\d+),\"(?P<label>.*)\",(?P<start>\d+),(?P<stop>\d+),\(', re.IGNORECASE)
-        for getl_rslt in fw.getl_q(0, port, debug=self.debug, log=log).split('\n'):
+        for getl_rslt in fw.getl_q(0, port, log=log).split('\n'):
             if not len(getl_rslt):
                 continue
             getl_obj = getl_ptn.search(getl_rslt)
             if not getl_obj:
-                pr("Unable to parse GETL result: " + getl_rslt, 'fatal', log=log)
+                log.critical("Unable to parse GETL result: " + getl_rslt)
+                sys.exit(1)
             label = getl_obj.group('label').strip()
             labels.append(label)
         return labels
@@ -119,10 +128,9 @@ class MatchLoopFixer(object):
                         # so we can disregard the size of the repeat block
                         possible_comm_vec = rptv_data['start_vector'] + offset
                     if possible_comm_vec == comm_vec:
-                        pr("Match RPTV found on vec/cyc: '{}/{}' with per(ns): '{}' for comment port: '{}'"
+                        log.debug("Match RPTV found on vec/cyc: '{}/{}' with per(ns): '{}' for comment port: '{}'"
                            .format(rptv_data['start_vector'], rptv_data['start_cycle'],
-                                   self.periods[self.comment_port], self.comment_port),
-                           'debug', debug=self.debug, log=log)
+                                   self.periods[self.comment_port], self.comment_port))
                         self.match_rptv_times.append(rptv_data['start_cycle'] * self.periods[self.comment_port])
 
     def get_rptv_from_getv(self, port):
@@ -140,7 +148,7 @@ class MatchLoopFixer(object):
         rptv_num = 0  # init
         # for GETV we must give a dummy really big number to get everything for this port
         # (let's hope no label has that many)
-        for getv_rslt in fw.getv_q(0, 100000000000, port, debug=self.debug, log=log).split('\n'):
+        for getv_rslt in fw.getv_q(0, 100000000000, port, log=log).split('\n'):
             if len(getv_rslt):
                 getv_obj = getv_ptn.search(getv_rslt)
                 if getv_obj and getv_obj.group('seq_status').strip().lower() == 'rptv':
@@ -172,13 +180,13 @@ class MatchLoopFixer(object):
         rptv_no = 0  # re-init
         for label in self.labels_by_port[port]:
             # need to get the range of seq instructions from SQLB? which SQPG? needs
-            sqlb_rslt = fw.sqlb_q(label, debug=self.debug, log=log)
+            sqlb_rslt = fw.sqlb_q(label, log=log)
             sqlb_obj = sqlb_ptn.search(sqlb_rslt)
             if sqlb_obj:
                 start = int(sqlb_obj.group('start'))
                 stop = int(sqlb_obj.group('stop'))
                 # okay, now that we have the range, we can run SQPG? and get all the seq instructions for the port
-                for sqpg_rslt in fw.sqpg_q(port, start, stop, debug=self.debug, log=log).split('\n'):
+                for sqpg_rslt in fw.sqpg_q(port, start, stop, log=log).split('\n'):
                     # search each result for all RPTV commands keeping track of the count, since that is a key that was
                     # started with GETV? earlier.  The cmd_No will allow us to modify the correct repeat later
                     sqpg_obj = sqpg_ptn.search(sqpg_rslt)
@@ -222,13 +230,13 @@ class MatchLoopFixer(object):
                     if aligned_period not in aligned_periods[port]:
                         aligned_periods[port].append(aligned_period)
                     delta = abs(closest_rptv_cyc-ideal_rptv_cyc)
-                    pr("Vector misalignment at matchloop repeat on port: '{}' label: '{}'\n"
+                    log.warning("Vector misalignment at matchloop repeat on port: '{}' label: '{}'\n"
                        "\t(Assuming aligned period for all future calculations in this script).\n"
                        "\tCycle deviation from actual to aligned cycle is: '{} cycles'\n"
                        "\tActual period: '{} ns' Aligned period: '{} ns'\n"
                        "\t(You may want to change the period on this port to the aligned value)."
                        .format(port, self.rptv_data[port][closest_rptv_num]['label'], delta,
-                               self.periods[port], aligned_period), 'warn', log=log)
+                               self.periods[port], aligned_period))
                 # deliver the payload
                 if m_rptv_time not in self.match_rptv_data:
                     self.match_rptv_data[m_rptv_time] = {}
@@ -239,7 +247,7 @@ class MatchLoopFixer(object):
             else:
                 per = self.periods[port]
             self.aligned_periods[port] = per
-        pr(self.match_rptv_data, 'debug', self.debug, log=log)
+        log.debug(self.match_rptv_data)
 
     def calc_step_size(self, m_rptv_data):
         """
@@ -247,31 +255,29 @@ class MatchLoopFixer(object):
         :param m_rptv_data:
         :return:
         """
-        pr("Formula for calculating step size for each port: int(ceil(step_size_t / (period / no_of_vectors)))", log=log)
-        pr("Aligned period (which may differ from actual) is used for calculating step size.", log=log)
+        log.info("Formula for calculating step size for each port: int(ceil(step_size_t / (period / no_of_vectors)))")
+        log.info("Aligned period (which may differ from actual) is used for calculating step size.")
         if not self.aligned_periods:
-            pr("Can't calculate step size until Aligned periods have been calculated!", 'fatal', log=log)
+            log.critical("Can't calculate step size until Aligned periods have been calculated!")
         self.step_size_t = max([self.aligned_periods[p] / data['no_of_vectors'] for p, data in m_rptv_data.iteritems()])
-        pr("Step size (time) for all ports: %r ns" % (self.step_size_t,), 'debug', self.debug, log=log)
+        log.debug("Step size (time) for all ports: %r ns" % (self.step_size_t,))
 
         for port in self.ports:
             no_of_vectors = m_rptv_data[port]['no_of_vectors']
             self.step_size_n[port] = int(math.ceil(self.step_size_t / (self.aligned_periods[port] / no_of_vectors)))
-            pr("Port: '{}' Aligned Period: '{} ns' no_of_vectors: '{}' Step size (for no_of_repeats) : '{}'"
-               .format(port, self.aligned_periods[port], no_of_vectors, self.step_size_n[port]), 'debug', self.debug, log=log)
+            log.debug("Port: '{}' Aligned Period: '{} ns' no_of_vectors: '{}' Step size (for no_of_repeats) : '{}'"
+                      .format(port, self.aligned_periods[port], no_of_vectors, self.step_size_n[port]))
 
     def set_final_values(self, m_rptv_data, original_rptv, current_rptv):
         all_new_rptv = {}
         for port in self.ports:
             total_steps = original_rptv[port] - current_rptv[port]
             start_cycle_t = self.aligned_periods[port]*current_rptv[port]
-            pr("Total steps traversed: {} for port: '{}'".format(total_steps, port), 'debug', debug=self.debug, log=log)
-            pr("Last pass for port/cycle(time): {}/{}({})"
-               .format(port, current_rptv[port], start_cycle_t), 'debug', debug=self.debug, log=log)
-
-            pr("Step size (time)    used: {}".format(self.step_size_t), 'debug', debug=self.debug, log=log)
-            pr("Step size (repeats) used: {}".format(self.step_size_n[port]), 'debug', debug=self.debug, log=log)
-            pr("Margin set to: {}".format(self.margin), 'debug', self.debug, log=log)
+            log.debug("Total steps traversed: {} for port: '{}'".format(total_steps, port))
+            log.debug("Last pass for port/cycle(time): {}/{}({})".format(port, current_rptv[port], start_cycle_t))
+            log.debug("Step size (time)    used: {}".format(self.step_size_t))
+            log.debug("Step size (repeats) used: {}".format(self.step_size_n[port]))
+            log.debug("Margin set to: {}".format(self.margin))
 
             # adding margin
             new_rptv = current_rptv[port] * (1 + self.margin)
@@ -280,20 +286,16 @@ class MatchLoopFixer(object):
                 # let's only go down for now
                 all_new_rptv[port] = new_rptv
                 rptv_t = new_rptv * self.aligned_periods[port]
-                pr("For port: {} New RPTV value: {} (amount of time: {})"
-                   .format(port, new_rptv, rptv_t), 'debug', self.debug, log=log)
-
-                pr("First Fail at: {}  Setting with margin to: {}"
-                   .format(current_rptv[port], new_rptv), 'debug', debug=self.debug, log=log)
+                log.debug("For port: {} New RPTV value: {} (amount of time: {})".format(port, new_rptv, rptv_t))
+                log.debug("First Fail at: {}  Setting with margin to: {}".format(current_rptv[port], new_rptv))
                 net_time_savings = (self.aligned_periods[port]*(original_rptv[port]-new_rptv))/1000/1000  # ms
-                pr("Final update to label: '{}' Setting RPTV to: {} from {} (with net time savings: {})"
-                   .format(m_rptv_data[port]['label'], new_rptv, original_rptv[port], net_time_savings))
+                log.info("Final update to label: '{}' Setting RPTV to: {} from {} (with net time savings: {})"
+                         .format(m_rptv_data[port]['label'], new_rptv, original_rptv[port], net_time_savings))
             else:
                 # Margin above Fail location would make the repeat increase, so abort
                 new_rptv = original_rptv[port]
-                pr("Not enough room to add margin (set to {}). Restoring label: '{}'. Setting RPTV back to: {} from {}"
-                   .format(self.margin, m_rptv_data[port]['label'], original_rptv[port], current_rptv[port]),
-                   'warn', log=log)
+                log.warning("Not enough room to add margin (set to {}). Restoring label: '{}'. Setting RPTV back to: {} from {}"
+                            .format(self.margin, m_rptv_data[port]['label'], original_rptv[port], current_rptv[port]))
 
             # okay, let's go modify the label with the new rptv value with margin added (or set back to original)
             self.update_port_label("FINAL update to label", port, m_rptv_data, new_rptv)
@@ -302,8 +304,7 @@ class MatchLoopFixer(object):
         if self.debug:
             for p, rptv in all_new_rptv.iteritems():
                 rptv_t = rptv * self.aligned_periods[p]
-                pr("For port: {} New RPTV value: {} (amount of time: {})"
-                   .format(p, rptv, rptv_t), 'debug', self.debug, log=log)
+                log.debug("For port: {} New RPTV value: {} (amount of time: {})".format(p, rptv, rptv_t))
 
     def get_port_repeat(self, original_rptv, cport_midpt, port):
         """
@@ -311,13 +312,13 @@ class MatchLoopFixer(object):
         """
         # get num steps traversed (decreased) by comment port
         unit_steps_delta = (original_rptv[self.comment_port] - cport_midpt) / self.step_size_n[self.comment_port]
-        pr("Units steps delta from original (factoring out step size): {}".format(unit_steps_delta), 'debug', self.debug, log=log)
+        log.debug("Units steps delta from original (factoring out step size): {}".format(unit_steps_delta))
         if port == self.comment_port:
             new_rptv = cport_midpt
         else:
             # calculate number of cycles to decrease based on comment port change
             new_rptv = original_rptv[port] - unit_steps_delta * self.step_size_n[port]
-        pr("New RPTV value on port: {} is: {}".format(port, new_rptv), 'debug', self.debug, log=log)
+        log.debug("New RPTV value on port: {} is: {}".format(port, new_rptv))
         return new_rptv
 
     def update_port_label(self, msg, port, m_rptv_data, new_repeat):
@@ -326,18 +327,18 @@ class MatchLoopFixer(object):
         no_of_vectors = m_rptv_data[port]['no_of_vectors']
         no_of_repeats = m_rptv_data[port]['no_of_repeats']
         cmd_no = m_rptv_data[port]['cmd_no']
-        pr("{msg}: '{label}' on Port: '{port}' at vector: '{vector}' beging changed to 'RPTV {new_num},{new_rep}'"
-           "(orig: RPTV {old_num}, {old_rep} with stepsize={step})"
-           .format(msg=msg, label=label, port=port, vector=start_vector, new_num=no_of_vectors, old_num=no_of_vectors,
-                   old_rep=no_of_repeats, new_rep=new_repeat, step=self.step_size_n[port]), log=log)
+        log.info("{msg}: '{label}' on Port: '{port}' at vector: '{vector}' beging changed to 'RPTV {new_num},{new_rep}'"
+                 "(orig: RPTV {old_num}, {old_rep} with stepsize={step})"
+                 .format(msg=msg, label=label, port=port, vector=start_vector, new_num=no_of_vectors, old_num=no_of_vectors,
+                         old_rep=no_of_repeats, new_rep=new_repeat, step=self.step_size_n[port]))
         fw.sqpg(cmd_no=cmd_no, instr='rptv', param_1=no_of_vectors, param_2=new_repeat,
-                memory=self.memory, port=port, debug=self.debug, log=log)
+                memory=self.memory, port=port, log=log)
 
     def do_parametric_ftest(self):
 
         # iterate through each matchloop repeat across all ports found earlier
         for m_rptv_time, m_rptv_data in sorted(self.match_rptv_data.iteritems()):
-            pr("START Repeat modification search for burst: '{}'".format(self.burst), log=log)
+            log.info("START Repeat modification search for burst: '{}'".format(self.burst))
 
             self.calc_step_size(m_rptv_data)
             original_rptv = {port: data['no_of_repeats'] for port, data in m_rptv_data.iteritems()}
@@ -353,16 +354,16 @@ class MatchLoopFixer(object):
                 count = 0
                 while (cport_upper-cport_lower) > self.step_size_n[self.comment_port]:
                     count += 1
-                    pr("Trying next repeat (count={})".format(count), log=log)
+                    log.info("Trying next repeat (count={})".format(count))
                     # calculate midpoint: average and then round up to nearest repeat step size
                     cport_midpt = roundup2mod((cport_upper + cport_lower) / 2, self.step_size_n[self.comment_port])
-                    pr("New midpoint for comment port({}): {} (original repeat={})"
-                       .format(self.comment_port, cport_midpt, original_rptv[self.comment_port]), 'debug', debug=self.debug, log=log)
+                    log.debug("New midpoint for comment port({}): {} (original repeat={})"
+                              .format(self.comment_port, cport_midpt, original_rptv[self.comment_port]))
 
                     for port in self.ports:
                         current_rptv[port] = self.get_port_repeat(original_rptv, cport_midpt, port)
                         self.update_port_label("BINARY search change to label", port, m_rptv_data, current_rptv[port])
-                    if fw.ftst_q(self.burst, debug=self.debug, log=log):
+                    if fw.ftst_q(self.burst, log=log):
                         # passed at midpoint, search bottom half
                         cport_upper = cport_midpt
                         last_passing_rptv = deepcopy(current_rptv)
@@ -370,10 +371,10 @@ class MatchLoopFixer(object):
                         # failed at midpoint, search top half
                         cport_lower = cport_midpt
                 if not last_passing_rptv:
-                    pr("NO PASS FOUND FOR BURST: '{}'!".format(self.burst), 'warn', log=log)
+                    log.warning("NO PASS FOUND FOR BURST: '{}'!".format(self.burst))
                     self.update_port_label("No Pass found!  Resetting repeats back to original values.", port, m_rptv_data, current_rptv[port])
                 else:
-                    pr(last_passing_rptv, 'debug', debug=self.debug, log=log)
+                    log.debug(last_passing_rptv)
                     self.set_final_values(m_rptv_data, original_rptv, last_passing_rptv)
 
             else:  # linear search
@@ -381,24 +382,26 @@ class MatchLoopFixer(object):
                 keep_going = True
                 while keep_going:
                     # keep going until functional test fails
-                    if not fw.ftst_q(self.burst, debug=self.debug, log=log):
+                    if not fw.ftst_q(self.burst, log=log):
                         if passed == 0:
-                            pr("Did not pass at least at once", 'fatal', log=log)
+                            log.critical("Did not pass at least at once")
+                            sys.exit(1)
                         self.set_final_values(m_rptv_data, original_rptv, current_rptv)
                         keep_going = False
-                        pr("Found P/F transition on burst: '{}' at t(ns) = {}"
-                           .format(self.burst, m_rptv_time), 'debug', debug=self.debug, log=log)
+                        log.debug("Found P/F transition on burst: '{}' at t(ns) = {}".format(self.burst, m_rptv_time))
                     else:
                         passed += 1
-                        pr("Trying next repeat (count={})".format(passed), log=log)
+                        log.info("Trying next repeat (count={})".format(passed))
                         for port in self.ports:
                             label = m_rptv_data[port]['label']
                             current_rptv[port] -= self.step_size_n[port]
                             if current_rptv[port] < 0:
-                                pr("Unable to find P/F threshold for label: '{}'".format(label), 'fatal', log=log)
+                                log.critical("Unable to find P/F threshold for label: '{}'".format(label))
+                                sys.exit(1)
                             self.update_port_label("LINEAR search change to label", port, m_rptv_data, current_rptv[port])
-            if not fw.ftst_q(self.burst, debug=self.debug, log=log):
-                pr("Failed Func test after final modification to burst", 'fatal', log=log)
+            if not fw.ftst_q(self.burst, log=log):
+                log.critical("Failed Func test after final modification to burst")
+                sys.exit(1)
 
     def __init__(self, debug=False, progname='', maxlogs=1, outdir=os.path.dirname(os.path.realpath(__file__)),
                  offset=0, srchstr='', comment_port='', memory='SH', lmap=False, marg=0.1, binary=False):
@@ -413,7 +416,7 @@ class MatchLoopFixer(object):
         :param comment_port:
         :param lmap:
         """
-        global log
+        global logfn
         self.debug = debug
         self.lmap = lmap
         self.comment_port = comment_port
@@ -424,27 +427,26 @@ class MatchLoopFixer(object):
             log_level = logging.DEBUG
         else:
             log_level = logging.INFO
-        logger_name, outdir = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
-                                           outdir=outdir, name=progname, maxlogs=maxlogs, level=log_level)
-        log = logging.getLogger(logger_name)
-        log.warning = callcounted(log.warning)
-        log.error = callcounted(log.error)
-        pr('Running ' + os.path.basename(sys.modules[__name__].__file__) + '...', log=log)
+        logger_name, outdir, logfile = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                                    outdir=outdir, name=progname, maxlogs=maxlogs, level=log_level)
+        logfn = logfile
+        self.setup_logger(logger_name)
+        log.info('Running ' + os.path.basename(sys.modules[__name__].__file__) + '...')
 
         if self.lmap:
-            pr("Currently does not support LMAP mode!  Please re-generate your patterns with BFLM and remove switch",
-               'fatal', log=log)
+            log.critical("Currently does not support LMAP mode!  Please re-generate your patterns with BFLM and remove switch")
+            sys.exit(1)
 
         # get burst name and ports
         self.burst, self.ports = fw.sqsl_q(debug=self.debug, log=log)
 
         # execute functional test
-        if not args.skip_func and not fw.ftst_q(self.burst, lmap=self.lmap, debug=self.debug, log=log):
-            pr("this may be normal, especially if there are flaky patterns as they are not considered here", log=log)
+        if not args.skip_func and not fw.ftst_q(self.burst, lmap=self.lmap, log=log):
+            log.info("this may be normal, especially if there are flaky patterns as they are not considered here")
             time.sleep(1)
 
         for port in self.ports:
-            self.periods[port] = fw.pclk_q(port, debug=self.debug, log=log)
+            self.periods[port] = fw.pclk_q(port, log=log)
             self.labels_by_port[port] = self.get_labels(port)
             self.rptv_data[port] = self.get_rptv_from_getv(port)
             self.get_rptv_cmd_no_from_sqpg(port)
@@ -509,13 +511,17 @@ if __name__ == "__main__":
                          marg=args.margin,
                          binary=args.bin)
 
-    pr('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]), log=log)
-    pr('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter, log=log), log=log)
-    pr('Number of ERRORS for "{}": {}'.format(__script__, log.error.counter), log=log)
+    log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
+    log.info('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter))
+    log.info('Number of ERRORS for "{}": {}'.format(__script__, log.error.counter))
 
     time = time.time()-_start_time
-    pr('Script took ' + str(round(time, 3)) + ' seconds (' + humanize_time(time) + ')', log=log)
-    pr('Everything printed here was also printed to your log file(s) in the output directory.')
+    log.info('Script took ' + str(round(time, 3)) + ' seconds (' + humanize_time(time) + ')')
+    log.info('Everything printed here was also printed to your log file(s) in the output directory.')
     new_files = os.popen('ls -lrt {}'.format(args.output_dir)).read()
-    pr("Displaying Output Directory: {}\n\tContents: \n\t\t{}"
-       .format(args.output_dir, '\n\t\t'.join(new_files.split('\n'))))
+    log.info("Displaying Output Directory: {}\n\tContents: \n\t\t{}".format(args.output_dir, '\n\t\t'.join(new_files.split('\n'))))
+
+    # hack to remove color code characters from log file
+    string = open(logfn).read()
+    new_str = re.sub(r'(\033|\x1b)\[\d+m', '', string)
+    open(logfn, 'w').write(new_str)

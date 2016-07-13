@@ -1,8 +1,7 @@
 #!/db/kepler_pe/93k/anaconda_ete/bin/python
 """
-    Dynamically modifies the RPTV counts to find the first passing condition of an MATCHLOOP flattened pattern.
-    Considers the fact that these patterns have multiple ports and the modulo behavior needs to be preserved for LMAP.
-    Doesn't hurt BFLM either.
+    Dynamically modifies the RPTV counts to find P/F location of matchloops (flattened into masked repeat blocks).
+    Currently does not support LMAP generated patterns (BFLM only) even though there is a switch.
 """
 import time
 from common import *
@@ -52,6 +51,11 @@ class MatchLoopFixer(object):
 
     @staticmethod
     def setup_logger(logger_name):
+        """
+        Setup logger with decorators for warning and error so we can count how
+        many times they were called.
+        :param logger_name: string name of logger used for retrieval
+        """
         global log
         log = logging.getLogger(logger_name)
         log.warning = callcounted(log.warning)
@@ -59,7 +63,9 @@ class MatchLoopFixer(object):
 
     def find_commport_match_rpt_vec_no(self, srch_str):
         """
-        This function searches each vector comment for srch_str, if provided.
+        This function searches each vector comment (on comment port only) for srch_str, if provided.
+        :param srch_str: string string to search for in comments
+        :return dict vector addresses that had the comment per label
         """
         log.info("Running tcmt()... (This may take a few minutes!)")
         tcmt_ptn = re.compile(r'tcmt (?P<vec_addr>\d+),"(?P<comment>[^"]+)"', re.IGNORECASE)
@@ -81,10 +87,12 @@ class MatchLoopFixer(object):
                         srch_rslts[label].append(vec_addr)
         return srch_rslts
 
-    def get_labels(self, port):
+    @staticmethod
+    def get_labels(port):
         """
         Get all labels for each port in current burst
-        There is only a query version of this command, so no need for 'get_'
+        :param port: string name of port to get labels for using firmware
+        :return list all labels found in port given
         """
         labels = []
         getl_ptn = re.compile(r'getl (?P<idx>\d+),\"(?P<label>.*)\",(?P<start>\d+),(?P<stop>\d+),\(', re.IGNORECASE)
@@ -196,19 +204,31 @@ class MatchLoopFixer(object):
 
     @staticmethod
     def get_cyc2num(port, rptv_data):
+        """
+        Get the rptv number (order found in burst for given port) indexed by the start cycle of that rptv
+        :param port: string name of port
+        :param rptv_data: dict all the relevant data for every repeat (gleaned from SQPG? and GETV?)
+        :return: dict repeat number by start cycle
+        """
         return {this_rptv_data['start_cycle']: rptv_no for rptv_no, this_rptv_data in rptv_data[port].iteritems()}
 
     @staticmethod
     def get_closest_rptv_num(cyc2num, ideal_rptv_cyc):
+        """
+        Get the closest rptv number that coincides with the ideal_rptv_cyc
+        :param cyc2num: dict repeat number by start cycle
+        :param ideal_rptv_cyc: the start_cycle of the rptv if the vectors were correctly aligned
+        :return: int rptv number closest to ideal_rptv_cyc passed
+        """
         return cyc2num.get(ideal_rptv_cyc, cyc2num[min(cyc2num.keys(), key=lambda x: abs(x-ideal_rptv_cyc))])
 
     def find_corr_match_rptv_data(self):
         """
-        This routine uses the matchloop repeats found in the control port (comment_port) to find the corresponding
-        match repeats on the other ports.  It does this by calcalating the time (time = cycle * period) where the repeat
+        Uses the matchloop repeats found in the control port (comment_port) to find the corresponding
+        match repeats on the other ports.  Does this by calcalating the time (time = cycle * period) where the repeat
         starts and uses that in the other ports to find the correct cycle (cycle = time / period).
         If no repeat is found on that cycle, then it looks for the closest repeat in either direction and gives warning
-        that vectors are not aligned. It also gives you the current period for that port and what the period would be to
+        that vectors are not aligned. Also gives you the current period for that port and what the period would be to
         align the vectors.
         """
         aligned_periods = {}  # keep this local until we can compare with original periods
@@ -231,16 +251,18 @@ class MatchLoopFixer(object):
                         aligned_periods[port].append(aligned_period)
                     delta = abs(closest_rptv_cyc-ideal_rptv_cyc)
                     log.warning("Vector misalignment at matchloop repeat on port: '{}' label: '{}'\n"
-                       "\t(Assuming aligned period for all future calculations in this script).\n"
-                       "\tCycle deviation from actual to aligned cycle is: '{} cycles'\n"
-                       "\tActual period: '{} ns' Aligned period: '{} ns'\n"
-                       "\t(You may want to change the period on this port to the aligned value)."
-                       .format(port, self.rptv_data[port][closest_rptv_num]['label'], delta,
-                               self.periods[port], aligned_period))
+                                "\t(Assuming aligned period for all future calculations in this script).\n"
+                                "\tCycle deviation from actual to aligned cycle is: '{} cycles'\n"
+                                "\tActual period: '{} ns' Aligned period: '{} ns'\n"
+                                "\t(You may want to change the period on this port to the aligned value)."
+                                .format(port, self.rptv_data[port][closest_rptv_num]['label'], delta,
+                                        self.periods[port], aligned_period))
                 # deliver the payload
                 if m_rptv_time not in self.match_rptv_data:
                     self.match_rptv_data[m_rptv_time] = {}
                 self.match_rptv_data[m_rptv_time][port] = self.rptv_data[port][closest_rptv_num]
+        # average all the periods and round to nearest 2 decimal places
+        # if a matchloop had no mis-aligned periods on any port, then just use period
         for port, periods in aligned_periods.iteritems():
             if len(periods):
                 per = round(np.mean(periods), 2)
@@ -251,9 +273,8 @@ class MatchLoopFixer(object):
 
     def calc_step_size(self, m_rptv_data):
         """
-        Calculate min step size in time for all ports.  Must have calculated aligned periods first.
-        :param m_rptv_data:
-        :return:
+        Calculate min step size in time and number of steps for all ports.  Must have calculated aligned periods first.
+        :param m_rptv_data: dict all the relevant data for match repeats (gleaned from SQPG? and GETV?)
         """
         log.info("Formula for calculating step size for each port: int(ceil(step_size_t / (period / no_of_vectors)))")
         log.info("Aligned period (which may differ from actual) is used for calculating step size.")
@@ -269,6 +290,12 @@ class MatchLoopFixer(object):
                       .format(port, self.aligned_periods[port], no_of_vectors, self.step_size_n[port]))
 
     def set_final_values(self, m_rptv_data, original_rptv, current_rptv):
+        """
+        Adds margin to last passing rptv value and sets final rptv repeat values for all ports
+        :param m_rptv_data: dict all the relevant data for match repeats (gleaned from SQPG? and GETV?)
+        :param original_rptv: dict original rptv values for each port
+        :param current_rptv: dict latest rptv value for each port
+        """
         all_new_rptv = {}
         for port in self.ports:
             total_steps = original_rptv[port] - current_rptv[port]
@@ -309,6 +336,10 @@ class MatchLoopFixer(object):
     def get_port_repeat(self, original_rptv, cport_midpt, port):
         """
         Calculate repeats for port passed in based on control port's repeat count
+        :param original_rptv: dict original repeat value per port
+        :param cport_midpt: int repeat count which is current midpoint for control (comment) port
+        :param port: string name of port
+        :return: int updated rptv value which is equivalent to control (comment) port's value
         """
         # get num steps traversed (decreased) by comment port
         unit_steps_delta = (original_rptv[self.comment_port] - cport_midpt) / self.step_size_n[self.comment_port]
@@ -322,6 +353,13 @@ class MatchLoopFixer(object):
         return new_rptv
 
     def update_port_label(self, msg, port, m_rptv_data, new_repeat):
+        """
+        Download the updated rptv info to the tester for given port
+        :param msg: string message to prepended to log message
+        :param port: string name of port
+        :param m_rptv_data: dict all the relevant data for match repeats (gleaned from SQPG? and GETV?)
+        :param new_repeat: int value of updated repeat count for this port
+        """
         label = m_rptv_data[port]['label']
         start_vector = m_rptv_data[port]['start_vector']
         no_of_vectors = m_rptv_data[port]['no_of_vectors']
@@ -335,7 +373,9 @@ class MatchLoopFixer(object):
                 memory=self.memory, port=port, log=log)
 
     def do_parametric_ftest(self):
-
+        """
+        Linear or Binary search of P/F for rptv vules changed
+        """
         # iterate through each matchloop repeat across all ports found earlier
         for m_rptv_time, m_rptv_data in sorted(self.match_rptv_data.iteritems()):
             log.info("START Repeat modification search for burst: '{}'".format(self.burst))
@@ -372,7 +412,8 @@ class MatchLoopFixer(object):
                         cport_lower = cport_midpt
                 if not last_passing_rptv:
                     log.warning("NO PASS FOUND FOR BURST: '{}'!".format(self.burst))
-                    self.update_port_label("No Pass found!  Resetting repeats back to original values.", port, m_rptv_data, current_rptv[port])
+                    for port in self.ports:
+                        self.update_port_label("No Pass found!  Resetting repeats back to original values.", port, m_rptv_data, current_rptv[port])
                 else:
                     log.debug(last_passing_rptv)
                     self.set_final_values(m_rptv_data, original_rptv, last_passing_rptv)
@@ -403,18 +444,16 @@ class MatchLoopFixer(object):
                 log.critical("Failed Func test after final modification to burst")
                 sys.exit(1)
 
-    def __init__(self, debug=False, progname='', maxlogs=1, outdir=os.path.dirname(os.path.realpath(__file__)),
+    def __init__(self, debug=False, progname='', outdir=os.path.dirname(os.path.realpath(__file__)),
                  offset=0, srchstr='', comment_port='', memory='SH', lmap=False, marg=0.1, binary=False):
         """
-        Constructor for MatchLoopFixer
         :param debug: bool determines whether to print/log 'debug' statements in pr() functions
         :param progname: string used for appending to output file names and output directory
-        :param maxlogs: int determines whether to have 1 log file per module or just 1 overall (default)
         :param outdir: string destination of all output files.  if not exist, it will be created
-        :param offset:
-        :param srchstr:
-        :param comment_port:
-        :param lmap:
+        :param offset: int vector comment address offset from matchloop.
+        :param srchstr: string string to search for in comments
+        :param comment_port: string
+        :param lmap: bool patterns were generated with LMAP (true) or BFLM (false)
         """
         global logfn
         self.debug = debug
@@ -427,9 +466,8 @@ class MatchLoopFixer(object):
             log_level = logging.DEBUG
         else:
             log_level = logging.INFO
-        logger_name, outdir, logfile = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
-                                                    outdir=outdir, name=progname, maxlogs=maxlogs, level=log_level)
-        logfn = logfile
+        logger_name, outdir, logfn = init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__),
+                                                  outdir=outdir, name=progname, level=log_level)
         self.setup_logger(logger_name)
         log.info('Running ' + os.path.basename(sys.modules[__name__].__file__) + '...')
 
@@ -468,9 +506,6 @@ if __name__ == "__main__":
     parser.add_argument('-name', '--name', required=False, default='', help='Optional name used for output files/logs.')
     parser.add_argument('-d', '--debug', action='store_true', help='print a lot of debug stuff to dlog')
     parser.add_argument('-out', '--output_dir', required=False, default='', help='Directory to place log file(s).')
-    parser.add_argument('-max', '--maxlogs', type=int, default=1, required=False,
-                        help='(0=OFF:log data to stdout).'
-                             'Set to 1 to keep only one log (subsequent runs will overwrite).')
     parser.add_argument('-comm_port', '--comment_port', required=True, default='',
                         help='Port that has the search comments (just give one port, even if others have the string.')
     parser.add_argument('-cmt_offst', '--comment_offset', type=int, default=1, required=False,
@@ -484,8 +519,6 @@ if __name__ == "__main__":
     parser.add_argument('-mem', '--memory', required=False,
                         default='SH',
                         help="Set to 'SH' or 'SHMEM'")
-    # parser.add_argument('-keep_temp_burst', '--keep_temp_burst', required=False,
-    #                     help='Do not delete the temporary burst at the end of the script exeuction (not the default)')
     parser.add_argument('-skip_func', '--skip_func', action='store_true', required=False,
                         help='Do not run an initial functional test... not the default !')
     parser.add_argument('-bin', '--bin', action='store_true', required=False,
@@ -502,7 +535,6 @@ if __name__ == "__main__":
     mlf = MatchLoopFixer(progname=args.name,
                          debug=args.debug,
                          outdir=args.output_dir,
-                         maxlogs=args.maxlogs,
                          offset=args.comment_offset,
                          srchstr=args.comment_search_string,
                          comment_port=args.comment_port,
@@ -512,16 +544,17 @@ if __name__ == "__main__":
                          binary=args.bin)
 
     log.info('ARGUMENTS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
-    log.info('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter))
-    log.info('Number of ERRORS for "{}": {}'.format(__script__, log.error.counter))
+    log.warning('Number of WARNINGS for "{}": {}'.format(__script__, log.warning.counter))
+    log.error('Number of ERRORS for "{}": {}'.format(__script__, log.error.counter))
 
     time = time.time()-_start_time
     log.info('Script took ' + str(round(time, 3)) + ' seconds (' + humanize_time(time) + ')')
-    log.info('Everything printed here was also printed to your log file(s) in the output directory.')
-    new_files = os.popen('ls -lrt {}'.format(args.output_dir)).read()
-    log.info("Displaying Output Directory: {}\n\tContents: \n\t\t{}".format(args.output_dir, '\n\t\t'.join(new_files.split('\n'))))
+    log.info('Everything printed here was also printed to your log file in the output directory.')
+    log.info('Log file: {}'.format(logfn))
 
-    # hack to remove color code characters from log file
-    string = open(logfn).read()
-    new_str = re.sub(r'(\033|\x1b)\[\d+m', '', string)
-    open(logfn, 'w').write(new_str)
+    if logfn is not None:
+        # hack to remove color code characters from log file. couldn't figure out how to prevent
+        # colors from being sent to log file that were meant for console
+        string = open(logfn).read()
+        new_str = re.sub(r'(\033|\x1b)\[\d+m', '', string)
+        open(logfn, 'w').write(new_str)

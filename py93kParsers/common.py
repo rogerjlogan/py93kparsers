@@ -141,8 +141,8 @@ def get_valid_dir(name,outdir=''):
     return outdir,info_msg,warn_msg
 
 
-def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),name='',outdir='',maxlogs=1,ext='.log'):
-    outdir,info_msg,warn_msg = get_valid_dir(name=name,outdir=outdir)
+def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__), name='', outdir='', ext='.log'):
+    outdir, info_msg, warn_msg = get_valid_dir(name=name, outdir=outdir)
     if len(name):
         progname = name+'_'
     else:
@@ -154,8 +154,8 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
     counter = 0
     while os.path.isfile(pathfn):
         counter += 1
-        if counter >= maxlogs:
-            info_msg.append('maxlogs={} (default=1) Consider moving/deleting previous files (logs,png\'s,csv\'s,etc) between runs. Overwriting {}'.format(maxlogs,fn))
+        if counter >= 1:
+            info_msg.append('Consider moving/deleting previous files (logs,png\'s,csv\'s,etc) between runs. Overwriting {}'.format(fn))
             break
         else:
             fn = basename + '.' + str(counter) + ext
@@ -164,7 +164,7 @@ def get_valid_file(scriptname=os.path.basename(sys.modules[__name__].__file__),n
     msg = 'Creating file: '+pathfn
     print msg
     info_msg.append(msg)
-    return pathfn,outdir,info_msg,warn_msg
+    return pathfn, outdir, info_msg, warn_msg
 
 def add_coloring_to_emit_windows(fn):
         # add methods we need to the class
@@ -258,39 +258,34 @@ def add_coloring_to_emit_ansi(fn):
     return new
 
 
-def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', maxlogs=1 ,level=logging.INFO):
+def init_logging(scriptname=os.path.basename(sys.modules[__name__].__file__), outdir='', name='', level=logging.INFO):
 
-    logger_name = 'log'
-    if maxlogs > 0:
+    pathfn, outdir, info_msg, warn_msg = get_valid_file(scriptname=scriptname, name=name, outdir=outdir, ext='.log')
 
-        pathfn, outdir, info_msg, warn_msg = get_valid_file(scriptname=scriptname,name=name,outdir=outdir,maxlogs=maxlogs,ext='.log')
+    basename = os.path.basename(pathfn).split('.')[0]
+    logger_name = 'log_'+basename
 
-        basename = os.path.basename(pathfn).split('.')[0]
-        logger_name = 'log_'+basename
-
-        # FIXME: damn, really wish i could get this to print with color encoding to file
-        if platform.system() == 'Windows':
-            # Windows does not support ANSI escapes and we are using API calls to set the console color
-            logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
-        else:
-            # all non-Windows platforms are supporting ANSI escapes so we use them
-            logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
-
-        log = logging.getLogger(logger_name)
-        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
-        file_handler = logging.FileHandler(pathfn, mode='w')
-        file_handler.setFormatter(formatter)
-
-        log.setLevel(level)
-        log.addHandler(file_handler)
-
-        stream_handler = logging.StreamHandler(stream=sys.stdout)
-        formatter = logging.Formatter('%(levelname)s: %(message)s')
-        stream_handler.setFormatter(formatter)
-        log.addHandler(stream_handler)
-
+    if platform.system() == 'Windows':
+        # Windows does not support ANSI escapes and we are using API calls to set the console color
+        logging.StreamHandler.emit = add_coloring_to_emit_windows(logging.StreamHandler.emit)
     else:
-        logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=level, datefmt='%m/%d/%Y %I:%M:%S %p')
+        # all non-Windows platforms are supporting ANSI escapes so we use them
+        logging.StreamHandler.emit = add_coloring_to_emit_ansi(logging.StreamHandler.emit)
+
+    log = logging.getLogger(logger_name)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
+    file_handler = logging.FileHandler(pathfn, mode='w')
+    file_handler.setFormatter(formatter)
+
+    log.setLevel(level)
+    log.addHandler(file_handler)
+
+    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    stream_handler.setFormatter(formatter)
+    log.addHandler(stream_handler)
+
+    # logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=level, datefmt='%m/%d/%Y %I:%M:%S %p')
 
     return logger_name, outdir, pathfn
 

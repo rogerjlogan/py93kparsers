@@ -1,10 +1,11 @@
 #!/db/kepler_pe/93k/anaconda_ete/bin/python
 """
-    Dynamically modifies the RPTV counts to find P/F location of matchloops (flattened into masked repeat blocks).
+    Dynamically modifies (binary/linear search using FW commands) the RPTV counts to find P/F location of matchloops (flattened into masked repeat blocks).
     Currently does not support LMAP generated patterns (BFLM only) even though there is a switch to choose LMAP (for later use).
-    Expections:
+    Set primaries by running desired test suite first. Patterns are modified in place on the tester. Do not try to run this on a simulator.
+    Expectations:
         1. There are corresponding repeats across all ports (except ignored ports).  If no repeat is found at the same point in
-            time (calculated from commment port) then an attempt is made to find the closest repeat.  The period for that port
+            time (calculated from comment port) then an attempt is made to find the closest repeat.  The period for that port
             is then adjusted (aligned) for all future calculations in the script.  This is necessary to limit the size of the LCM
             of all port periods. The LCM of all port periods is used to find the step size in units of time for each port.
         2. The comment port has the correct repeat block size.  If other repeat blocks are smaller (in time units),

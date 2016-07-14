@@ -358,7 +358,7 @@ class MatchLoopFixer(object):
 
     def update_port_label(self, msg, port, m_rptv_data, new_repeat):
         """
-        Download the updated rptv info to the tester for given port. Also calculates compression achieved so far.
+        Download the updated rptv info to the tester for given port. Also calculates reduction achieved so far.
         :param msg: string message to prepended to log message
         :param port: string name of port
         :param m_rptv_data: dict all the relevant data for match repeats (gleaned from SQPG? and GETV?)
@@ -463,16 +463,16 @@ class MatchLoopFixer(object):
                     self.update_port_label("Post Search Func Test Failed!  "
                                            "Resetting repeats back to original values.", port, m_rptv_data, original_rptv[port])
 
-    def show_compression(self):
-        log.info("Showing Compression Achieved for Burst: '{}' ...".format(self.burst))
+    def show_reduction(self):
+        log.info("Showing Reduction Achieved for Burst: '{}' ...".format(self.burst))
         for port in self.ports:
             beg = self.beg_cycle_count[port]
             end = self.end_cycle_count[port]
-            compression = 100 - round(float(end)/float(beg)*100, 4)
+            reduction = 100 - round(float(end)/float(beg)*100, 4)
             difference = beg - end
             time_saved = difference * self.periods[port] / 1000 / 1000  # ms
-            log.info("\t{:>15}: Beg Cyc Count: {:>10} End Cyc Count: {:>10} Differece: {:<10} Compression: {:>7} % Time Saved: {:>7} ms"
-                     .format(port, beg, end, difference, compression, time_saved))
+            log.info("\t{:>15}: Beg Cyc Count: {:>10} End Cyc Count: {:>10} Differece: {:<10} Reduction: {:>7} % Time Saved: {:>7} ms"
+                     .format(port, beg, end, difference, reduction, time_saved))
         log.info("Search String was: '{}'".format(self.search_str))
         log.info("Labels found with Search String (and their vector numbers) ...")
         log.debug(self.labels_wtih_srchstr)
@@ -498,7 +498,7 @@ class MatchLoopFixer(object):
         return total_cyc
 
     def __init__(self, debug=False, progname='', outdir=os.path.dirname(os.path.realpath(__file__)),
-                 offset=0, srchstr='', comment_port='', lmap=False, marg=0.1, binary=False):
+                 offset=0, srchstr='', comment_port='', lmap=False, marg=0.1, binary=False, ignore=''):
         """
         Init for MatchLoopFixer
         :param debug: bool determines whether to print/log 'debug' statements in pr() functions
@@ -532,6 +532,15 @@ class MatchLoopFixer(object):
         # get burst name and ports
         self.burst, self.ports = fw.sqsl_q(log=log)
 
+        if len(ignore):
+            # remove ignored ports before continuing
+            for port in [p.strip() for p in ignore.split(',')]:
+                if port == self.comment_port:
+                    log.critical("Comment port: '{}' can not be in ignore port list: '{}'".format(port, ignore))
+                    sys.exit(1)
+                log.debug("Removing port: '{}'".format(port))
+                self.ports.remove(port)
+
         # execute functional test
         if not args.skip_func and not fw.ftst_q(self.burst, lmap=self.lmap, log=log):
             log.info("this may be normal, especially if there are flaky patterns as they are not considered here")
@@ -559,7 +568,7 @@ class MatchLoopFixer(object):
 
         self.end_cycle_count = self.get_cycle_count()
 
-        self.show_compression()
+        self.show_reduction()
 
 
 if __name__ == "__main__":
@@ -576,7 +585,9 @@ if __name__ == "__main__":
                              ' 1=comm_srch_str is one vector AFTER matchloop END)')
     parser.add_argument('-comm_srch_str', '--comment_search_string', required=False,
                         default='turn strobe(s) back on for final loop cycle',
-                        help='String to search for in comments')
+                        help='String to search for in comments (USE DOUBLE QUOTES)')
+    parser.add_argument('-ignore', '--ignore_ports', required=False, default='',
+                        help='Comma separated string of ports to ignore for this script (useful for Asynchronous ports; USE DOUBLE QUOTES)')
     parser.add_argument('-skip_func', '--skip_func', action='store_true', required=False,
                         help='Do not run an initial functional test... not the default !')
     parser.add_argument('-bin', '--bin', action='store_true', required=False,
@@ -598,7 +609,8 @@ if __name__ == "__main__":
                          comment_port=args.comment_port,
                          lmap=args.lmap,
                          marg=args.margin,
-                         binary=args.bin)
+                         binary=args.bin,
+                         ignore=args.ignore_ports)
 
     log.info('ARGS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
     num_warns = log.warning.counter

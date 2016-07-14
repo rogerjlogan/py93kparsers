@@ -530,7 +530,7 @@ class MatchLoopFixer(object):
             sys.exit(1)
 
         # get burst name and ports
-        self.burst, self.ports = fw.sqsl_q(debug=self.debug, log=log)
+        self.burst, self.ports = fw.sqsl_q(log=log)
 
         # execute functional test
         if not args.skip_func and not fw.ftst_q(self.burst, lmap=self.lmap, log=log):

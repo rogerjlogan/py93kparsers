@@ -57,7 +57,7 @@ def sqpg_q(portlist, cmd_no_a, cmd_no_b=None, log=None):
         return fwc('sqpg? "{},{}",({});'.format(cmd_no_a, cmd_no_b, portlist), log=log)
 
 
-def sqsl_q(debug=False, log=None):
+def sqsl_q(log=None):
     """
     Get the current mpb burst name and the ports it uses.
     :param debug: determines print level

@@ -464,6 +464,9 @@ class MatchLoopFixer(object):
                                            "Resetting repeats back to original values.", port, m_rptv_data, original_rptv[port])
 
     def show_reduction(self):
+        """
+        Display statistics of differences between total cycle count for each port before/after RPTV modification
+        """
         log.info("Showing Reduction Achieved for Burst: '{}' ...".format(self.burst))
         for port in self.ports:
             beg = self.beg_cycle_count[port]
@@ -480,12 +483,17 @@ class MatchLoopFixer(object):
             log.info("\tLabel with Search String: '{}' Vectors: {}".format(label, ','.join([str(v) for v in vectors])))
 
     def get_cycle_count(self):
+        """
+        Uses GETV? to get all vector data per port and looks at last vector to get total cycle count
+        :return: dict total cycle count (int) for each port
+        """
         getv_ptn = re.compile(r'getv (?P<start_cycle>\d+),(?P<no_of_cycles>\d+),', re.IGNORECASE)
         total_cyc = {}
         for port in self.ports:
             total_cyc[port] = 0  # init
             # get last vector data only
-            getv_rslt = fw.getv_q(0, 100000000000, port, log=log).strip().split('\n')[-1]
+            getv_rslt = fw.getv_q(0, 100000000000, port,
+                                  debug_output_char_limit=0, log=log).strip().split('\n')[-1]
             if len(getv_rslt):
                 getv_obj = getv_ptn.search(getv_rslt)
                 if getv_obj:
@@ -561,11 +569,13 @@ class MatchLoopFixer(object):
         # use the absolute time found above to find corresponding match repeats for all the ports now
         self.find_corr_match_rptv_data()
 
+        # get cycle count BEFORE RPTV MODIFICATION for statistics at end
         self.beg_cycle_count = self.get_cycle_count()
 
         # modify match repeats and continually check for P/F
         self.do_parametric_ftest()
 
+        # get cycle count AFTER RPTV MODIFICATION for statistics at end
         self.end_cycle_count = self.get_cycle_count()
 
         self.show_reduction()
@@ -612,7 +622,7 @@ if __name__ == "__main__":
                          binary=args.bin,
                          ignore=args.ignore_ports)
 
-    log.info('ARGS:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
+    log.info('ARGS PASSED TO THIS SCRIPT:\n\t'+'\n\t'.join(['--'+k+'='+str(v) for k, v in args.__dict__.iteritems()]))
     num_warns = log.warning.counter
     num_errors = log.error.counter
     if num_warns:

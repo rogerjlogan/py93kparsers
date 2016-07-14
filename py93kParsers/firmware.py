@@ -121,8 +121,9 @@ def sqla_q(label, attr_key='para_mem', log=None):
     return fwc('sqla?,"{}","{}";'.format(label, attr_key), log=log)
 
 
-def getv_q(start_cycle, no_of_cycles, pinlist, log=None):
-    return fwc('getv? {},{},({});'.format(start_cycle, no_of_cycles, pinlist), log=log)
+def getv_q(start_cycle, no_of_cycles, pinlist, debug_output_char_limit=100, log=None):
+    return fwc('getv? {},{},({});'.format(start_cycle, no_of_cycles, pinlist),
+               debug_output_char_limit=debug_output_char_limit, log=log)
 
 
 def pclk_q(port, log=None):

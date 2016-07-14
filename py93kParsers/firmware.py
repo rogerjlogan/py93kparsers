@@ -113,8 +113,12 @@ def tstl(label, port, log=None):
 def tcmt_q(vect_addr, vect_length=0, debug_output_char_limit=100, log=None):
     if vect_length == 0:
         vect_length = ''
-    return fwc('tcmt? {}, {}'.format(vect_addr, vect_length),
+    return fwc('tcmt? {}, {};'.format(vect_addr, vect_length),
                debug_output_char_limit=debug_output_char_limit, log=log)
+
+
+def sqla_q(label, attr_key='para_mem', log=None):
+    return fwc('sqla?,"{}","{}";'.format(label, attr_key), log=log)
 
 
 def getv_q(start_cycle, no_of_cycles, pinlist, log=None):
